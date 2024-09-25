@@ -18,11 +18,17 @@ namespace Site\Helpers;
 class TableHelper
 {
 
-   const  USERS = "sd_mt_userdb";
-   const  ROLES = "sd_mt_role";
+   const USERS = "sd_mt_userdb";
+   const ROLES = "sd_mt_role";
    const USERROLE = "sd_mt_user_role";
    const SITE  = "sd_site_settings";
+   const SITE_ALERTS  = "sd_site_alerts";
 
    const EFLOFFICE =  "sd_efl_office";
+   const HUBS =  "sd_hubs";
+   const HUB_GROUPS =  "sd_hub_groups";
+   const STATEDB =  "sd_state_db";
+   const VENDORS =  "sd_vendors";
+   const VENDOR_RATE =  "sd_vendor_rate";
    
 }
