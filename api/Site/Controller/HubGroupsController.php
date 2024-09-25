@@ -23,10 +23,10 @@ class HubGroupsController extends BaseController{
      * 
      */
     public function insert(){
-        $validate_columns = [ "sd_hub_id","sd_mt_role_id"  ];
+        $columns = ["sd_hub_id","sd_mt_role_id"];
         // do validations
-        $this->_helper->validate(HubGroupsHelper::validations,$validate_columns,$this->post);
-        $columns = ["sd_hub_id","sd_mt_role_id" ,"last_modified_time" ]; 
+        $this->_helper->validate(HubGroupsHelper::validations,$columns,$this->post);
+        $columns[] =  "last_modified_time";
          // insert and get id
          $id = $this->_helper->insert($columns,$this->post);
        
@@ -42,11 +42,10 @@ class HubGroupsController extends BaseController{
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["sd_hub_id","sd_mt_role_id" ,"last_modified_time"];
+        $columns = ["sd_hub_id","sd_mt_role_id"];
         // do validations
         $this->_helper->validate(HubGroupsHelper::validations, $columns, $this->post);
         // extra columns
-    
         $columns[] =  "last_modified_time";
         // begin transition
         $this->db->_db->Begin();

@@ -42,12 +42,12 @@ class VendorsController extends BaseController{
         if($id < 1){
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["vendor_code","vendor_company","gst_no","pin_code"];
+        $columns = ["vendor_code","vendor_company","gst_no","pin_code","status"];
         // do validations
         $this->_helper->validate(VendorsHelper::validations,$columns,$this->post);
         // insert and get id
-        $columns = ["vendor_code","vendor_company","gst_no","pin_code","status","last_modified_by","last_modified_time"];
-        $this->post["status"] = 5;
+        $columns[] = "last_modified_by";
+        $columns[] =  "last_modified_time";
         $this->_helper->update($columns,$this->post,$id);
         $this->response($id);
     }

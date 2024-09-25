@@ -76,29 +76,36 @@ class EflOfficeHelper extends BaseHelper
                 "type"=> SmartConst::VALID_REQUIRED,
                 "msg"=> "Please Enter pan no"
             ]
-      
+        
             ],
-           "cin_no"=> [
+        "cin_no"=> [
+        [
+            "type"=> SmartConst::VALID_REQUIRED,
+            "msg"=> "Please Enter cin no"
+        ]
+    
+        ],
+        "state"=> [
             [
                 "type"=> SmartConst::VALID_REQUIRED,
-                "msg"=> "Please Enter cin no"
+                "msg"=> "Please Specify state"
             ]
-      
+        
             ],
-            "state"=> [
-                [
-                    "type"=> SmartConst::VALID_REQUIRED,
-                    "msg"=> "Please Specify state"
-                ]
-          
-                ],
-            "pin_code"=> [
-                [
-                    "type"=> SmartConst::VALID_REQUIRED,
-                    "msg"=> "Please Enter pincode"
-                ]
-          
-                ],
+        "pin_code"=> [
+            [
+                "type"=> SmartConst::VALID_REQUIRED,
+                "msg"=> "Please Enter pincode"
+            ]
+        
+            ],
+        "status" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Enter status"
+            ]
+    
+        ]
     ];
 
 

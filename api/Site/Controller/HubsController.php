@@ -23,14 +23,13 @@ class HubsController extends BaseController{
      * 
      */
     public function insert(){
-        $validate_columns = [ "hub_id" ,"hub_name" ,"hub_location","sd_efl_office_id"  ];
+        $columns = [ "hub_id" ,"hub_name" ,"hub_location","sd_efl_office_id"];
         // do validations
-        $this->_helper->validate(HubsHelper::validations,$validate_columns,$this->post);
-        $columns = ["hub_id" ,"hub_name" ,"hub_location","sd_efl_office_id" ,"created_by"  ,
-        "created_time"  ,"last_modified_by"  ,"last_modified_time"  ]; 
+        $this->_helper->validate(HubsHelper::validations,$columns,$this->post);
+        $columns[] = "created_by" ;
+        $columns[] = "created_time" ;
          // insert and get id
          $id = $this->_helper->insert($columns,$this->post);
-       
         //
          $this->response($id);
     }

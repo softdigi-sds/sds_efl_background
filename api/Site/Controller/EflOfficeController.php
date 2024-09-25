@@ -23,14 +23,15 @@ class EflOfficeController extends BaseController{
      * 
      */
     public function insert(){
-        $validate_columns = [ "office_city" ,"address_one", "address_two", "gst_no" ,"pan_no" ,
+        $columns = [ "office_city" ,"address_one", "address_two", "gst_no" ,"pan_no" ,
         "cin_no"  ,"state"  ,"pin_code"  ];
         // do validations
-        $this->_helper->validate(EflOfficeHelper::validations,$validate_columns,$this->post);
-        $columns = ["office_city" ,"address_one", "address_two", "gst_no" ,"pan_no" ,
-        "cin_no"  ,"state"  ,"pin_code"  , "status"  ,  "created_by" ,"created_time" ,"last_modified_by" , 
-        "last_modified_time" ]; 
-         // insert and get id
+        $this->_helper->validate(EflOfficeHelper::validations,$columns,$this->post);
+        $columns[] = "status";
+        $columns[] = "created_by" ;
+        $columns[] = "created_time" ;
+        $this->post["status"] = 5;
+        // insert and get id
          $id = $this->_helper->insert($columns,$this->post);
        
         //
@@ -46,7 +47,7 @@ class EflOfficeController extends BaseController{
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
         $columns = ["office_city" ,"address_one", "address_two", "gst_no" ,"pan_no" ,
-        "cin_no"  ,"state"  ,"pin_code" ];
+        "cin_no"  ,"state"  ,"pin_code","status" ];
         // do validations
         $this->_helper->validate(EflOfficeHelper::validations, $columns, $this->post);
         // extra columns

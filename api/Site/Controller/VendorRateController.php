@@ -6,7 +6,7 @@ use Core\BaseController;
 use Site\Helpers\VendorRateHelper as VendorRateHelper;
 
 
-class VendorsController extends BaseController{
+class VendorRateController extends BaseController{
     
     private VendorRateHelper $_helper;
 

@@ -70,6 +70,13 @@ class VendorsHelper extends BaseHelper
                 "msg" => "Please Enter Pin Code"
             ]
     
+            ],
+        "status" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Enter status"
+            ]
+    
         ]
     ];
 
