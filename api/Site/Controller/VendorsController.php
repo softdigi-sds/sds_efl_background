@@ -3,39 +3,37 @@
 namespace Site\Controller;
 
 use Core\BaseController;
+use Site\Helpers\VendorsHelper as VendorsHelper;
 
-use Site\Helpers\UserRoleHelper;
 
+class VendorsController extends BaseController{
+    
+    private VendorsHelper $_helper;
 
-class UserRoleController extends BaseController{
-    private UserRoleHelper $_helper;
-
-     function __construct($params)
+    function __construct($params)
     {
         parent::__construct($params);
         // 
-        $this->_helper = new UserRoleHelper($this->db);
+        $this->_helper = new VendorsHelper($this->db);
     }
 
    /**
      * 
      */
     public function insert(){
-        $columns = ["sd_mt_userdb_id","sd_mt_role_id","created_by"];
+        $columns = ["vendor_code","vendor_company","gst_no","pin_code"];
         // do validations
-        $this->_helper->validate(UserRoleHelper::validations,$columns,$this->post);
-        // add other columns
-        $columns[]="created_time"; 
-        
-         // Begin database transaction
-         $this->db->_db->Begin();
+        $this->_helper->validate(VendorsHelper::validations,$columns,$this->post);
+        $columns = ["vendor_code","vendor_company","vendor_name","gst_no","pan_no","address_one","address_two","state_name","pin_code","status","created_by","created_time"];
+        $this->post["status"] = 5;
+        $this->db->_db->Begin();
         // insert and get id
         $id = $this->_helper->insert($columns,$this->post);
-         // Commit transaction
-         $this->db->_db->commit();
+        $this->db->_db->commit();
         //
         $this->response($id);
     }
+  
     /**
      * 
      */
@@ -44,13 +42,16 @@ class UserRoleController extends BaseController{
         if($id < 1){
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["created_by"];
+        $columns = ["vendor_code","vendor_company","gst_no","pin_code"];
         // do validations
-        $this->_helper->validate(UserRoleHelper::validations,$columns,$this->post);
+        $this->_helper->validate(VendorsHelper::validations,$columns,$this->post);
         // insert and get id
-        $id = $this->_helper->update($columns,$this->post,$id);
+        $columns = ["vendor_code","vendor_company","gst_no","pin_code","status","last_modified_by","last_modified_time"];
+        $this->post["status"] = 5;
+        $this->_helper->update($columns,$this->post,$id);
         $this->response($id);
     }
+
 
     public function getAll(){      
         // insert and get id
@@ -69,7 +70,7 @@ class UserRoleController extends BaseController{
         $data = $this->_helper->getOneData($id);
         $this->response($data);
     }
-     /**
+    /**
      * 
      */
     public function deleteOne(){  
@@ -79,13 +80,8 @@ class UserRoleController extends BaseController{
         }    
         // insert and get id
         $this->_helper->deleteOneId($id);
-        //
         $out = new \stdClass();
         $out->msg = "Deleted Successfully";
         $this->response($out);
     }
-
-   
-
-
 }

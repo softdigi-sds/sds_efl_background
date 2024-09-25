@@ -11,17 +11,17 @@ use Site\Helpers\UserRoleHelper;
 
 class RoleController extends BaseController{
     
-    private RoleHelper $_role_helper;
+    private RoleHelper $_helper;
       //
-      private UserRoleHelper $_user_role_helper;
+      private UserRoleHelper $_user_helper;
 
     function __construct($params)
     {
         parent::__construct($params);
         // 
-        $this->_role_helper = new RoleHelper($this->db);
+        $this->_helper = new RoleHelper($this->db);
           //
-        $this->_user_role_helper = new UserRoleHelper($this->db);
+        $this->_user_helper = new UserRoleHelper($this->db);
     }
 
    /**
@@ -30,7 +30,7 @@ class RoleController extends BaseController{
     public function insert(){
         $columns = [ "role_name"];
         // do validations
-        $this->_role_helper->validate(RoleHelper::validations,$columns,$this->post);
+        $this->_helper->validate(RoleHelper::validations,$columns,$this->post);
         // add other columns
         $columns[]="created_by"; 
         $columns[]="created_time"; 
@@ -38,10 +38,10 @@ class RoleController extends BaseController{
          // Begin database transaction
          $this->db->_db->Begin();
             // insert and get id
-            $id = $this->_role_helper->insert($columns,$this->post);
+            $id = $this->_helper->insert($columns,$this->post);
          // insert roles
         //  if(!($this->post["users"]) == NULL){
-        //     $this->_user_role_helper->insertUsers($id, $this->post["users"]);
+        //     $this->_user_helper->insertUsers($id, $this->post["users"]);
         // }
         // Commit transaction
         $this->db->_db->commit();
@@ -61,19 +61,19 @@ class RoleController extends BaseController{
         }
         $columns = ["role_name"];
         // do validations
-        $this->_role_helper->validate(RoleHelper::validations,$columns,$this->post);
+        $this->_helper->validate(RoleHelper::validations,$columns,$this->post);
          // add other columns
          $columns[]="created_by"; 
         // insert and get id
-        $this->_role_helper->update($columns,$this->post,$id);
+        $this->_helper->update($columns,$this->post,$id);
         // update the roles
         // if(!($this->post["users"]) == NULL){
-        //     $this->_user_role_helper->insertUsers($id, $this->post["users"]);
+        //     $this->_user_helper->insertUsers($id, $this->post["users"]);
         // }
         // else
         // {
         //     // delete from user role table
-        //     $this->_user_role_helper->deleteRoleUser($id);
+        //     $this->_user_helper->deleteRoleUser($id);
 
         // }       
         // add log
@@ -83,9 +83,9 @@ class RoleController extends BaseController{
 
     public function getAll(){      
         // insert and get id
-        $data = $this->_role_helper->getAllData();
+        $data = $this->_helper->getAllData();
         foreach($data as $key=>$obj){
-            $obj->employees = $this->_user_role_helper->getSelectedUsersWithRoleId($obj->ID);
+            $obj->employees = $this->_user_helper->getSelectedUsersWithRoleId($obj->ID);
             $data[$key] = $obj;
         }
         $this->response($data);
@@ -99,7 +99,7 @@ class RoleController extends BaseController{
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }    
         // insert and get id
-        $data = $this->_role_helper->getOneData($id);
+        $data = $this->_helper->getOneData($id);
         $this->response($data);
     }
     /**
@@ -111,9 +111,9 @@ class RoleController extends BaseController{
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }    
         // delete from role table
-        $this->_role_helper->deleteOneId($id);
+        $this->_helper->deleteOneId($id);
         // delete from user_role table
-        $this->_user_role_helper->deleteRoleUser($id);
+        $this->_user_helper->deleteRoleUser($id);
         // add log
         $this->addLog("DELETED A ROLE","",SmartAuthHelper::getLoggedInUserName());
         //
@@ -126,7 +126,7 @@ class RoleController extends BaseController{
      */
     public function getAllSelect(){      
         $select = ["ID as value,role_name as label "];
-        $data = $this->_role_helper->getAllData("",[],$select);
+        $data = $this->_helper->getAllData("",[],$select);
         $roles =[ "value" => 10000000, "label" => "All Roles"];
         $users =[ "value" => 10000001, "label" => "All Users"];
         $data[] = $roles;

@@ -45,7 +45,7 @@ class UserRoleHelper extends BaseHelper
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter Role Id"
             ]],
-"created_by" => [
+        "created_by" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter created_by"

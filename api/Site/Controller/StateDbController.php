@@ -3,39 +3,35 @@
 namespace Site\Controller;
 
 use Core\BaseController;
+use Site\Helpers\StateDbHelper as StateDbHelper;
 
-use Site\Helpers\UserRoleHelper;
 
+class StateDbController extends BaseController{
+    
+    private StateDbHelper $_helper;
 
-class UserRoleController extends BaseController{
-    private UserRoleHelper $_helper;
-
-     function __construct($params)
+    function __construct($params)
     {
         parent::__construct($params);
         // 
-        $this->_helper = new UserRoleHelper($this->db);
+        $this->_helper = new StateDbHelper($this->db);
     }
 
    /**
      * 
      */
     public function insert(){
-        $columns = ["sd_mt_userdb_id","sd_mt_role_id","created_by"];
+        $columns = [ "state_id", "state_name"];
         // do validations
-        $this->_helper->validate(UserRoleHelper::validations,$columns,$this->post);
-        // add other columns
-        $columns[]="created_time"; 
-        
-         // Begin database transaction
+        $this->_helper->validate(StateDbHelper::validations,$columns,$this->post);
          $this->db->_db->Begin();
         // insert and get id
         $id = $this->_helper->insert($columns,$this->post);
-         // Commit transaction
-         $this->db->_db->commit();
+        $this->db->_db->commit();
         //
         $this->response($id);
     }
+  
     /**
      * 
      */
@@ -44,14 +40,13 @@ class UserRoleController extends BaseController{
         if($id < 1){
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["created_by"];
+        $columns = [ "state_id", "state_name"];
         // do validations
-        $this->_helper->validate(UserRoleHelper::validations,$columns,$this->post);
+        $this->_helper->validate(StateDbHelper::validations,$columns,$this->post);
         // insert and get id
-        $id = $this->_helper->update($columns,$this->post,$id);
+        $this->_helper->update($columns,$this->post,$id);
         $this->response($id);
     }
-
     public function getAll(){      
         // insert and get id
         $data = $this->_helper->getAllData();
@@ -69,7 +64,7 @@ class UserRoleController extends BaseController{
         $data = $this->_helper->getOneData($id);
         $this->response($data);
     }
-     /**
+    /**
      * 
      */
     public function deleteOne(){  
@@ -79,13 +74,18 @@ class UserRoleController extends BaseController{
         }    
         // insert and get id
         $this->_helper->deleteOneId($id);
-        //
         $out = new \stdClass();
         $out->msg = "Deleted Successfully";
         $this->response($out);
     }
-
-   
+    /**
+     * 
+     */
+    public function getAllSelect(){      
+        $select = ["state_id as value,state_name as label"];
+        $data = $this->_helper->getAllData("",[],$select);
+        $this->response($data);
+    }
 
 
 }

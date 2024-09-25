@@ -40,7 +40,7 @@ class UserHelper extends BaseHelper
         "last_reset_time" => SmartConst::SCHEMA_CDATETIME,
         "change_pass" => SmartConst::SCHEMA_INTEGER,
         "created_time" => SmartConst::SCHEMA_CDATETIME,
-        "created_by" => SmartConst::SCHEMA_VARCHAR,
+        "created_by" => SmartConst::SCHEMA_CUSER_ID,
         "active_status" => SmartConst::SCHEMA_INTEGER,
         "failed_attempts" => SmartConst::SCHEMA_INTEGER,
     ];
