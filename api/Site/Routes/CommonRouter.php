@@ -73,7 +73,33 @@ class CommonRouter
                $this->_routes["/userrole/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
                $this->_routes["/userrole/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
            }
-       
+           private function efl_office_routes()
+           {
+               $controller = "EflOfficeController";
+               $this->_routes["/efloffice/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
+               $this->_routes["/efloffice/update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
+               $this->_routes["/efloffice/get_all"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAll"];
+               $this->_routes["/efloffice/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
+               $this->_routes["/efloffice/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
+           }
+           private function hubs_routes()
+           {
+               $controller = "HubsController";
+               $this->_routes["/hubs/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
+               $this->_routes["/hubs/update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
+               $this->_routes["/hubs/get_all"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAll"];
+               $this->_routes["/hubs/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
+               $this->_routes["/hubs/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
+           }
+           private function hub_groups_routes()
+           {
+               $controller = "HubGroupsController";
+               $this->_routes["/hubgroups/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
+               $this->_routes["/hubgroups/update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
+               $this->_routes["/hubgroups/get_all"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAll"];
+               $this->_routes["/hubsgroups/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
+               $this->_routes["/hubsgroups/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
+           }
     
 
     
@@ -83,6 +109,9 @@ class CommonRouter
         $this->users_routes();
         $this->role_routes();
         $this->user_role_routes();
+        $this->efl_office_routes();
+        $this->hubs_routes();
+        $this->hub_groups_routes();
         return $this->_routes;
     }
 
