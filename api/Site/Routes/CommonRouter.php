@@ -167,8 +167,6 @@ class CommonRouter
         $this->_routes["/efl_vehicles/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/efl_vehicles/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
     }
-
-    
     private function get_all_Routes()
     {
         $this->auth_routes();

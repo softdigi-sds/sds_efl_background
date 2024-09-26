@@ -57,11 +57,16 @@ class EflConsumptionHelper extends BaseHelper
         "sd_date" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
-                "msg" => "Please Enter date"
+                "msg" => "Please Enter sd date"
             ]
         ],
 
-
+        "unit_count" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Enter unit count"
+            ]
+        ],
 
     ];
 
