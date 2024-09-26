@@ -34,7 +34,9 @@ class EflOfficeController extends BaseController{
         $columns[] = "status";
         $columns[] = "created_by" ;
         $columns[] = "created_time" ;
-        $this->post["state"] = Data::post_select_value($this->post["state"]);
+        // var_dump($this->post["state"]);exit();
+        $state = $this->post["state"];
+        $this->post["state"]  = $state["value"];
         $this->post["status"] = 5;
         // check office already exist
         $data = $this->_helper->checkOfficeExist($this->post["office_city"]);

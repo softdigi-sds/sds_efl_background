@@ -85,7 +85,7 @@ class RoleController extends BaseController{
         // insert and get id
         $data = $this->_helper->getAllData();
         foreach($data as $key=>$obj){
-            $obj->employees = $this->_user_helper->getSelectedUsersWithRoleId($obj->ID);
+            $obj->users = $this->_user_helper->getSelectedUsersWithRoleId($obj->ID);
             $data[$key] = $obj;
         }
         $this->response($data);
