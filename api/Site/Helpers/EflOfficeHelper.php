@@ -165,7 +165,7 @@ class EflOfficeHelper extends BaseHelper
         $from = Table::EFLOFFICE;
         $select = ["ID"];
         $sql = "office_city=:city";
-        $data_in = ["ID" => $office_city];
+        $data_in = ["city" => $office_city];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }

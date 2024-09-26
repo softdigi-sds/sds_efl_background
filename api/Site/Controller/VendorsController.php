@@ -4,28 +4,34 @@ namespace Site\Controller;
 
 use Core\BaseController;
 use Site\Helpers\VendorsHelper as VendorsHelper;
+use Core\Helpers\SmartData as Data;
+use Site\Helpers\InvoiceHelper as InvoiceHelper;
 
 
 class VendorsController extends BaseController{
     
     private VendorsHelper $_helper;
+    private InvoiceHelper $_invoice_helper;
 
     function __construct($params)
     {
         parent::__construct($params);
         // 
         $this->_helper = new VendorsHelper($this->db);
+        $this->_invoice_helper = new InvoiceHelper($this->db);
     }
 
    /**
      * 
      */
     public function insert(){
-        $columns = ["vendor_code","vendor_company","gst_no","pin_code"];
+        $columns = ["sd_hub_id","vendor_code","vendor_company","gst_no","pin_code"];
         // do validations
         $this->_helper->validate(VendorsHelper::validations,$columns,$this->post);
         $columns = ["vendor_code","vendor_company","vendor_name","gst_no","pan_no","address_one","address_two","state_name","pin_code","status","created_by","created_time"];
         $this->post["status"] = 5;
+        $this->post["sd_hub_id"] = Data::post_select_value($this->post["sd_hub_id"]);
+        $this->post["state_name"] = Data::post_select_value($this->post["state_name"]);
         $data = $this->_helper->checkVendorByCodeCompany($this->post["vendor_code"], $this->post["vendor_company"]);
         if (!empty($data)) {
             \CustomErrorHandler::triggerInvalid("Vendor code and company already available ");
@@ -81,7 +87,11 @@ class VendorsController extends BaseController{
         $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
         if($id < 1){
             \CustomErrorHandler::triggerInvalid("Invalid ID");
-        }    
+        }  
+        $data = $this->_invoice_helper->checkInvoiceExist($id);
+        if (!empty($data)) {
+            \CustomErrorHandler::triggerInvalid("Cannot remove Vendor, invoice is registered for for this vendor");
+        }  
         // insert and get id
         $this->_helper->deleteOneId($id);
         $out = new \stdClass();

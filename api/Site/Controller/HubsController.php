@@ -103,7 +103,11 @@ class HubsController extends BaseController{
         $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
         if($id < 1){
             \CustomErrorHandler::triggerInvalid("Invalid ID");
-        }    
+        }     
+        $data = $this->_vendor_rate_helper->checkVenodrByHubId($id);
+        if (!empty($data)) {
+            \CustomErrorHandler::triggerInvalid("Cannot remove Hub, Hub is allocated to a vendor.");
+        }
         // insert and get id
         $this->_helper->deleteOneId($id);
     
@@ -111,9 +115,14 @@ class HubsController extends BaseController{
         $out->msg = "Removed Successfully";
         $this->response($out);
     }    
-     /**
+    /**
      * 
      */
+    public function getAllSelect(){      
+        $select = ["ID as value,hub_id as label"];
+        $data = $this->_helper->getAllData("",[],$select);
+        $this->response($data);
+    }
 
 
 }

@@ -32,7 +32,7 @@ class UserController extends BaseController
      */
     public function insert()
     {
-        $columns = ["ename", "euserid","mobile_no","active_status"];
+        $columns = ["ename", "euserid","mobile_no"];
         // do validations
         $this->_helper->validate(UserHelper::validations, $columns, $this->post);
         //
@@ -43,14 +43,16 @@ class UserController extends BaseController
         }
         $this->db->_db->Begin();
         // add other columns 
+        $columns[] = "active_status";
         $columns[] = "profile_img";
         $columns[] = "emailid";
         $columns[] = "designation";
         $columns[] = "created_time";
         $columns[] = "change_pass";
         $columns[] = "epassword";
+        $this->post["active_status"] = 5;
         $this->post["change_pass"] = 1;
-        $this->post["epassword"] = SmartGeneral::hashPassword($this->post["euserid"]);
+        $this->post["epassword"] = SmartGeneral::hashPassword($this->post["emailid"]);
         // insert and get id
         $id = $this->_helper->insert($columns, $this->post);
         // insert roles
@@ -73,10 +75,11 @@ class UserController extends BaseController
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["ename", "mobile_no","profile_img",   "active_status"];
+        $columns = ["ename", "mobile_no" ];
         // do validations
         $this->_helper->validate(UserHelper::validations, $columns, $this->post);
         // extra columns
+        $columns[] = "active_status";
         $columns[] = "emailid";
         $columns[] = "designation";
         // begin transition
