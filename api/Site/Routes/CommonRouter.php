@@ -128,6 +128,15 @@ class CommonRouter
         $this->_routes["/vendor_rate/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/vendor_rate/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
     }
+    private function bill_routes()
+    {
+        $controller = "BillController";
+        $this->_routes["/bill/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
+        $this->_routes["/bill/update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
+        $this->_routes["/bill/get_all"] = [SmartConst::REQUEST_GET,$controller, "getAll"];
+        $this->_routes["/bill/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
+        $this->_routes["/bill/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
+    }
     
 
     
@@ -143,6 +152,7 @@ class CommonRouter
         $this->state_db_routes();
         $this->vendors_routes();
         $this->vendor_rate_routes();
+        $this-> bill_routes();
         return $this->_routes;
     }
 

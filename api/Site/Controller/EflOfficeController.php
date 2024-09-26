@@ -89,10 +89,10 @@ class EflOfficeController extends BaseController{
         }    
         // insert and get id
         $this->_helper->deleteOneId($id);
-    ;
-        //
         $out = new \stdClass();
         $out->msg = "Removed Successfully";
+        $this->response($out);
+
     }    
      /**
      * 
