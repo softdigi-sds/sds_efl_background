@@ -208,6 +208,19 @@ class UserHelper extends BaseHelper
     /**
      * 
      */
+    public function getOneDataWithEmailId($emailid)
+    {
+        $from = Table::USERS." t1 ";
+        $select = ["t1.*"];
+        $sql = "t1.emailid=:ID";
+        $data_in = ["ID" => $emailid];
+        $group_by = "";
+        $order_by = "";
+        return $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
+    }
+    /**
+     * 
+     */
     public function deleteOneId($id)
     {
         $from = Table::USERS;
