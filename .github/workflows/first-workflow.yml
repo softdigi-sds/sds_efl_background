@@ -29,4 +29,4 @@ jobs:
           pwd
           ls -l
           # Replace remote-user and remote-host with your SSH credentials 
-          scp -r $GITHUB_WORKSPACE/api/* github@195.35.23.133:/opt/lnpr/app
+          scp -r $GITHUB_WORKSPACE/api/* github@195.35.23.133:/opt/efl/app
