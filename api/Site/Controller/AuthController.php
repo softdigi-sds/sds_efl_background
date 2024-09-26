@@ -46,7 +46,6 @@ class AuthController extends BaseController
         return $role_names;
     }
 
-
     private function get_response($user_data)
     {
         $payload = array(
