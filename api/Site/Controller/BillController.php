@@ -5,28 +5,30 @@ namespace Site\Controller;
 use Core\BaseController;
 
 use Core\Helpers\SmartAuthHelper;
-use Site\Helpers\HubGroupsHelper;
+use Site\Helpers\BillHelper;
 
 
 
-class HubGroupsController extends BaseController{
+class BillController extends BaseController{
   
-  private HubGroupsHelper $_helper;
+  private BillHelper $_helper;
     function __construct($params)
     {
         parent::__construct($params);
         // 
-        $this->_helper = new HubGroupsHelper($this->db);
+        $this->_helper = new BillHelper($this->db);
     }
 
    /**
      * 
      */
     public function insert(){
-        $columns = ["sd_hub_id","sd_mt_role_id"];
+        $columns = [ "bill_start_date","bill_end_date" ];
         // do validations
-        $this->_helper->validate(HubGroupsHelper::validations,$columns,$this->post);
-         // insert and get id
+        $this->_helper->validate(BillHelper::validations,$columns,$this->post);
+        $columns[] = "created_by" ;
+        $columns[] = "created_time" ;
+        // insert and get id
          $id = $this->_helper->insert($columns,$this->post);
        
         //
@@ -41,11 +43,12 @@ class HubGroupsController extends BaseController{
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["sd_hub_id","sd_mt_role_id"];
+        $columns = ["bill_start_date","bill_end_date" ];
         // do validations
-        $this->_helper->validate(HubGroupsHelper::validations, $columns, $this->post);
+        $this->_helper->validate(BillHelper::validations, $columns, $this->post);
         // extra columns
-        $columns[] =  "last_modified_time";
+        $columns[] = "created_by";
+        $columns[] = "created_time";
         // begin transition
         $this->db->_db->Begin();
           // insert and get id
@@ -82,10 +85,10 @@ class HubGroupsController extends BaseController{
         }    
         // insert and get id
         $this->_helper->deleteOneId($id);
-   
         $out = new \stdClass();
         $out->msg = "Removed Successfully";
         $this->response($out);
+
     }    
      /**
      * 

@@ -106,13 +106,14 @@ class HubsController extends BaseController{
         }    
         // insert and get id
         $this->_helper->deleteOneId($id);
-        $data = $this->_vendor_rate_helper->checkVenodrByHubId($id);
-        if (!empty($data)) {
-            \CustomErrorHandler::triggerInvalid("Cannot remove Hub, it is allocated with vendors.");
-        } 
-        //
+    
         $out = new \stdClass();
         $out->msg = "Removed Successfully";
-    }  
+        $this->response($out);
+    }    
+     /**
+     * 
+     */
+
 
 }
