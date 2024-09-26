@@ -28,8 +28,7 @@ jobs:
         run: |
           pwd
           ls -l
-          # Replace remote-user and remote-host with your SSH credentials
-          scp -r $GITHUB_WORKSPACE/api/images/* github@195.35.23.133:/opt/efl/api/images        
+          # Replace remote-user and remote-host with your SSH credentials              
           scp -r $GITHUB_WORKSPACE/api/Site/* github@195.35.23.133:/opt/efl/api/Site         
           scp -r $GITHUB_WORKSPACE/api/Core/* github@195.35.23.133:/opt/efl/api/Core
           scp -r $GITHUB_WORKSPACE/api/index.php github@195.35.23.133:/opt/efl/app/api/
