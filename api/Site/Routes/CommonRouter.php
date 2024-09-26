@@ -30,6 +30,9 @@ class CommonRouter
         $this->_routes["/auth/get_log"] = [SmartConst::REQUEST_POST, $controller, "getLog"];
         $this->_routes["/auth/get_settings"] = [SmartConst::REQUEST_GET, $controller, "getSiteSettings"];
         $this->_routes["/auth/do_backup"] = [SmartConst::REQUEST_GET, $controller, "takeBackup"];
+        $this->_routes["/auth/test_excel"] = [SmartConst::REQUEST_GET, $controller, "testExcel"];
+        $this->_routes["/auth/create_excel"] = [SmartConst::REQUEST_GET, $controller, "createExcelFromData"];
+        
     }
 
 

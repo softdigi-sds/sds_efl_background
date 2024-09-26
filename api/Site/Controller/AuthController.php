@@ -4,6 +4,7 @@ namespace Site\Controller;
 
 use Core\BaseController;
 use Core\Helpers\SmartGeneral;
+use Core\Helpers\SmartExcellHelper as Excel;
 use Core\Helpers\SmartData as Data;
 use Core\Helpers\SmartLogger as Logger;
 use Site\Helpers\BackupHelper;
@@ -88,21 +89,21 @@ class AuthController extends BaseController{
      * 
      */
     public function login(){         
-        $columns = ["euserid","epassword"];
+        $columns = ["emailid","epassword"];
          // do validations
          $this->_user_helper->validate(UserHelper::validations,$columns,$this->post);
          // take the data
-         $userid = Data::post_data("euserid","STRING"); 
+         $emailid = Data::post_data("emailid","STRING"); 
          // get the data
-         $user_data = $this->_user_helper->getOneDataWithUserId($userid);
+         $user_data = $this->_user_helper->getOneDataWithEmailId($emailid);
          // 
          if(!isset($user_data->ID)){
-            \CustomErrorHandler::triggerInvalid("Invalid ICNO");
+            \CustomErrorHandler::triggerInvalid("Invalid Email ID");
          }
          // get status
          $status = $user_data->active_status;
          // check failed password attempts
-         if($userid!="admin") {
+         if($emailid!="admin@gmail.com") {
          $this->_user_helper->checkFailedAttempts($user_data); 
          }
          //
@@ -121,7 +122,7 @@ class AuthController extends BaseController{
         // update the last login time 
         $this->_user_helper->updateLastLogin($user_data->ID); 
         // user data
-        $user_data->role = $userid!="admin"? ["USER"]:["ADMIN"];  
+        $user_data->role = $emailid!="admin@gmail.com"? ["USER"]:["ADMIN"];  
         // updating the visitor count
         $this->updateVisitorCount();
         //
@@ -176,7 +177,29 @@ class AuthController extends BaseController{
         $backup->doBackUp($backup_file);
     }
    
+    public function testExcel(){
+        $excel_obj = new Excel("E:/Book1.xlsx",0 );
+        $data = $excel_obj->getExcelData();
+        foreach($data as $index => $value){
+            foreach($value as $key =>$dt){
+        echo "$key: $dt <br>";
+            }
+            echo "<br>";
+        }
+    }
 
+    public function createExcelFromData(){
+        $excel_obj = new Excel("E:/Book1.xlsx",0 );
+        $data = [
+            (object) ['sno' => 1, 'name' => 'Sandy', 'age' => 21],
+            (object) ['sno' => 2, 'name' => 'Kenith', 'age' => null],
+            (object) ['sno' => 3, 'name' => 'Dhabeer', 'age' => 21],
+            (object) ['sno' => 4, 'name' => 'Vekant', 'age' => 22],
+            (object) ['sno' => 5, 'name' => 'Sriharry', 'age' => 23],
+        ];
+        $excel_obj->createExcelFromData($data);
 
-
+    }
+   
+   
 }
