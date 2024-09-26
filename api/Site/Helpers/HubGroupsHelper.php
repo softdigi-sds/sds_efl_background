@@ -72,15 +72,18 @@ class HubGroupsHelper extends BaseHelper
     /**
      * 
      */
-    public function getAllData($sql = "", $data_in = [],$select=[],$group_by = "", $count = false,$single=false)
+    public function getAllData($sql = "", $data_in = [], $select_in=[],$group_by = "", $count = false)
     {
-        $from = Table::HUB_GROUPS;
-        $select = !empty($select) ? $select : ["*"];
-       // $order_by="last_modified_time DESC";
-        return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
+        $from = Table::HUB_GROUPS." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.sd_hub_id = t2.ID 
+        LEFT JOIN ".Table::ROLES." t3 ON t1.sd_mt_role_id=t3.ID";
+        $select = ["t1.*","t3.role_name","t2.hub_name"];
+        $order_by="t1.last_modified_time DESC";
+        if(!empty($select_in)){
+            $select = $select_in;
+            $order_by="";
+        }
+        return $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, false, [], $count);
     }
-
-
     /**
      * 
      */
@@ -104,4 +107,24 @@ class HubGroupsHelper extends BaseHelper
         $this->deleteId($from,$id);
     }
   
+    public function insertRoles(int $hub_id,$data)
+    {
+        // delete existing roles with Hub id
+        $this->deleteBySql(Table::HUB_GROUPS,"sd_hub_id=:uid",["uid"=>$hub_id]);
+        // columns
+        $columns = ["sd_hub_id","sd_mt_role_id","last_modified_time"];       
+        foreach($data as $single_data){
+            $data_in = [];
+            $data_in["sd_hub_id"] = $hub_id;
+            $data_in["sd_mt_role_id"] = isset($single_data["value"]) ? $single_data["value"] : 0;          
+            $this->insert($columns,$data_in);
+        }
+    }
+    
+    public function getSelectedRolesWithHubId(int $hub_id){
+        
+        $sql = "t1.sd_hub_id=:ID";
+        $select = ["t1.sd_mt_role_id as value","t3.role_name as label"];
+        return $this->getAllData($sql,["ID"=>$hub_id],$select);
+    }
 }

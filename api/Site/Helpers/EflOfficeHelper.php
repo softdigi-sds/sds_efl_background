@@ -128,8 +128,8 @@ class EflOfficeHelper extends BaseHelper
      */
     public function getAllData($sql = "", $data_in = [],$select=[],$group_by = "", $count = false,$single=false)
     {
-        $from = Table::EFLOFFICE;
-        $select = !empty($select) ? $select : ["*"];
+        $from = Table::EFLOFFICE." t1 INNER JOIN ".Table::STATEDB." t2 ON t1.state=t2.ID ";
+        $select = !empty($select) ? $select : ["t1.*, t2.state_name"];
        // $order_by="last_modified_time DESC";
         return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
     }
@@ -139,9 +139,9 @@ class EflOfficeHelper extends BaseHelper
      * 
      */
     public function getOneData($id)
-    {
-        $from = Table::EFLOFFICE;
-        $select = ["*"];
+    { 
+        $from = Table::EFLOFFICE." t1 INNER JOIN ".Table::STATEDB." t2 ON t1.state=t2.ID ";
+        $select = ["t1.*, t2.state_name"];
         $sql = "ID=:ID";
         $data_in = ["ID" => $id];
         $group_by = "";
@@ -156,6 +156,18 @@ class EflOfficeHelper extends BaseHelper
     {
         $from = Table::EFLOFFICE;
         $this->deleteId($from,$id);
+    }
+    /**
+     * 
+     */
+    public function checkOfficeExist($office_city)
+    {
+        $from = Table::EFLOFFICE;
+        $select = ["ID"];
+        $sql = "office_city=:city";
+        $data_in = ["ID" => $office_city];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        return $data;
     }
   
 }

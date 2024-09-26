@@ -161,5 +161,16 @@ class VendorRateHelper extends BaseHelper
         $from = Table::VENDOR_RATE;
         $this->deleteId($from,$id);
     }
-
+    /**
+     * 
+     */
+    public function checkVenodrByHubId($id)
+    {
+        $from = Table::VENDOR_RATE;
+        $select = ["ID"];
+        $sql = "sd_hubs_id=:ID";
+        $data_in = ["ID" => $id];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        return $data;
+    }
 }

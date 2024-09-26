@@ -40,9 +40,9 @@ class RoleController extends BaseController{
             // insert and get id
             $id = $this->_helper->insert($columns,$this->post);
          // insert roles
-        //  if(!($this->post["users"]) == NULL){
-        //     $this->_user_helper->insertUsers($id, $this->post["users"]);
-        // }
+         if(!($this->post["users"]) == NULL){
+            $this->_user_helper->insertUsers($id, $this->post["users"]);
+        }
         // Commit transaction
         $this->db->_db->commit();
         // // add log

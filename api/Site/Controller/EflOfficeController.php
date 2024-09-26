@@ -5,32 +5,42 @@ namespace Site\Controller;
 use Core\BaseController;
 
 use Core\Helpers\SmartAuthHelper;
+use Core\Helpers\SmartData as Data;
 use Site\Helpers\EflOfficeHelper;
+use Site\Helpers\HubsHelper;
 
 
 
 class EflOfficeController extends BaseController{
   
   private EflOfficeHelper $_helper;
+  private HubsHelper $_hubs_helper;
     function __construct($params)
     {
         parent::__construct($params);
         // 
         $this->_helper = new EflOfficeHelper($this->db);
+        $this->_hubs_helper = new HubsHelper($this->db);
     }
 
    /**
      * 
      */
     public function insert(){
-        $columns = [ "office_city" ,"address_one", "address_two", "gst_no" ,"pan_no" ,
+        $columns = [ "office_city" ,"address_one","gst_no" ,"pan_no" ,
         "cin_no"  ,"state"  ,"pin_code"  ];
         // do validations
         $this->_helper->validate(EflOfficeHelper::validations,$columns,$this->post);
         $columns[] = "status";
         $columns[] = "created_by" ;
         $columns[] = "created_time" ;
+        $this->post["state"] = Data::post_select_value($this->post["state"]);
         $this->post["status"] = 5;
+        // check office already exist
+        $data = $this->_helper->checkOfficeExist($this->post["office_city"]);
+        if (!empty($data)) {
+            \CustomErrorHandler::triggerInvalid("City Office already available ");
+        }
         // insert and get id
          $id = $this->_helper->insert($columns,$this->post);
        
@@ -46,7 +56,7 @@ class EflOfficeController extends BaseController{
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["office_city" ,"address_one", "address_two", "gst_no" ,"pan_no" ,
+        $columns = ["address_one", "address_two", "gst_no" ,"pan_no" ,
         "cin_no"  ,"state"  ,"pin_code","status" ];
         // do validations
         $this->_helper->validate(EflOfficeHelper::validations, $columns, $this->post);
@@ -87,16 +97,24 @@ class EflOfficeController extends BaseController{
         if($id < 1){
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }    
+        $data = $this->_hubs_helper->checkHubByOfficeId($id);
+        if (!empty($data)) {
+            \CustomErrorHandler::triggerInvalid("Cannot remove City Office, Hub is attached with this City.");
+        }
         // insert and get id
         $this->_helper->deleteOneId($id);
-    ;
         //
         $out = new \stdClass();
         $out->msg = "Removed Successfully";
-    }    
+    } 
+
      /**
      * 
      */
-
+    public function getAllSelect(){      
+        $select = ["ID as value,office_city as label"];
+        $data = $this->_helper->getAllData("",[],$select);
+        $this->response($data);
+    }
 
 }

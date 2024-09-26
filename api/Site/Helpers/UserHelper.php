@@ -128,12 +128,6 @@ class UserHelper extends BaseHelper
                 "msg" => "Please Specify Designation"
             ]
         ],
-        "profile_img" => [
-            [
-                "type" => SmartConst::VALID_REQUIRED,
-                "msg" => "Please upload image"
-            ]
-        ],
        
         "active_status" => [
             [

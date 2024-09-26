@@ -127,4 +127,17 @@ class VendorsHelper extends BaseHelper
         $this->deleteId($from,$id);
     }
 
+     /**
+     * 
+     */
+    public function checkVendorByCodeCompany($code, $company)
+    {
+        $from = Table::HUBS;
+        $select = ["ID"];
+        $sql = "vendor_code=:code AND vendor_company=:company";
+        $data_in = ["code" => $code, "company" => $company];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        return $data;
+    }
+
 }

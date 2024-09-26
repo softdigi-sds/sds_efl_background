@@ -26,6 +26,10 @@ class VendorsController extends BaseController{
         $this->_helper->validate(VendorsHelper::validations,$columns,$this->post);
         $columns = ["vendor_code","vendor_company","vendor_name","gst_no","pan_no","address_one","address_two","state_name","pin_code","status","created_by","created_time"];
         $this->post["status"] = 5;
+        $data = $this->_helper->checkVendorByCodeCompany($this->post["vendor_code"], $this->post["vendor_company"]);
+        if (!empty($data)) {
+            \CustomErrorHandler::triggerInvalid("Vendor code and company already available ");
+        }
         $this->db->_db->Begin();
         // insert and get id
         $id = $this->_helper->insert($columns,$this->post);
@@ -42,7 +46,7 @@ class VendorsController extends BaseController{
         if($id < 1){
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["vendor_code","vendor_company","gst_no","pin_code","status"];
+        $columns = ["gst_no","pin_code","status"];
         // do validations
         $this->_helper->validate(VendorsHelper::validations,$columns,$this->post);
         // insert and get id

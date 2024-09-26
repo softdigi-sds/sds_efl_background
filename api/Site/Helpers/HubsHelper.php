@@ -88,8 +88,8 @@ class HubsHelper extends BaseHelper
      */
     public function getAllData($sql = "", $data_in = [],$select=[],$group_by = "", $count = false,$single=false)
     {
-        $from = Table::HUBS;
-        $select = !empty($select) ? $select : ["*"];
+        $from = Table::HUBS." t1 INNER JOIN ".Table::EFLOFFICE." t2 ON t1.sd_efl_office_id=t2.ID ";
+        $select = !empty($select) ? $select : ["t1.*, t2.office_city "];
        // $order_by="last_modified_time DESC";
         return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
     }
@@ -100,13 +100,17 @@ class HubsHelper extends BaseHelper
      */
     public function getOneData($id)
     {
-        $from = Table::HUBS;
-        $select = ["*"];
+        $from = Table::HUBS." t1 INNER JOIN ".Table::EFLOFFICE." t2 ON t1.sd_efl_office_id=t2.ID ";
+        $select = ["t1.*, t2.office_city "];
         $sql = "ID=:ID";
         $data_in = ["ID" => $id];
         $group_by = "";
         $order_by = "";
         $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
+        if(isset($data->ID)){
+            $_hub_grp_helper = new HubGroupsHelper($this->db);
+            $data->role = $_hub_grp_helper->getSelectedRolesWithHubId($data->ID);
+        }
         return $data;
     }
      /**
@@ -117,5 +121,29 @@ class HubsHelper extends BaseHelper
         $from = Table::HUBS;
         $this->deleteId($from,$id);
     }
-  
+    /**
+     * 
+     */
+    public function checkHubExist($hub_id)
+    {
+        $from = Table::HUBS;
+        $select = ["ID"];
+        $sql = "hub_id=:city";
+        $data_in = ["ID" => $hub_id];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        return $data;
+    }
+    /**
+     * 
+     */
+    public function checkHubByOfficeId($id)
+    {
+        $from = Table::HUBS;
+        $select = ["ID"];
+        $sql = "sd_efl_office_id=:ID";
+        $data_in = ["ID" => $id];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        return $data;
+    }
+    
 }

@@ -82,7 +82,7 @@ class StateDbController extends BaseController{
      * 
      */
     public function getAllSelect(){      
-        $select = ["state_id as value,state_name as label"];
+        $select = ["ID as value,state_name as label"];
         $data = $this->_helper->getAllData("",[],$select);
         $this->response($data);
     }
