@@ -138,11 +138,37 @@ class CommonRouter
         $controller = "BillController";
         $this->_routes["/bill/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
         $this->_routes["/bill/update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
-        $this->_routes["/bill/get_all"] = [SmartConst::REQUEST_GET,$controller, "getAll"];
+        $this->_routes["/bill/get_all"] = [SmartConst::REQUEST_GET,$this->_admin_only,$controller, "getAll"];
         $this->_routes["/bill/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/bill/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
     }
-    
+    private function efl_consumption_routes()
+    {
+        $controller = "EflConsumptionController";
+        $this->_routes["/efl_consumption/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
+        $this->_routes["/efl_consumption/update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
+        $this->_routes["/efl_consumption/get_all"] = [SmartConst::REQUEST_GET,$this->_admin_only,$controller, "getAll"];
+        $this->_routes["/efl_consumption/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
+        $this->_routes["/efl_consumption/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
+    }
+    private function invoice_routes()
+    {
+        $controller = "InvoiceController";
+        $this->_routes["/invoice/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
+        $this->_routes["/invoice/update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
+        $this->_routes["/invoice/get_all"] = [SmartConst::REQUEST_GET,$this->_admin_only,$controller, "getAll"];
+        $this->_routes["/invoice/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
+        $this->_routes["/invoicedelete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
+    }
+    private function efl_vehicles_routes()
+    {
+        $controller = "EflVehiclesController";
+        $this->_routes["/efl_vehicles/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
+        $this->_routes["/efl_vehicles/update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
+        $this->_routes["/efl_vehicles/get_all"] = [SmartConst::REQUEST_GET,$this->_admin_only,$controller, "getAll"];
+        $this->_routes["/efl_vehicles/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
+        $this->_routes["/efl_vehicles/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
+    }
     private function site_routes()
     {
         $controller = "SiteController";
@@ -167,6 +193,10 @@ class CommonRouter
         $this->vendors_routes();
         $this->vendor_rate_routes();
         $this-> bill_routes();
+        $this->efl_consumption_routes();
+        $this->efl_vehicles_routes();
+        $this->invoice_routes();
+        $this->site_routes();
         return $this->_routes;
     }
 
