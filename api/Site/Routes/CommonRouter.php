@@ -170,7 +170,7 @@ class CommonRouter
         $this->_routes["/efl_vehicles/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/efl_vehicles/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
     }
-    
+
     private function site_routes()
     {
         $controller = "SiteController";
@@ -198,7 +198,7 @@ class CommonRouter
         $this->efl_consumption_routes();
         $this->efl_vehicles_routes();
         $this->invoice_routes();
-        //$this->site_routes();
+        $this->site_routes();
         return $this->_routes;
     }
 
