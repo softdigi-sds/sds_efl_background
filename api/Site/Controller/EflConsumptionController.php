@@ -23,7 +23,7 @@ class EflConsumptionController extends BaseController{
      * 
      */
     public function insert(){
-        $columns = ["sd_hub_id","sd_vendors_id" ,"sd_date" ,"unit_count" ,"last_modified_by" ,"last_modified_time" ];
+        $columns = ["sd_hub_id","sd_vendors_id" ,"sd_date" ,"unit_count"];
         // do validations
         $this->_helper->validate(EflConsumptionHelper::validations,$columns,$this->post);
         $columns[] = "created_by" ;
