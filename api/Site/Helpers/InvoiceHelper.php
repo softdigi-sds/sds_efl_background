@@ -140,4 +140,13 @@ class InvoiceHelper extends BaseHelper
         $this->deleteId($from,$id);
     }
   
+    public function checkInvoiceExist($vend_id)
+    {
+        $from = Table::INVOICE;
+        $select = ["ID"];
+        $sql = "sd_vendors_id=:vend_id";
+        $data_in = ["vend_id" => $vend_id];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        return $data;
+    }
 }

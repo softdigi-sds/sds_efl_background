@@ -76,7 +76,7 @@ class HubGroupsHelper extends BaseHelper
     {
         $from = Table::HUB_GROUPS." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.sd_hub_id = t2.ID 
         LEFT JOIN ".Table::ROLES." t3 ON t1.sd_mt_role_id=t3.ID";
-        $select = ["t1.*","t3.role_name","t2.hub_name"];
+        $select = ["t1.*","t3.role_name","t2.hub_id","t2.hub_name"];
         $order_by="t1.last_modified_time DESC";
         if(!empty($select_in)){
             $select = $select_in;

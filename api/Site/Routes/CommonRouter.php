@@ -84,6 +84,7 @@ class CommonRouter
         $this->_routes["/efloffice/get_all"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAll"];
         $this->_routes["/efloffice/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/efloffice/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
+        $this->_routes["/efloffice/get_all_select"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAllSelect"];
     }
     private function hubs_routes()
     {
@@ -93,6 +94,7 @@ class CommonRouter
         $this->_routes["/hubs/get_all"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAll"];
         $this->_routes["/hubs/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/hubs/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
+        $this->_routes["/hubs/get_all_select"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAllSelect"];
     }
     private function hub_groups_routes()
     {
@@ -167,6 +169,8 @@ class CommonRouter
         $this->_routes["/efl_vehicles/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/efl_vehicles/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
     }
+
+    
     private function get_all_Routes()
     {
         $this->auth_routes();
@@ -183,6 +187,7 @@ class CommonRouter
         $this->efl_consumption_routes();
         $this->efl_vehicles_routes();
         $this->invoice_routes();
+        $this->site_routes();
         return $this->_routes;
     }
 
