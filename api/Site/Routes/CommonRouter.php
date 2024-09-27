@@ -188,7 +188,7 @@ class CommonRouter
         $this->efl_consumption_routes();
         $this->efl_vehicles_routes();
         $this->invoice_routes();
-        $this->site_routes();
+        //$this->site_routes();
         return $this->_routes;
     }
 
