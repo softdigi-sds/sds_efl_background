@@ -30,8 +30,12 @@ class VendorsController extends BaseController{
         $this->_helper->validate(VendorsHelper::validations,$validate_columns,$this->post);
         $columns = ["sd_hub_id","vendor_code","vendor_company","vendor_name","gst_no","pan_no","address_one","address_two","state_name","pin_code","status","created_by","created_time"];
         $this->post["status"] = 5;
-        $this->post["sd_hub_id"] = Data::post_select_value($this->post["sd_hub_id"]);
-        $this->post["state_name"] = Data::post_select_value($this->post["state_name"]);
+        // $this->post["sd_hub_id"] = Data::post_select_value($this->post["sd_hub_id"]);
+        // $this->post["state_name"] = Data::post_select_value($this->post["state_name"]);
+        $hub_id = $this->post["sd_hub_id"];
+        $this->post["sd_hub_id"]  = $hub_id["value"];
+         $state_name = $this->post["state_name"];
+        $this->post["state_name"]  = $state_name["value"];
         $data = $this->_helper->checkVendorByCodeCompany($this->post["vendor_code"], $this->post["vendor_company"]);
         if (!empty($data)) {
             \CustomErrorHandler::triggerInvalid("Vendor code and company already available ");

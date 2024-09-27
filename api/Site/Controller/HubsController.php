@@ -35,7 +35,9 @@ class HubsController extends BaseController{
         $this->_helper->validate(HubsHelper::validations,$columns,$this->post);
         $columns[] = "created_by" ;
         $columns[] = "created_time" ;
-        $this->post["sd_efl_office_id"] = Data::post_select_value($this->post["sd_efl_office_id"]);
+        // $this->post["sd_efl_office_id"] = Data::post_select_value($this->post["sd_efl_office_id"]);
+        $office_id = $this->post["sd_efl_office_id"];
+        $this->post["sd_efl_office_id"]  = $office_id["value"];
         $data = $this->_helper->checkHubExist($this->post["hub_id"]);
         if (!empty($data)) {
             \CustomErrorHandler::triggerInvalid("Hub ID already exist ");

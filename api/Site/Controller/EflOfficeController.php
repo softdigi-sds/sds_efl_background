@@ -34,7 +34,7 @@ class EflOfficeController extends BaseController{
         $columns[] = "status";
         $columns[] = "created_by" ;
         $columns[] = "created_time" ;
-        // var_dump($this->post["state"]);exit();
+        // $this->post["state"] = Data::post_select_value($this->post["state"]);
         $state = $this->post["state"];
         $this->post["state"]  = $state["value"];
         $this->post["status"] = 5;
