@@ -21,11 +21,25 @@ class VendorRateController extends BaseController{
      * 
      */
     public function insert(){
-        $columns = [ "sd_hubs_id","sd_vendors_id","unit_rate_type","min_units","unit_rate","extra_unit_rate","parking_rate_type","parking_min_count","parking_rate_vehicle","effective_date"];
+        $columns = [ "sd_hubs_id","sd_vendors_id","unit_rate_type","parking_rate_type","effective_date"];
         // do validations
         $this->_helper->validate(VendorRateHelper::validations,$columns,$this->post);
+       // columns
+        $columns[] = "min_units";
+        $columns[] = "unit_rate";
+        $columns[] = "extra_unit_rate";
+        $columns[] = "parking_min_count";
+        $columns[] = "parking_rate_vehicle";
+        $columns[] = "parking_extra_rate_vehicle";
         $columns[] = "created_time";
         $columns[] = "created_by";
+        // data
+        $this->post["sd_hubs_id"] = isset($this->post["sd_hubs_id"]) ? intval($this->post["sd_hubs_id"]["value"]) : 0;
+        $this->post["sd_vendors_id"] = isset($this->post["sd_vendors_id"]) ? intval($this->post["sd_vendors_id"]["value"]) : 0;
+        $data = $this->_helper->checkEffectiveDateClash($this->post["effective_date"]);
+        if (!empty($data)) {
+            \CustomErrorHandler::triggerInvalid("There is already an Effective date available");
+        }
         $this->db->_db->Begin();
         // insert and get id
         $id = $this->_helper->insert($columns,$this->post);
@@ -42,10 +56,16 @@ class VendorRateController extends BaseController{
         if($id < 1){
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = [ "sd_hubs_id","sd_vendors_id","unit_rate_type","min_units","unit_rate","extra_unit_rate","parking_rate_type","parking_min_count","parking_rate_vehicle","effective_date"];
+        $columns = ["unit_rate_type","parking_rate_type","effective_date"];
         // do validations
         $this->_helper->validate(VendorRateHelper::validations,$columns,$this->post);
         // insert and get id
+        $columns[] = "min_units";
+        $columns[] = "unit_rate";
+        $columns[] = "extra_unit_rate";
+        $columns[] = "parking_min_count";
+        $columns[] = "parking_rate_vehicle";
+        $columns[] = "parking_extra_rate_vehicle";
         $columns[] = "last_modified_time";
         $columns[] = "last_modified_by";
         $this->_helper->update($columns,$this->post,$id);

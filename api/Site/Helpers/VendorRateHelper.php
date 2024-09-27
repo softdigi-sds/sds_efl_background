@@ -34,6 +34,7 @@ class VendorRateHelper extends BaseHelper
         "parking_rate_type" => SmartConst::SCHEMA_VARCHAR,
         "parking_min_count" => SmartConst::SCHEMA_INTEGER,
         "parking_rate_vehicle" => SmartConst::SCHEMA_FLOAT,
+        "parking_extra_rate_vehicle" => SmartConst::SCHEMA_FLOAT,
         "effective_date" => SmartConst::SCHEMA_DATE,
         "created_time" => SmartConst::SCHEMA_CDATETIME,
         "created_by" => SmartConst::SCHEMA_CUSER_ID,
@@ -170,6 +171,15 @@ class VendorRateHelper extends BaseHelper
         $select = ["ID"];
         $sql = "sd_hubs_id=:ID";
         $data_in = ["ID" => $id];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        return $data;
+    }
+    public function checkEffectiveDateClash($effective_date)
+    {
+        $from = Table::VENDOR_RATE;
+        $select = ["ID"];
+        $sql = " effective_date <:effective_date";
+        $data_in = ["effective_date" => $effective_date];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }

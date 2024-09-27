@@ -98,4 +98,17 @@ class VendorsController extends BaseController{
         $out->msg = "Deleted Successfully";
         $this->response($out);
     }
+
+    public function getAllSelectCompany(){  
+        $id = isset($this->post["hub_id"]) ? intval($this->post["hub_id"]) : 0;
+    if($id < 1){
+            \CustomErrorHandler::triggerInvalid("Invalid Hub ID");
+        }    
+        // insert and get id
+        $sql = "sd_hub_id=:hub_id";
+        $data_in = ["hub_id" => $id];
+        $select = ["ID AS value, vendor_company AS  label"];
+        $data = $this->_helper->getAllData($sql , $data_in, $select);
+        $this->response($data);
+    }
 }
