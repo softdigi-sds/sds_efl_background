@@ -9,7 +9,7 @@ use Site\Helpers\EflVehiclesHelper;
 
 
 
-class EflVechiclesController extends BaseController{
+class EflVehiclesController extends BaseController{
   
   private EflVehiclesHelper $_helper;
     function __construct($params)
@@ -23,7 +23,7 @@ class EflVechiclesController extends BaseController{
      * 
      */
     public function insert(){
-        $columns = ["sd_hub_id","sd_vendors_id","sd_date", "vehical_count" ];
+        $columns = ["sd_hub_id","sd_vendors_id","sd_date", "vehicle_count" ];
         // do validations
         $this->_helper->validate(EflVehiclesHelper::validations,$columns,$this->post);
         $columns[] = "created_by" ;
@@ -43,7 +43,7 @@ class EflVechiclesController extends BaseController{
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["sd_hub_id","sd_vendors_id","sd_date", "vehical_count"];
+        $columns = ["sd_hub_id","sd_vendors_id","sd_date", "vehicle_count"];
         // do validations
         $this->_helper->validate(EflVehiclesHelper::validations, $columns, $this->post);
         // extra columns
