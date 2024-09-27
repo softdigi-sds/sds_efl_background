@@ -151,7 +151,7 @@ class AuthController extends BaseController
             \CustomErrorHandler::triggerInvalid("Invalid ICNO");
         }
         //         
-        $post_data = ["epassword" => SmartGeneral::hashPassword($user_data->euserid)];
+        $post_data = ["epassword" => SmartGeneral::hashPassword($user_data->emailid)];
         $update_columns = ["epassword", "last_reset_time"];
         //
         $this->_user_helper->update($update_columns, $post_data, $user_data->ID);

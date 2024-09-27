@@ -25,10 +25,10 @@ class VendorsController extends BaseController{
      * 
      */
     public function insert(){
-        $columns = ["sd_hub_id","vendor_code","vendor_company","gst_no","pin_code"];
+        $validate_columns = ["sd_hub_id","vendor_code","vendor_company","gst_no","pin_code"];
         // do validations
-        $this->_helper->validate(VendorsHelper::validations,$columns,$this->post);
-        $columns = ["vendor_code","vendor_company","vendor_name","gst_no","pan_no","address_one","address_two","state_name","pin_code","status","created_by","created_time"];
+        $this->_helper->validate(VendorsHelper::validations,$validate_columns,$this->post);
+        $columns = ["sd_hub_id","vendor_code","vendor_company","vendor_name","gst_no","pan_no","address_one","address_two","state_name","pin_code","status","created_by","created_time"];
         $this->post["status"] = 5;
         $this->post["sd_hub_id"] = Data::post_select_value($this->post["sd_hub_id"]);
         $this->post["state_name"] = Data::post_select_value($this->post["state_name"]);
@@ -105,9 +105,9 @@ class VendorsController extends BaseController{
             \CustomErrorHandler::triggerInvalid("Invalid Hub ID");
         }    
         // insert and get id
-        $sql = "sd_hub_id=:hub_id";
+        $sql = "t1.sd_hub_id=:hub_id";
         $data_in = ["hub_id" => $id];
-        $select = ["ID AS value, vendor_company AS  label"];
+        $select = ["t1.ID AS value, t1.vendor_company AS  label"];
         $data = $this->_helper->getAllData($sql , $data_in, $select);
         $this->response($data);
     }

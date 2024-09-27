@@ -114,7 +114,7 @@ class EflOfficeController extends BaseController{
      * 
      */
     public function getAllSelect(){      
-        $select = ["ID as value,office_city as label"];
+        $select = ["t1.ID as value,t1.office_city as label"];
         $data = $this->_helper->getAllData("",[],$select);
         $this->response($data);
     }

@@ -72,7 +72,12 @@ class HubsController extends BaseController{
           // insert roles
         if(!($this->post["role"]) == NULL){
         $this->_hub_group_helper->insertRoles($id, $this->post["role"]);
-        }
+        } else
+        {
+            // delete from user role table
+            $this->_hub_group_helper->deleteHubRole($id);
+
+        } 
         //
         $this->db->_db->commit();
         $this->response($id);
@@ -119,7 +124,7 @@ class HubsController extends BaseController{
      * 
      */
     public function getAllSelect(){      
-        $select = ["ID as value,hub_id as label"];
+        $select = ["t1.ID as value,t1.hub_id as label"];
         $data = $this->_helper->getAllData("",[],$select);
         $this->response($data);
     }

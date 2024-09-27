@@ -187,10 +187,12 @@ class CommonRouter
         $this->auth_routes();
         $this->users_routes();
         $this->role_routes();
+        // not requiered ( user role, hub group )
         $this->user_role_routes();
+        $this->hub_groups_routes();
+        //
         $this->efl_office_routes();
         $this->hubs_routes();
-        $this->hub_groups_routes();
         $this->state_db_routes();
         $this->vendors_routes();
         $this->vendor_rate_routes();

@@ -178,7 +178,7 @@ class VendorRateHelper extends BaseHelper
     {
         $from = Table::VENDOR_RATE;
         $select = ["ID"];
-        $sql = " effective_date <:effective_date";
+        $sql = " effective_date <=:effective_date";
         $data_in = ["effective_date" => $effective_date];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;

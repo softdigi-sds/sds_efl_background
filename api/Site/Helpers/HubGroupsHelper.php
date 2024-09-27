@@ -107,6 +107,12 @@ class HubGroupsHelper extends BaseHelper
         $this->deleteId($from,$id);
     }
   
+      /**
+     * 
+     */public function deleteHubRole($id)
+     {
+        $this->deleteBySql(Table::HUB_GROUPS,"sd_hub_id=:uid",["uid"=>$id]);
+    }
     public function insertRoles(int $hub_id,$data)
     {
         // delete existing roles with Hub id

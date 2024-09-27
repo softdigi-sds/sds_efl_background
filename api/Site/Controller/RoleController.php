@@ -13,7 +13,7 @@ class RoleController extends BaseController{
     
     private RoleHelper $_helper;
       //
-      private UserRoleHelper $_user_helper;
+      private UserRoleHelper $_user_role_helper;
 
     function __construct($params)
     {
@@ -21,7 +21,7 @@ class RoleController extends BaseController{
         // 
         $this->_helper = new RoleHelper($this->db);
           //
-        $this->_user_helper = new UserRoleHelper($this->db);
+        $this->_user_role_helper = new UserRoleHelper($this->db);
     }
 
    /**
@@ -41,7 +41,7 @@ class RoleController extends BaseController{
             $id = $this->_helper->insert($columns,$this->post);
          // insert roles
          if(!($this->post["users"]) == NULL){
-            $this->_user_helper->insertUsers($id, $this->post["users"]);
+            $this->_user_role_helper->insertUsers($id, $this->post["users"]);
         }
         // Commit transaction
         $this->db->_db->commit();
@@ -67,15 +67,15 @@ class RoleController extends BaseController{
         // insert and get id
         $this->_helper->update($columns,$this->post,$id);
         // update the roles
-        // if(!($this->post["users"]) == NULL){
-        //     $this->_user_helper->insertUsers($id, $this->post["users"]);
-        // }
-        // else
-        // {
-        //     // delete from user role table
-        //     $this->_user_helper->deleteRoleUser($id);
+        if(!($this->post["users"]) == NULL){
+            $this->_user_role_helper->insertUsers($id, $this->post["users"]);
+        }
+        else
+        {
+            // delete from user role table
+            $this->_user_role_helper->deleteRoleUser($id);
 
-        // }       
+        }       
         // add log
         $this->addLog("UPDATED A ROLE","",SmartAuthHelper::getLoggedInUserName());
         $this->response($id);
@@ -85,7 +85,7 @@ class RoleController extends BaseController{
         // insert and get id
         $data = $this->_helper->getAllData();
         foreach($data as $key=>$obj){
-            $obj->users = $this->_user_helper->getSelectedUsersWithRoleId($obj->ID);
+            $obj->users = $this->_user_role_helper->getSelectedUsersWithRoleId($obj->ID);
             $data[$key] = $obj;
         }
         $this->response($data);
@@ -113,7 +113,7 @@ class RoleController extends BaseController{
         // delete from role table
         $this->_helper->deleteOneId($id);
         // delete from user_role table
-        $this->_user_helper->deleteRoleUser($id);
+        $this->_user_role_helper->deleteRoleUser($id);
         // add log
         $this->addLog("DELETED A ROLE","",SmartAuthHelper::getLoggedInUserName());
         //

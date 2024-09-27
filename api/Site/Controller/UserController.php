@@ -75,11 +75,10 @@ class UserController extends BaseController
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["ename", "mobile_no" ];
+        $columns = ["ename", "mobile_no", "active_status" ];
         // do validations
         $this->_helper->validate(UserHelper::validations, $columns, $this->post);
         // extra columns
-        $columns[] = "active_status";
         $columns[] = "emailid";
         $columns[] = "designation";
         // begin transition
@@ -87,11 +86,16 @@ class UserController extends BaseController
           // insert and get id
         $id = $this->_helper->update($columns, $this->post, $id);
         // insert the roles selected in userdb roles stable
-        // if(!($this->post["role"]) == NULL)
-        // {
-        //     $this->_user_role_helper->insertRoles($id, $this->post["role"]);
-        // }     
-       //
+        if(!($this->post["role"]) == NULL)
+        {
+            $this->_user_role_helper->insertRoles($id, $this->post["role"]);
+        }   else
+        {
+            // delete from user role table
+            $this->_user_role_helper->deleteUserRole($id);
+
+        }      
+       
         $this->db->_db->commit();
         // add log
         $this->addLog("UPDATED A USER DETAIL","",SmartAuthHelper::getLoggedInUserName());

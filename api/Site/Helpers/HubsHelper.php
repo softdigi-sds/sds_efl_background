@@ -102,7 +102,7 @@ class HubsHelper extends BaseHelper
     {
         $from = Table::HUBS." t1 INNER JOIN ".Table::EFLOFFICE." t2 ON t1.sd_efl_office_id=t2.ID ";
         $select = ["t1.*, t2.office_city "];
-        $sql = "ID=:ID";
+        $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
         $group_by = "";
         $order_by = "";
