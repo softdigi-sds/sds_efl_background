@@ -84,7 +84,7 @@ class VendorsHelper extends BaseHelper
     /**
      * 
      */
-    public function `insert(array $columns, array $data)
+    public function  insert(array $columns, array $data)
     {
         return $this->insertDb(self::schema, Table::VENDORS, $columns, $data);
     }
