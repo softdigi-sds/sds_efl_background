@@ -100,7 +100,7 @@ class VendorsHelper extends BaseHelper
      */
     public function getAllData($sql = "", $data_in = [],$select=[],$group_by = "", $count = false,$single=false)
     {
-        $from = Table::VENDORS." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.hub_id=:t2.ID ".Table::STATEDB." t3 ON t1.state_name=:t3.ID ";
+        $from = Table::VENDORS." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.hub_id=t2.ID ".Table::STATEDB." t3 ON t1.state_name=t3.ID ";
         $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t2.hub_name, t3.state_name "];
        // $order_by="last_modified_time DESC";
         return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
@@ -110,7 +110,7 @@ class VendorsHelper extends BaseHelper
      */
     public function getOneData($id)
     {
-        $from = Table::VENDORS." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.hub_id=:t2.ID ".Table::STATEDB." t3 ON t1.state_name=:t3.ID ";
+        $from = Table::VENDORS." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.hub_id=t2.ID ".Table::STATEDB." t3 ON t1.state_name=t3.ID ";
         $select = ["t1.*, t2.hub_id, t2.hub_name, t3.state_name "];
         $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
