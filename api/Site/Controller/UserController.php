@@ -32,7 +32,7 @@ class UserController extends BaseController
      */
     public function insert()
     {
-        $columns = ["ename", "euserid","mobile_no"];
+        $columns = ["ename", "euserid","mobile_no","epassword"];
         // do validations
         $this->_helper->validate(UserHelper::validations, $columns, $this->post);
         //
@@ -52,7 +52,7 @@ class UserController extends BaseController
         $columns[] = "epassword";
         $this->post["active_status"] = 5;
         $this->post["change_pass"] = 1;
-        $this->post["epassword"] = SmartGeneral::hashPassword($this->post["emailid"]);
+        $this->post["epassword"] = SmartGeneral::hashPassword($this->post["epassword"]);
         // insert and get id
         $id = $this->_helper->insert($columns, $this->post);
         // insert roles

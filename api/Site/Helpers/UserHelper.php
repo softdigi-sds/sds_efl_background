@@ -133,7 +133,13 @@ class UserHelper extends BaseHelper
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please prefer your Status"
-            ],
+            ]
+        ],
+        "profile_img" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please prefer your Status"
+            ]
         ]
 
     ];
