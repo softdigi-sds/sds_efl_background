@@ -153,6 +153,7 @@ class CommonRouter
         $this->_routes["/efl_consumption/get_all"] = [SmartConst::REQUEST_GET,$this->_admin_only,$controller, "getAll"];
         $this->_routes["/efl_consumption/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/efl_consumption/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
+        $this->_routes["/efl_consumption/get_consumption_data"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getConsumptionData"];
     }
     private function invoice_routes()
     {
@@ -171,6 +172,7 @@ class CommonRouter
         $this->_routes["/efl_vehicles/get_all"] = [SmartConst::REQUEST_GET,$this->_admin_only,$controller, "getAll"];
         $this->_routes["/efl_vehicles/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/efl_vehicles/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
+        $this->_routes["/efl_vehicles/get_parking_data"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getParkingData"];
     }
 
     private function site_routes()

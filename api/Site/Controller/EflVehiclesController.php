@@ -92,7 +92,20 @@ class EflVehiclesController extends BaseController{
     }    
      /**
      * 
-     */
+     */public function getParkingData(){
+
+    $id = isset($this->post["hub_id"]) ? intval($this->post["hub_id"]) : 0;
+    $date = isset($this->post["date"]) ? trim($this->post["date"]) : "";
+    if($id < 1){
+        \CustomErrorHandler::triggerInvalid("Invalid Hub ID");
+    }    
+    if(strlen($date) < 3 ){
+        \CustomErrorHandler::triggerInvalid("Invalid date ");
+    }    
+    // insert and get id
+    $data = $this->_helper->getOneData($id);
+    $this->response($data);
+}
 
 
 }
