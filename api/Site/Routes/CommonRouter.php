@@ -123,6 +123,7 @@ class CommonRouter
         $this->_routes["/vendors/get_all"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAll"];
         $this->_routes["/vendors/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/vendors/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
+        $this->_routes["/vendors/get_all_company"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllSelectCompany"];
     }
     private function vendor_rate_routes()
     {

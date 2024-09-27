@@ -84,7 +84,7 @@ class VendorsHelper extends BaseHelper
     /**
      * 
      */
-    public function insert(array $columns, array $data)
+    public function `insert(array $columns, array $data)
     {
         return $this->insertDb(self::schema, Table::VENDORS, $columns, $data);
     }
@@ -135,7 +135,7 @@ class VendorsHelper extends BaseHelper
     {
         $from = Table::HUBS;
         $select = ["ID"];
-        $sql = "vendor_code=:code AND vendor_company=:company";
+        $sql = "vendor_code=:code OR vendor_company=:company";
         $data_in = ["code" => $code, "company" => $company];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
