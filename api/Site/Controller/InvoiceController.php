@@ -23,7 +23,7 @@ class InvoiceController extends BaseController{
      * 
      */
     public function insert(){
-        $columns = [  "sd_bill_id", "sd_hub_id", "sd_vendors_id", "total_units","total_vehicals", "unit_amount", "vechical_amount", "gst_percentage", "gst_amount", "total_amount"];
+        $columns = [  "sd_bill_id", "sd_hub_id", "sd_vendor_id", "total_units","total_vehicles", "unit_amount", "vechicle_amount", "gst_percentage", "gst_amount", "total_amount"];
         // do validations
         $this->_helper->validate(InvoiceHelper::validations,$columns,$this->post);
         $columns[] = "status";
@@ -43,7 +43,7 @@ class InvoiceController extends BaseController{
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["sd_bill_id", "sd_hub_id", "sd_vendors_id", "total_units","total_vehicals", "unit_amount", "vechical_amount", "gst_percentage", "gst_amount", "total_amount"];
+        $columns = ["sd_bill_id", "sd_hub_id", "sd_vendor_id", "total_units","total_vehicles", "unit_amount", "vechicle_amount", "gst_percentage", "gst_amount", "total_amount"];
         // do validations
         $this->_helper->validate(InvoiceHelper::validations, $columns, $this->post);
         // extra columns

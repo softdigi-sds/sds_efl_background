@@ -26,11 +26,11 @@ class InvoiceHelper extends BaseHelper
     const schema = [
         "sd_bill_id" => SmartConst::SCHEMA_INTEGER,
         "sd_hub_id" => SmartConst::SCHEMA_INTEGER,
-        "sd_vendors_id" => SmartConst::SCHEMA_INTEGER,
+        "sd_vendor_id" => SmartConst::SCHEMA_INTEGER,
         "total_units"=> SmartConst::SCHEMA_FLOAT,
-        "total_vehicals"=> SmartConst::SCHEMA_INTEGER,
+        "total_vehicles"=> SmartConst::SCHEMA_INTEGER,
         "unit_amount"=> SmartConst::SCHEMA_FLOAT,
-        "vechical_amount"=> SmartConst::SCHEMA_FLOAT,
+        "vechicle_amount"=> SmartConst::SCHEMA_FLOAT,
         "gst_percentage"=> SmartConst::SCHEMA_FLOAT,
         "gst_amount" => SmartConst::SCHEMA_FLOAT,
         "total_amount" => SmartConst::SCHEMA_FLOAT,
@@ -52,7 +52,7 @@ class InvoiceHelper extends BaseHelper
                 "msg" => "Please Enter sd hub id"
             ]
             ],
-        "sd_vendors_id" => [    
+        "sd_vendor_id" => [    
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter sd vendors id"
@@ -62,7 +62,7 @@ class InvoiceHelper extends BaseHelper
                     "type" => SmartConst::VALID_REQUIRED,
                     "msg" => "Please Enter total_units"
                 ]],
-                "total_vehicals" => [    
+                "total_vehicles" => [    
                     [
                         "type" => SmartConst::VALID_REQUIRED,
                         "msg" => "Please Enter total vehicals"
@@ -72,7 +72,7 @@ class InvoiceHelper extends BaseHelper
                             "type" => SmartConst::VALID_REQUIRED,
                             "msg" => "Please Enter unit amount"
                         ]],
-                "vechical_amount" => [    
+                "vechicle_amount" => [    
                         [
                             "type" => SmartConst::VALID_REQUIRED,
                             "msg" => "Please Enter vechical amount"
@@ -81,7 +81,12 @@ class InvoiceHelper extends BaseHelper
                             [
                                 "type" => SmartConst::VALID_REQUIRED,
                                 "msg" => "Please Enter gst percentage"
-                            ]],                 
+                            ]],       
+                            "gst_amount" => [    
+                            [
+                                "type" => SmartConst::VALID_REQUIRED,
+                                "msg" => "Please Enter gst amount"
+                            ]],             
                 "total_amount"=> [    
                     [
                         "type" => SmartConst::VALID_REQUIRED,

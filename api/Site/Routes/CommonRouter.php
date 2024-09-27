@@ -15,9 +15,11 @@ class CommonRouter
 {
 
     private $_routes = [];
-    private $_admin_only = ["ADMIN", "USER"];
+    // private $_admin_only = ["ADMIN", "USER"];
+    private $_admin_only = [];
     private $_user_only = ["USER"];
-    private $_admin_user = ["ADMIN", "USER"];
+    // private $_admin_user = ["ADMIN", "USER"];
+    private $_admin_user = [];
 
     /**
      * 
@@ -159,7 +161,7 @@ class CommonRouter
         $this->_routes["/invoice/update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
         $this->_routes["/invoice/get_all"] = [SmartConst::REQUEST_GET,$this->_admin_only,$controller, "getAll"];
         $this->_routes["/invoice/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
-        $this->_routes["/invoicedelete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
+        $this->_routes["/invoice/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
     }
     private function efl_vehicles_routes()
     {

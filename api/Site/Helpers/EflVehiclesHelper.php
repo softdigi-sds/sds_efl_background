@@ -27,7 +27,7 @@ class EflVehiclesHelper extends BaseHelper
         "sd_hub_id" => SmartConst::SCHEMA_INTEGER,
         "sd_vendors_id" => SmartConst::SCHEMA_INTEGER,
         "sd_date"=> SmartConst::SCHEMA_CDATE,
-        "vehical_count" => SmartConst::SCHEMA_INTEGER,
+        "vehicle_count" => SmartConst::SCHEMA_INTEGER,
         "created_by"=> SmartConst::SCHEMA_CUSER_ID,
         "created_time" => SmartConst::SCHEMA_CDATETIME,
         "last_modified_by"=> SmartConst::SCHEMA_INTEGER,
