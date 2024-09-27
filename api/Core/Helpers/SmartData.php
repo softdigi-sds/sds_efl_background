@@ -19,6 +19,7 @@ class SmartData {
     //put your code here
     
     static public function post_data($name,$type){
+        echo "<br> type ".$type;
         switch($type){
             case "INTEGER" : return self::post_int_data($name); 
             case "FLOAT" : return self::post_float_data($name);
@@ -49,7 +50,7 @@ class SmartData {
     }
 
     static public function post_select_value($name){
-        $id_arr = self::post_data($name,"ARRAY");
+        $id_arr = is_array($name)? $name : [];
         return isset($id_arr["value"]) ? intval($id_arr["value"]):0;
     }
 

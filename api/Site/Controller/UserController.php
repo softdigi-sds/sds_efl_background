@@ -32,7 +32,8 @@ class UserController extends BaseController
      */
     public function insert()
     {
-        $columns = ["ename", "euserid","mobile_no","epassword"];
+        
+        $columns = ["ename", "mobile_no","epassword"];
         // do validations
         $this->_helper->validate(UserHelper::validations, $columns, $this->post);
         //

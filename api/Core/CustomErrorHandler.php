@@ -39,7 +39,7 @@ class CustomErrorHandler extends ErrorException
      */
     static private function display_output($json, $error_code)
     {
-        debug_print_backtrace();
+        // debug_print_backtrace();
         self::rollBackDb();
         ob_clean();
         http_response_code($error_code);

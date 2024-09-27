@@ -2,6 +2,7 @@
 
 namespace Site\Controller;
 
+use Core\Helpers\SmartData as Data;
 use Core\BaseController;
 use Site\Helpers\VendorRateHelper as VendorRateHelper;
 
@@ -34,12 +35,13 @@ class VendorRateController extends BaseController{
         $columns[] = "created_time";
         $columns[] = "created_by";
         // data
-        $this->post["sd_hubs_id"] = isset($this->post["sd_hubs_id"]) ? intval($this->post["sd_hubs_id"]["value"]) : 0;
-        $this->post["sd_vendors_id"] = isset($this->post["sd_vendors_id"]) ? intval($this->post["sd_vendors_id"]["value"]) : 0;
-        $data = $this->_helper->checkEffectiveDateClash($this->post["effective_date"]);
-        if (!empty($data)) {
-            \CustomErrorHandler::triggerInvalid("There is already an Effective date available");
-        }
+        $this->post["sd_hubs_id"] = Data::post_select_value($this->post["sd_hubs_id"]);
+        $this->post["sd_vendors_id"] = Data::post_select_value($this->post["sd_vendors_id"]);
+        // $data = $this->_helper->checkEffectiveDateClash($this->post["effective_date"]);
+        // // var_dump($data);exit();
+        // if (!empty($data)) {
+        //     \CustomErrorHandler::triggerInvalid("There is already an Effective date available ". $data->effective_date);
+        // }
         $this->db->_db->Begin();
         // insert and get id
         $id = $this->_helper->insert($columns,$this->post);

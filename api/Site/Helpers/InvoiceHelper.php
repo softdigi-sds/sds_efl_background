@@ -149,7 +149,7 @@ class InvoiceHelper extends BaseHelper
     {
         $from = Table::INVOICE;
         $select = ["ID"];
-        $sql = "sd_vendors_id=:vend_id";
+        $sql = "sd_vendor_id=:vend_id";
         $data_in = ["vend_id" => $vend_id];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;

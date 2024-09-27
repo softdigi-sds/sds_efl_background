@@ -31,12 +31,11 @@ class EflOfficeController extends BaseController{
         "cin_no"  ,"state"  ,"pin_code"  ];
         // do validations
         $this->_helper->validate(EflOfficeHelper::validations,$columns,$this->post);
+        $columns[] = "address_two";
         $columns[] = "status";
         $columns[] = "created_by" ;
         $columns[] = "created_time" ;
-        // $this->post["state"] = Data::post_select_value($this->post["state"]);
-        $state = $this->post["state"];
-        $this->post["state"]  = $state["value"];
+        $this->post["state"] = Data::post_select_value($this->post["state"]);
         $this->post["status"] = 5;
         // check office already exist
         $data = $this->_helper->checkOfficeExist($this->post["office_city"]);
@@ -58,13 +57,16 @@ class EflOfficeController extends BaseController{
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["address_one", "address_two", "gst_no" ,"pan_no" ,
+        $columns = ["address_one", "gst_no" ,"pan_no" ,
         "cin_no"  ,"state"  ,"pin_code","status" ];
         // do validations
         $this->_helper->validate(EflOfficeHelper::validations, $columns, $this->post);
         // extra columns
+        $columns[] = "address_two";
         $columns[] = "last_modified_by";
         $columns[] =  "last_modified_time";
+        // data
+        $this->post["state"] = Data::post_select_value($this->post["state"]);
         // begin transition
         $this->db->_db->Begin();
           // insert and get id

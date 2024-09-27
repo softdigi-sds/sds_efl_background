@@ -45,6 +45,12 @@ class VendorsHelper extends BaseHelper
      * 
      */
     const validations = [
+        "sd_hub_id" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Enter Hub id"
+            ]
+        ],
         "vendor_code" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
@@ -100,7 +106,7 @@ class VendorsHelper extends BaseHelper
      */
     public function getAllData($sql = "", $data_in = [],$select=[],$group_by = "", $count = false,$single=false)
     {
-        $from = Table::VENDORS." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.hub_id=t2.ID ".Table::STATEDB." t3 ON t1.state_name=t3.ID ";
+        $from = Table::VENDORS." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.sd_hub_id=t2.ID LEFT JOIN ".Table::STATEDB." t3 ON t1.state_name=t3.ID ";
         $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t2.hub_name, t3.state_name "];
        // $order_by="last_modified_time DESC";
         return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
@@ -110,13 +116,22 @@ class VendorsHelper extends BaseHelper
      */
     public function getOneData($id)
     {
-        $from = Table::VENDORS." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.hub_id=t2.ID ".Table::STATEDB." t3 ON t1.state_name=t3.ID ";
-        $select = ["t1.*, t2.hub_id, t2.hub_name, t3.state_name "];
+        $from = Table::VENDORS." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.sd_hub_id=t2.ID  LEFT JOIN ".Table::STATEDB." t3 ON t1.state_name=t3.ID ";
+        $select = ["t1.*, t2.ID AS hub_value, t2.hub_id, t3.ID AS state_value, t3.state_name "];
         $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
         $group_by = "";
         $order_by = "";
         $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
+        if(isset($data->ID)){
+            $data->hub = [];
+            $data->hub["value"] = $data->hub_value;
+            $data->hub["label"] = $data->hub_id;
+
+            $data->state = [];
+            $data->state["value"] = $data->state_value;
+            $data->state["label"] = $data->state_name;
+        }
         return $data;
     }
      /**
@@ -133,7 +148,7 @@ class VendorsHelper extends BaseHelper
      */
     public function checkVendorByCodeCompany($code, $company)
     {
-        $from = Table::HUBS;
+        $from = Table::VENDORS;
         $select = ["ID"];
         $sql = "vendor_code=:code OR vendor_company=:company";
         $data_in = ["code" => $code, "company" => $company];

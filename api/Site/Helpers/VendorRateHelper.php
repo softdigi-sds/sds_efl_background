@@ -135,23 +135,47 @@ class VendorRateHelper extends BaseHelper
      */
     public function getAllData($sql = "", $data_in = [],$select=[],$group_by = "", $count = false,$single=false)
     {
-        $from = Table::VENDOR_RATE;
-        $select = !empty($select) ? $select : ["*"];
-       // $order_by="last_modified_time DESC";
-        return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
+        $from = Table::VENDOR_RATE." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.sd_hubs_id=t2.ID LEFT JOIN ".Table::VENDORS." t3 ON t1.sd_vendors_id=t3.ID ";
+        $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t3.vendor_company"];
+        $data =  $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
+        $hub = [];
+        $vendor = [];
+            foreach($data as $dt )
+        {    if(isset($dt->ID)){
+            $hub["value"] = $dt->sd_hubs_id;
+            $hub["label"] = $dt->hub_id;
+
+            $vendor["value"] = $dt->sd_vendors_id;
+            $vendor["label"] = $dt->vendor_company;
+            $dt->hub = $hub;
+            $dt->vendor = $vendor; 
+           
+        }
+    
+    }
+    return $data;
     }
     /**
      * 
      */
     public function getOneData($id)
     {
-        $from = Table::VENDOR_RATE;
-        $select = ["*"];
-        $sql = "ID=:ID";
+        $from = Table::VENDOR_RATE." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.sd_hubs_id=t2.ID LEFT JOIN ".Table::VENDORS." t3 ON t1.sd_vendors_id=t3.ID ";
+        $select = ["t1.*, t2.hub_id, t3.vendor_company"];
+        $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
         $group_by = "";
         $order_by = "";
         $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
+        if(isset($data->ID)){
+            $data->hub = [];
+            $data->hub["value"] = $data->sd_hubs_id;
+            $data->hub["label"] = $data->hub_id;
+
+            $data->vendor = [];
+            $data->vendor["value"] = $data->sd_vendors_id;
+            $data->vendor["label"] = $data->vendor_company;
+        }
         return $data;
     }
      /**
@@ -176,10 +200,13 @@ class VendorRateHelper extends BaseHelper
     }
     public function checkEffectiveDateClash($effective_date)
     {
+        $dateTime = new \DateTime($effective_date);
+        $date = $dateTime->format('Y-m-d');
+        // echo $date;exit();
         $from = Table::VENDOR_RATE;
-        $select = ["ID"];
+        $select = ["ID,effective_date"];
         $sql = " effective_date <=:effective_date";
-        $data_in = ["effective_date" => $effective_date];
+        $data_in = ["effective_date" => $date];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }

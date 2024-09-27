@@ -59,18 +59,18 @@ class UserHelper extends BaseHelper
                 "msg"=>"Maximum Length For Employee Name is 100 characters"
             ]           
         ],
-        "euserid" => [
-            [
-                "type" => SmartConst::VALID_REQUIRED,
-                "msg" => "Please Enter Userid"
-            ],
-            [
-                "type" => SmartConst::VALID_MAX_LENGTH,
-                "max"=>100,
-                "msg"=>"EuserId Max character 100"
-            ]
+        // "euserid" => [
+        //     [
+        //         "type" => SmartConst::VALID_REQUIRED,
+        //         "msg" => "Please Enter Userid"
+        //     ],
+        //     [
+        //         "type" => SmartConst::VALID_MAX_LENGTH,
+        //         "max"=>100,
+        //         "msg"=>"EuserId Max character 100"
+        //     ]
          
-        ],
+        // ],
         "epassword" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
