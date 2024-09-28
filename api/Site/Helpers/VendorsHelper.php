@@ -120,19 +120,17 @@ class VendorsHelper extends BaseHelper
         $select = ["t1.*, t2.ID AS hub_value, t2.hub_id, t3.ID AS state_value, t3.state_name "];
         $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
-        $group_by = "";
-        $order_by = "";
-        $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
-        if(isset($data->ID)){
-            $data->hub = [];
-            $data->hub["value"] = $data->hub_value;
-            $data->hub["label"] = $data->hub_id;
+            $data = $this->getAll($select,  $from, $sql, "", "", $data_in, true, []);
+            if(isset($data->ID)){
+                $data->hub = [];
+                $data->hub["value"] = $data->hub_value;
+                $data->hub["label"] = $data->hub_id;
 
-            $data->state = [];
-            $data->state["value"] = $data->state_value;
-            $data->state["label"] = $data->state_name;
-        }
-        return $data;
+                $data->state = [];
+                $data->state["value"] = $data->state_value;
+                $data->state["label"] = $data->state_name;
+            }
+            return $data;
     }
      /**
      * 

@@ -91,7 +91,19 @@ class HubsHelper extends BaseHelper
         $from = Table::HUBS." t1 INNER JOIN ".Table::EFLOFFICE." t2 ON t1.sd_efl_office_id=t2.ID ";
         $select = !empty($select) ? $select : ["t1.*, t2.office_city "];
        // $order_by="last_modified_time DESC";
-        return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
+        $data =  $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
+        $city = [];
+        foreach($data as $dt )
+        {    if(isset($dt->ID)){
+            $city["value"] = $dt->sd_efl_office_id;
+            $city["label"] = $dt->office_city;
+            $_hub_grp_helper = new HubGroupsHelper($this->db);
+            $dt->role = $_hub_grp_helper->getSelectedRolesWithHubId($dt->ID);
+            $dt->city = $city; 
+           
+        }
+        }
+        return $data;
     }
 
 
@@ -110,6 +122,9 @@ class HubsHelper extends BaseHelper
         if(isset($data->ID)){
             $_hub_grp_helper = new HubGroupsHelper($this->db);
             $data->role = $_hub_grp_helper->getSelectedRolesWithHubId($data->ID);
+            $data->city = [];
+            $data->city["value"] = $data->sd_efl_office_id;
+            $data->city["label"] = $data->office_city;
         }
         return $data;
     }

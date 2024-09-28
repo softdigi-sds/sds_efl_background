@@ -113,33 +113,24 @@ class EflVehiclesHelper extends BaseHelper
         $this->deleteId($from,$id);
     }
   
-    // public function getVendorsByHubId($id, $month, $year)
-    // {
-    //     $select = [" SUM(t1.vehicle_count) AS count, t1.sd_date AS date, t2.vendor_company "];
-    //     $from = Table::EFL_VEHICLES." t1 LEFT JOIN ".Table::VENDORS." t2 ON t2.sd_hub_id=t1.sd_hub_id ";
-    //     $sql = " t1.sd_hub_id=:ID AND YEAR(t1.sd_date)=:year AND MONTH(t1.sd_date)=:month";
-    //     $data_in = ["ID" => $id, "month" =>$month, "year" => $year];
-    //     $group_by = " GROUP BY sd_date ";
-    //     $count = $this->getAll($select, $from, $sql, $group_by, "", $data_in, false, [], false);
-    //     return $count;
-    // }
     public function getVendorsByHubId($id, $date)
     {
+
         $select = [" SUM(t1.vehicle_count) AS count, t1.sd_date AS date, t2.vendor_company "];
         $from = Table::EFL_VEHICLES." t1 LEFT JOIN ".Table::VENDORS." t2 ON t2.sd_hub_id=t1.sd_hub_id ";
         $sql = " t1.sd_hub_id=:ID AND t1.sd_date=:date";
         $data_in = ["ID" => $id, "date" =>$date];
-        $group_by = " GROUP BY sd_date ";
+        $group_by = " sd_date ";
         $count = $this->getAll($select, $from, $sql, $group_by, "", $data_in, false, [], false);
         return $count;
     }
     public function getCountByHubAndDate($id, $month, $year)
     {
-        $select = ["COUNT(vehicle_count) AS count, sd_date AS date"];
+        $select = [" SUM(vehicle_count) AS count, sd_date AS date "];
         $from = Table::EFL_VEHICLES;
         $sql = " sd_hub_id=:ID AND  YEAR(sd_date) =:year AND MONTH(sd_date) =:month ";
         $data_in = ["ID" => $id, "month" =>$month, "year" => $year];
-        $group_by = " GROUP BY sd_date ";
+        $group_by = " sd_date ";
         $count = $this->getAll($select, $from, $sql, $group_by, "", $data_in, false, [], false);
         return $count;
     }

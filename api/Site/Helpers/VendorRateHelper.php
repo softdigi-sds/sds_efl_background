@@ -138,17 +138,25 @@ class VendorRateHelper extends BaseHelper
         $from = Table::VENDOR_RATE." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.sd_hubs_id=t2.ID LEFT JOIN ".Table::VENDORS." t3 ON t1.sd_vendors_id=t3.ID ";
         $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t3.vendor_company"];
         $data =  $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
-        $hub = [];
-        $vendor = [];
-            foreach($data as $dt )
+        $hub = $vendor = $consumption = $parking = [];
+        foreach($data as $dt )
         {    if(isset($dt->ID)){
             $hub["value"] = $dt->sd_hubs_id;
             $hub["label"] = $dt->hub_id;
 
             $vendor["value"] = $dt->sd_vendors_id;
             $vendor["label"] = $dt->vendor_company;
+
+            $consumption["value"] = $dt->unit_rate_type;
+            $consumption["label"] = $dt->unit_rate_type;
+
+            $parking["value"] = $dt->parking_rate_type;
+            $parking["label"] = $dt->parking_rate_type;
+            
             $dt->hub = $hub;
             $dt->vendor = $vendor; 
+            $dt->consumption_type = $consumption;
+            $dt->parking_type = $parking; 
            
         }
     

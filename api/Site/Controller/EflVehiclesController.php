@@ -96,21 +96,15 @@ class EflVehiclesController extends BaseController{
      */
     public function getOneParkingData(){
 
-        $id = isset($this->post["hub_id"]) ? intval($this->post["hub_id"]) : 0;
-        // $month = isset($this->post["month"]) ? intval($this->post["month"]) : "";
-        // $year = isset($this->post["year"]) ? intval($this->post["year"]) : "";
+        $id = isset($this->post["hub_id"]) ? $this->post["hub_id"] : 0;
         $date = isset($this->post["date"]) ? trim($this->post["date"]) : "";
         if($id < 1){
             \CustomErrorHandler::triggerInvalid("Invalid Hub ID");
-        }    
-        // if($month < 0 || $year < 0 ){
-        //     \CustomErrorHandler::triggerInvalid("Invalid month or date ");
-        // } 
+        }   
            if(strlen($date) < 0){
             \CustomErrorHandler::triggerInvalid("Invalid date ");
         } 
         $hub_id = Data::post_select_value($id );
-        // $data = $this->_helper->getVendorsByHubId($hub_id,$month, $year);
         $data = $this->_helper->getVendorsByHubId($hub_id,$date);
         $this->response($data);
     }
@@ -119,9 +113,10 @@ class EflVehiclesController extends BaseController{
      /**
      * 
      */
-    public function getAllParkingData(){
+    public function getAllParkingData()
+    {
 
-        $id = isset($this->post["hub_id"]) ? intval($this->post["hub_id"]) : 0;
+        $id = isset($this->post["hub_id"]) ? $this->post["hub_id"] : 0;
         $month = isset($this->post["month"]) ? intval($this->post["month"]) : "";
         $year = isset($this->post["year"]) ? intval($this->post["year"]) : "";
         if($id < 1){
