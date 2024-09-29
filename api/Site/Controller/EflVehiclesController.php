@@ -24,17 +24,21 @@ class EflVehiclesController extends BaseController{
      * 
      */
     public function insert(){
-        $columns = ["sd_hub_id","sd_vendors_id","sd_date", "vehicle_count" ];
-        // do validations
-        $this->_helper->validate(EflVehiclesHelper::validations,$columns,$this->post);
-        $columns[] = "created_by" ;
-        $columns[] = "created_time" ;
-        // insert and get id
-         $id = $this->_helper->insert($columns,$this->post);
        
-        //
-         $this->response($id);
-    }
+        $consump_data = $this->post;
+        if(empty($consump_data)){
+             \CustomErrorHandler::triggerInvalid("Provided data dosen't contain any information !!");
+        }
+        $insert_columns = ["sd_hub_id","sd_vendors_id","sd_date", "vehicle_count", "created_by", "created_time"];
+        $update_columns = ["vehicle_count", "last_modified_by", "last_modified_time"];
+        foreach($consump_data as $data){
+         if(isset($data["sd_hub_id"])){
+             $this->_helper->insertUpdate($data, $insert_columns, $update_columns);
+ 
+         }
+        }
+          $this->responseMsg(msg: "Parking Report has been appended successfully");
+     }
     /**
      * 
      */

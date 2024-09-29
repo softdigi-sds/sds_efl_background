@@ -37,11 +37,11 @@ class VendorRateController extends BaseController{
         // data
         $this->post["sd_hubs_id"] = Data::post_select_value($this->post["sd_hubs_id"]);
         $this->post["sd_vendors_id"] = Data::post_select_value($this->post["sd_vendors_id"]);
-        // $data = $this->_helper->checkEffectiveDateClash($this->post["effective_date"]);
-        // // var_dump($data);exit();
-        // if (!empty($data)) {
-        //     \CustomErrorHandler::triggerInvalid("There is already an Effective date available ". $data->effective_date);
-        // }
+        $data = $this->_helper->checkEffectiveDateClash($this->post["effective_date"]);
+        // var_dump($data);exit();
+        if (!empty($data)) {
+            \CustomErrorHandler::triggerInvalid("There is already an Effective date available upto ". $data->effective_date);
+        }
         $this->db->_db->Begin();
         // insert and get id
         $id = $this->_helper->insert($columns,$this->post);

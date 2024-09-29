@@ -72,10 +72,10 @@ class BillHelper extends BaseHelper
      */
     public function getAllData($sql = "", $data_in = [],$select=[],$group_by = "", $count = false,$single=false)
     {
-        $from = Table::BILL;
-        $select = !empty($select) ? $select : ["*"];
-       // $order_by="last_modified_time DESC";
-        return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
+        $from = Table::BILL." t1 INNER JOIN ".Table::INVOICE." t2 ON t1.ID=t2.sd_bill_id ";
+        $sql = " t1.ID > 0 GROUP BY t2.sd_bill_id ";
+        $select = !empty($select) ? $select : ["t1.*, SUM(t2.unit_amount) AS unit_amt, SUM(t2.vehicle_amount) AS vehicle_amt "];
+       return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
     }
 
 
@@ -84,13 +84,11 @@ class BillHelper extends BaseHelper
      */
     public function getOneData($id)
     {
-        $from = Table::BILL;
-        $select = ["*"];
-        $sql = "ID=:ID";
+        $from = Table::BILL." t1 INNER JOIN ".Table::INVOICE." t2 ON t1.ID=t2.sd_bill_id ";
+        $select = ["t1.*, SUM(t2.unit_amount) AS unit_amt, SUM(t2.vehicle_amount) AS vehicle_amt "];
+        $sql = " t1.ID=:ID GROUP BY t2.sd_bill_id ";
         $data_in = ["ID" => $id];
-        $group_by = "";
-        $order_by = "";
-        $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }
      /**

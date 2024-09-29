@@ -6,24 +6,27 @@ use Core\BaseController;
 
 use Core\Helpers\SmartAuthHelper;
 use Site\Helpers\InvoiceHelper;
+use Site\Helpers\BillHelper;
 
 
 
 class InvoiceController extends BaseController{
   
   private InvoiceHelper $_helper;
+  private BillHelper $_bill_helper;
     function __construct($params)
     {
         parent::__construct($params);
         // 
         $this->_helper = new InvoiceHelper($this->db);
+        $this->_bill_helper = new BillHelper($this->db);
     }
 
    /**
      * 
      */
     public function insert(){
-        $columns = [  "sd_bill_id", "sd_hub_id", "sd_vendor_id", "total_units","total_vehicles", "unit_amount", "vechicle_amount", "gst_percentage", "gst_amount", "total_amount"];
+        $columns = [  "sd_bill_id", "sd_hub_id", "sd_vendor_id", "total_units","total_vehicles", "unit_amount", "vehicle_amount", "gst_percentage", "gst_amount", "total_amount"];
         // do validations
         $this->_helper->validate(InvoiceHelper::validations,$columns,$this->post);
         $columns[] = "status";
@@ -31,8 +34,25 @@ class InvoiceController extends BaseController{
         // insert and get id
          $id = $this->_helper->insert($columns,$this->post);
        
-        //
+         //
          $this->response($id);
+    }
+
+
+    public function generate()
+    {
+        $columns = [ "bill_start_date","bill_end_date" ];
+        // do validations
+        $this->_helper->validate(BillHelper::validations,$columns,$this->post);
+        $columns[] = "created_by" ;
+        $columns[] = "created_time" ;
+        $this->db->_db->Begin();
+        $bill_id = $this->_bill_helper->insert($columns,$this->post);
+        // invoice columns
+        $invoice_cols = [  "sd_bill_id", "sd_hub_id", "sd_vendor_id", "total_units","total_vehicles", "unit_amount", "vehicle_amount", "status", "gst_percentage", "gst_amount", "total_amount"];
+        $this->_helper->insertInvoice($bill_id, $this->post["bill_start_date"],$this->post["bill_end_date"], $invoice_cols);
+        $this->db->_db->commit();
+        $this->response($bill_id);
     }
     /**
      * 
@@ -43,7 +63,7 @@ class InvoiceController extends BaseController{
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["sd_bill_id", "sd_hub_id", "sd_vendor_id", "total_units","total_vehicles", "unit_amount", "vechicle_amount", "gst_percentage", "gst_amount", "total_amount"];
+        $columns = ["sd_bill_id", "sd_hub_id", "sd_vendor_id", "total_units","total_vehicles", "unit_amount", "vehicle_amount", "gst_percentage", "gst_amount", "total_amount"];
         // do validations
         $this->_helper->validate(InvoiceHelper::validations, $columns, $this->post);
         // extra columns
@@ -66,6 +86,16 @@ class InvoiceController extends BaseController{
     /**
      * 
      */
+    public function getInvoiceByBillID(){  
+        $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+        if($id < 1){
+            \CustomErrorHandler::triggerInvalid("Invalid Bill ID");
+        }    
+        // insert and get id
+        $data = $this->_helper->getInvoiceByBillId($id);
+        $this->response($data);
+    }
+
     public function getOne(){  
         $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
         if($id < 1){

@@ -133,4 +133,5 @@ class HubGroupsHelper extends BaseHelper
         $select = ["t1.sd_mt_role_id as value","t3.role_name as label"];
         return $this->getAllData($sql,["ID"=>$hub_id],$select);
     }
+    
 }

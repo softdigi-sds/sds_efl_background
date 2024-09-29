@@ -208,14 +208,22 @@ class VendorRateHelper extends BaseHelper
     }
     public function checkEffectiveDateClash($effective_date)
     {
-        $dateTime = new \DateTime($effective_date);
-        $date = $dateTime->format('Y-m-d');
-        // echo $date;exit();
         $from = Table::VENDOR_RATE;
         $select = ["ID,effective_date"];
-        $sql = " effective_date <=:effective_date";
-        $data_in = ["effective_date" => $date];
+        $sql = " effective_date >=:effective_date";
+        $data_in = ["effective_date" => $effective_date];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
+    }
+
+    public function getVendorRateByHubVenID($hub_id, $vend_id)
+    {
+        $from = Table::VENDOR_RATE;
+        $select = ["*"];
+        $sql = "sd_hubs_id=:hub_id AND sd_vendors_id=:vend_id ";
+        $data_in = ["hub_id" => $hub_id, "vend_id" => $vend_id,];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        return $data;
+    
     }
 }
