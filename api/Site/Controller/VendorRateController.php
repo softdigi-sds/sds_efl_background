@@ -35,8 +35,8 @@ class VendorRateController extends BaseController
         $columns[] = "created_time";
         $columns[] = "created_by";
         // data
-        $this->post["sd_hubs_id"] = Data::post_select_value($this->post["sd_hubs_id"]);
-        $this->post["sd_vendors_id"] = Data::post_select_value($this->post["sd_vendors_id"]);
+        $this->post["sd_hubs_id"] = Data::post_select_value("sd_hubs_id");
+        $this->post["sd_vendors_id"] = Data::post_select_value("sd_vendors_id");
         $data = $this->_helper->checkEffectiveDateClash($this->post["effective_date"]);
         // var_dump($data);exit();
         if (!empty($data)) {

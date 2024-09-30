@@ -127,13 +127,14 @@ class VendorRateHelper extends BaseHelper
         $order_by = "";
         $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
         if (isset($data->ID)) {
-            $data->hub = [];
-            $data->hub["value"] = $data->sd_hubs_id;
-            $data->hub["label"] = $data->hub_id;
-
-            $data->vendor = [];
-            $data->vendor["value"] = $data->sd_vendors_id;
-            $data->vendor["label"] = $data->vendor_company;
+            $hub_id = $data->sd_hubs_id;
+            $data->sd_hubs_id = [];
+            $data->sd_hubs_id["value"] = $hub_id;
+            $data->sd_hubs_id["label"] = $data->hub_id;
+            $vendor_id = $data->sd_vendors_id;
+            $data->sd_vendors_id = [];
+            $data->sd_vendors_id["value"] = $vendor_id;
+            $data->sd_vendors_id["label"] = $data->vendor_company;
         }
         return $data;
     }

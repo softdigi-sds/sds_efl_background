@@ -41,7 +41,7 @@ class EflVehiclesController extends BaseController
         $insert_columns = ["sd_hub_id", "sd_vendors_id", "sd_date", "vehicle_count", "created_by", "created_time"];
         $update_columns = ["vehicle_count", "last_modified_by", "last_modified_time"];
         foreach ($consump_data as $data) {
-            $data["$hub_id"] = $hub_id;
+            $data["sd_hub_id"] = $hub_id;
             $data["sd_date"] =  $date;
             $this->_helper->insertUpdate($data, $insert_columns, $update_columns);
         }

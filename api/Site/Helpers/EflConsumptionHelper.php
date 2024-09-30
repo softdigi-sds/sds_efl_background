@@ -125,13 +125,11 @@ class EflConsumptionHelper extends BaseHelper
         $sql = " sd_hub_id=:sd_hub_id AND sd_vendors_id=:sd_vendors_id AND sd_date=:sd_date ";
         $data_in = ["sd_hub_id" => $data["sd_hub_id"], "sd_vendors_id" => $data["sd_vendors_id"], "sd_date" => $data["sd_date"]];
         $exist_data = $this->getAllData($sql, $data_in, ["ID"], "", false, true);
-         if(isset($exist_data->ID)){
+        if (isset($exist_data->ID)) {
             $this->update($update_cols, $data, $exist_data->ID);
-        }
-        else{
+        } else {
             $this->insert($insert_cols, $data);
         }
-    
     }
 
 
@@ -146,32 +144,33 @@ class EflConsumptionHelper extends BaseHelper
                 $sql = " sd_hub_id=:ID AND sd_vendors_id=:ven_id AND sd_date=:date";
                 $data_in = ["ID" => $hub_id, "ven_id" => $ven_data->ID, "date" => $date];
                 $count = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
-                 $ven_data->count = isset($count->count) ? $count->count : 0;
+                // $ven_data->count = isset($count->count) ? $count->count : 0;
+                $ven_data->unit_count = isset($count->count) ? $count->count : 0;
+                $ven_data->sd_vendors_id = $ven_data->ID;
                 $ven_data->hub_id = $hub_id;
                 $ven_data->date = $date;
             }
         }
         return $data;
     }
-    
+
     public function getCountByHubAndDate($id, $month, $year)
     {
         $select = [" SUM(unit_count) AS count, sd_date AS date "];
         $from = Table::EFL_CONSUMPTION;
         $sql = " sd_hub_id=:ID AND YEAR(sd_date)=:year AND MONTH(sd_date)=:month GROUP BY sd_date ";
-        $data_in = ["ID" => $id, "month" =>$month, "year" => $year];
+        $data_in = ["ID" => $id, "month" => $month, "year" => $year];
         $count = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
         return $count;
     }
-    
+
     public function getConsumptionInvoiceByDate($strt_date, $end_date)
     {
         $select = [" t1.*,SUM(t1.unit_count) AS count "];
-        $from = Table::EFL_CONSUMPTION." t1 " ;
+        $from = Table::EFL_CONSUMPTION . " t1 ";
         $sql = "  t1.sd_date BETWEEN :strt_date AND :end_date GROUP BY t1.sd_vendors_id";
         $data_in = ["strt_date" => $strt_date, "end_date" => $end_date];
         $date = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
         return $date;
     }
-
-    }
+}

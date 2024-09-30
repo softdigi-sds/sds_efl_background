@@ -67,6 +67,16 @@ class VendorRateSubHelper extends BaseHelper
         ]
     ];
 
+    public function getRateTypes($id)
+    {
+        $_type = [
+            1 => "Fixed",
+            2 => "Minimum",
+            3 => "Rate Per Unit"
+        ];
+        return isset($_type[$id]) ? $_type[$id] : "";
+    }
+
     /**
      * 
      */
@@ -121,7 +131,15 @@ class VendorRateSubHelper extends BaseHelper
         $sql = "sd_vendor_rate_id=:id";
         $data_in = ["id" => $sd_vendor_rate_id];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
-        return $data;
+        $out = [];
+        foreach ($data as $key => $obj) {
+            $hsn = $obj->sd_hsn_id;
+            $obj->sd_hsn_id = ["value" => $hsn, "label" => $hsn];
+            $rate_type = $obj->rate_type;
+            $obj->rate_type = ["value" => $rate_type, "label" => $this->getRateTypes($rate_type)];
+            $out[$key] = $obj;
+        }
+        return $out;
     }
 
 
