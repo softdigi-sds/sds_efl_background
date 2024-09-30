@@ -30,9 +30,10 @@ class TableHelper
    const STATEDB =  "sd_state_db";
    const VENDORS =  "sd_vendors";
    const VENDOR_RATE =  "sd_vendor_rate";
+   const VENDOR_RATE_SUB =  "sd_vendor_rate_sub";
    const BILL = "sd_bill";
-   const EFL_CONSUMPTION = "sd_efl_consumption";	
-   const EFL_VEHICLES ="sd_efl_vehicles";
+   const EFL_CONSUMPTION = "sd_efl_consumption";
+   const EFL_VEHICLES = "sd_efl_vehicles";
    const INVOICE = "sd_invoice";
    const EFLHSNS = "sd_efl_hsns";
 }
