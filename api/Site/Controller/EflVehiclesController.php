@@ -29,6 +29,8 @@ class EflVehiclesController extends BaseController
 
         $consump_data = Data::post_array_data("input_data");
         $hub_id = Data::post_select_value("hub_id");
+        // echo "id = " .   $hub_id;
+        //exit();
         $date = Data::post_data("date", "STRING");
         if ($hub_id < 1) {
             \CustomErrorHandler::triggerInvalid("Please Select Hub ID");
@@ -109,15 +111,15 @@ class EflVehiclesController extends BaseController
     public function getOneParkingData()
     {
 
-        $id = isset($this->post["hub_id"]) ? $this->post["hub_id"] : 0;
+        // $id = isset($this->post["hub_id"]) ? $this->post["hub_id"] : 0;
+        $hub_id = Data::post_select_value("hub_id");
         $date = isset($this->post["date"]) ? trim($this->post["date"]) : "";
-        if ($id < 1) {
+        if ($hub_id  < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid Hub ID");
         }
         if (strlen($date) < 0) {
             \CustomErrorHandler::triggerInvalid("Invalid date ");
         }
-        $hub_id = Data::post_select_value($id);
         $data = $this->_helper->getVendorsByHubId($hub_id, $date);
         $this->response($data);
     }
@@ -129,16 +131,17 @@ class EflVehiclesController extends BaseController
     public function getAllParkingData()
     {
 
-        $id = isset($this->post["hub_id"]) ? $this->post["hub_id"] : 0;
+        $hub_id =  Data::post_select_value("hub_id");
+        //isset($this->post["hub_id"]) ? $this->post["hub_id"] : 0;
         $month = isset($this->post["month"]) ? intval($this->post["month"]) : "";
         $year = isset($this->post["year"]) ? intval($this->post["year"]) : "";
-        if ($id < 1) {
+        if ($hub_id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid Hub ID");
         }
         if ($month < 0 || $year < 0) {
             \CustomErrorHandler::triggerInvalid("Invalid month or date ");
         }
-        $hub_id = Data::post_select_value($id);
+        // $hub_id = Data::post_select_value($id);
         $data = $this->_helper->getCountByHubAndDate($hub_id, $month, $year);
         $this->response($data);
     }

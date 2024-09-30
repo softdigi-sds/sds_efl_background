@@ -24,19 +24,19 @@ use Site\Helpers\TableHelper as Table;
 class VendorRateSubHelper extends BaseHelper
 {
 
-    const schema = [       
+    const schema = [
         "sd_vendor_rate_id" => SmartConst::SCHEMA_INTEGER,
         "sd_hsn_id" => SmartConst::SCHEMA_INTEGER,
         "rate_type" => SmartConst::SCHEMA_INTEGER,
         "min_start" => SmartConst::SCHEMA_INTEGER,
         "min_end" => SmartConst::SCHEMA_INTEGER,
         "price" => SmartConst::SCHEMA_FLOAT,
-        "extra_price" => SmartConst::SCHEMA_FLOAT       
+        "extra_price" => SmartConst::SCHEMA_FLOAT
     ];
     /**
      * 
      */
-    const validations = [      
+    const validations = [
         "sd_vendor_rate_id" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
@@ -72,14 +72,14 @@ class VendorRateSubHelper extends BaseHelper
      */
     public function insert(array $columns, array $data)
     {
-        return $this->insertDb(self::schema, Table::VENDOR_RATE, $columns, $data);
+        return $this->insertDb(self::schema, Table::VENDOR_RATE_SUB, $columns, $data);
     }
     /**
      * 
      */
     public function update(array $columns, array $data, int $id)
     {
-        return $this->updateDb(self::schema, Table::VENDOR_RATE, $columns, $data, $id);
+        return $this->updateDb(self::schema, Table::VENDOR_RATE_SUB, $columns, $data, $id);
     }
     /**
      * 
@@ -88,7 +88,7 @@ class VendorRateSubHelper extends BaseHelper
     {
         $from = Table::VENDOR_RATE_SUB . "";
         $select = !empty($select) ? $select : ["t1.*"];
-        $data =  $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);       
+        $data =  $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
         return $data;
     }
     /**
@@ -96,13 +96,13 @@ class VendorRateSubHelper extends BaseHelper
      */
     public function getOneData($id)
     {
-        $from = Table::VENDOR_RATE . " t1 ";
+        $from = Table::VENDOR_RATE_SUB . " t1 ";
         $select = ["t1.*"];
         $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
         $group_by = "";
         $order_by = "";
-        $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);     
+        $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
         return $data;
     }
     /**
@@ -110,60 +110,82 @@ class VendorRateSubHelper extends BaseHelper
      */
     public function deleteOneId($id)
     {
-        $from = Table::VENDOR_RATE;
+        $from = Table::VENDOR_RATE_SUB;
         $this->deleteId($from, $id);
     }
 
     public function getAllByVendorRateId($sd_vendor_rate_id)
     {
-        $from = Table::VENDOR_RATE;
+        $from = Table::VENDOR_RATE_SUB;
         $select = ["*"];
         $sql = "sd_vendor_rate_id=:id";
-        $data_in = ["sd_vendor_rate_id" => $sd_vendor_rate_id];
+        $data_in = ["id" => $sd_vendor_rate_id];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
         return $data;
     }
 
-    
+
     public function getOneByVendAndHsn($vend_rate_id, $hsn_id)
     {
-        $from = Table::VENDOR_RATE;
+        $from = Table::VENDOR_RATE_SUB;
         $select = ["*"];
         $sql = "sd_vendor_rate_id=:vend_rate_id AND sd_hsn_id=:sd_hsn_id";
-        $data_in = ["vend_rate_id"=>$vend_rate_id,"hsn_id"=>$hsn_id];
-        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        $data_in = ["vend_rate_id" => $vend_rate_id, "sd_hsn_id" => $hsn_id];
+        $data = $this->getAll(
+            $select,
+            $from,
+            $sql,
+            "",
+            "",
+            $data_in,
+            true,
+            []
+        );
         return $data;
     }
 
 
-    public function insert_update_single($_data){      
-        $exist_data = $this->getOneByVendAndHsn($_data["sd_vendor_rate_id"],$_data["sd_hsn_id"]);     
-        if(isset($exist_data->ID)){
+    public function insert_update_single($_data)
+    {
+        $exist_data = $this->getOneByVendAndHsn($_data["sd_vendor_rate_id"], $_data["sd_hsn_id"]);
+        if (isset($exist_data->ID)) {
             // exisitng so need to update
-            $columns_update = ["rate_type","min_start","min_end","price","extra_price"];
-            $this->update($columns_update,$_data,$exist_data->ID);
+            $columns_update = ["rate_type", "min_start", "min_end", "price", "extra_price"];
+            $this->update($columns_update, $_data, $exist_data->ID);
             return  $exist_data->ID;
-        }else{
-            $columns_insert = ["sd_vendor_rate_id","sd_hsn_id","rate_type",
-            "min_start","min_end","price","extra_price"];
-            $id_inserted = $this->insert($columns_insert,$_data);
+        } else {
+            $columns_insert = [
+                "sd_vendor_rate_id",
+                "sd_hsn_id",
+                "rate_type",
+                "min_start",
+                "min_end",
+                "price",
+                "extra_price"
+            ];
+            $id_inserted = $this->insert($columns_insert, $_data);
             return  $id_inserted;
         }
     }
 
-    public function insert_update_data($rate_id,$data){
+    public function insert_update_data($rate_id, $data)
+    {
         $exist_data = $this->getAllByVendorRateId($rate_id);
         $ids = [];
-        foreach($data["rate_data"] as $rate_data){
-            $rate_data["sd_vendor_rate_id"] =$rate_id;
+        foreach ($data as $rate_data) {
+            $rate_data["sd_vendor_rate_id"] = $rate_id;
+            $rate_data["sd_hsn_id"] = isset($rate_data["sd_hsn_id"]) && isset($rate_data["sd_hsn_id"]["value"]) ? $rate_data["sd_hsn_id"]["value"] : 0;
+            $rate_data["rate_type"] = isset($rate_data["rate_type"]) && isset($rate_data["rate_type"]["value"]) ? $rate_data["rate_type"]["value"] : 0;
+            // var_dump($rate_data);
             $ids[] = $this->insert_update_single($rate_data);
         }
+        //exit();
         // now comapare the ids and remove the data
     }
 
 
 
-   
+
 
 
 

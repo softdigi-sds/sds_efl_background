@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Site\Controller;
 
@@ -11,10 +11,11 @@ use Site\Helpers\HubsHelper;
 
 
 
-class EflOfficeController extends BaseController{
-  
-  private EflOfficeHelper $_helper;
-  private HubsHelper $_hubs_helper;
+class EflOfficeController extends BaseController
+{
+
+    private EflOfficeHelper $_helper;
+    private HubsHelper $_hubs_helper;
     function __construct($params)
     {
         parent::__construct($params);
@@ -23,22 +24,30 @@ class EflOfficeController extends BaseController{
         $this->_hubs_helper = new HubsHelper($this->db);
     }
 
-   /**
+    /**
      * 
      */
-    public function insert(){
-        $columns = [ "office_city" ,"address_one","gst_no" ,"pan_no" ,
-        "cin_no"  ,"state"  ,"pin_code"  ];
+    public function insert()
+    {
+        $columns = [
+            "office_city",
+            "address_one",
+            "gst_no",
+            "pan_no",
+            "cin_no",
+            "state",
+            "pin_code"
+        ];
         // do validations
-        $this->_helper->validate(EflOfficeHelper::validations,$columns,$this->post);
+        $this->_helper->validate(EflOfficeHelper::validations, $columns, $this->post);
         $columns[] = "address_two";
         $columns[] = "status";
-        $columns[] = "created_by" ;
-        $columns[] = "created_time" ;
-        $columns[] = "cgst" ;
+        $columns[] = "created_by";
+        $columns[] = "created_time";
+        $columns[] = "cgst";
         $columns[] =  "igst";
-        $columns[] = "sgst" ;
-        $this->post["state"] = Data::post_select_value($this->post["state"]);
+        $columns[] = "sgst";
+        $this->post["state"] = Data::post_select_value("state");
         $this->post["status"] = 5;
         // check office already exist
         $data = $this->_helper->checkOfficeExist($this->post["office_city"]);
@@ -46,10 +55,10 @@ class EflOfficeController extends BaseController{
             \CustomErrorHandler::triggerInvalid("City Office already available ");
         }
         // insert and get id
-         $id = $this->_helper->insert($columns,$this->post);
-       
+        $id = $this->_helper->insert($columns, $this->post);
+
         //
-         $this->response($id);
+        $this->response($id);
     }
     /**
      * 
@@ -60,8 +69,15 @@ class EflOfficeController extends BaseController{
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["address_one", "gst_no" ,"pan_no" ,
-        "cin_no"  ,"state"  ,"pin_code","status"  ];
+        $columns = [
+            "address_one",
+            "gst_no",
+            "pan_no",
+            "cin_no",
+            "state",
+            "pin_code",
+            "status"
+        ];
         // do validations
         $this->_helper->validate(EflOfficeHelper::validations, $columns, $this->post);
         // extra columns
@@ -72,26 +88,28 @@ class EflOfficeController extends BaseController{
         $this->post["state"] = Data::post_select_value($this->post["state"]);
         // begin transition
         $this->db->_db->Begin();
-          // insert and get id
+        // insert and get id
         $id = $this->_helper->update($columns, $this->post, $id);
         $this->db->_db->commit();
         $this->response($id);
     }
- /**
+    /**
      * 
      */
-    public function getAll(){      
+    public function getAll()
+    {
         $data = $this->_helper->getAllData();
         $this->response($data);
     }
     /**
      * 
      */
-    public function getOne(){  
+    public function getOne()
+    {
         $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
-        if($id < 1){
+        if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
-        }    
+        }
         // insert and get id
         $data = $this->_helper->getOneData($id);
         $this->response($data);
@@ -99,11 +117,12 @@ class EflOfficeController extends BaseController{
     /**
      * 
      */
-    public function deleteOne(){  
+    public function deleteOne()
+    {
         $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
-        if($id < 1){
+        if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
-        }    
+        }
         $data = $this->_hubs_helper->checkHubByOfficeId($id);
         if (!empty($data)) {
             \CustomErrorHandler::triggerInvalid("Cannot remove City Office, Hub is attached with this City.");
@@ -113,15 +132,14 @@ class EflOfficeController extends BaseController{
         $out = new \stdClass();
         $out->msg = "Removed Successfully";
         $this->response(data: $out);
-
-    }    
-     /**
+    }
+    /**
      * 
      */
-    public function getAllSelect(){      
+    public function getAllSelect()
+    {
         $select = ["t1.ID as value,t1.office_city as label"];
-        $data = $this->_helper->getAllData("",[],$select);
+        $data = $this->_helper->getAllData("", [], $select);
         $this->response($data);
     }
-
 }

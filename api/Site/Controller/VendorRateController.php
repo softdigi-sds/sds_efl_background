@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Site\Controller;
 
@@ -8,8 +8,9 @@ use Site\Helpers\VendorRateHelper as VendorRateHelper;
 use Site\Helpers\VendorRateSubHelper as VendorRateSubHelper;
 
 
-class VendorRateController extends BaseController{
-    
+class VendorRateController extends BaseController
+{
+
     private VendorRateHelper $_helper;
     private VendorRateSubHelper $_sub_helper;
 
@@ -22,14 +23,15 @@ class VendorRateController extends BaseController{
         $this->_sub_helper = new VendorRateSubHelper($this->db);
     }
 
-   /**
+    /**
      * 
      */
-    public function insert(){
-        $columns = [ "sd_hubs_id","sd_vendors_id","effective_date"];
+    public function insert()
+    {
+        $columns = ["sd_hubs_id", "sd_vendors_id", "effective_date"];
         // do validations
-        $this->_helper->validate(VendorRateHelper::validations,$columns,$this->post);
-       // columns     
+        $this->_helper->validate(VendorRateHelper::validations, $columns, $this->post);
+        // columns     
         $columns[] = "created_time";
         $columns[] = "created_by";
         // data
@@ -38,44 +40,46 @@ class VendorRateController extends BaseController{
         $data = $this->_helper->checkEffectiveDateClash($this->post["effective_date"]);
         // var_dump($data);exit();
         if (!empty($data)) {
-            \CustomErrorHandler::triggerInvalid("There is already an Effective date available upto ". $data->effective_date);
+            \CustomErrorHandler::triggerInvalid("There is already an Effective date available upto " . $data->effective_date);
         }
-        $this->db->_db->Begin();
+        // $this->db->_db->Begin();
         // insert and get id
-        $id = $this->_helper->insert($columns,$this->post);
+        $id = $this->_helper->insert($columns, $this->post);
         // after that insert the sub data 
         $rate_data = Data::post_array_data("rate_data");
         // 
-        $this->_sub_helper->insert_update_data($id,$rate_data);
-
+        $this->_sub_helper->insert_update_data($id, $rate_data);
+        //  exit();
         $this->db->_db->commit();
         //
         $this->response($id);
     }
-  
+
     /**
      * 
      */
-    public function update(){
+    public function update()
+    {
         $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
-        if($id < 1){
+        if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
         $this->db->_db->Begin();
-        $columns = [];      
+        $columns = [];
         $columns[] = "last_modified_time";
         $columns[] = "last_modified_by";
-        $this->_helper->update($columns,$this->post,$id);
+        $this->_helper->update($columns, $this->post, $id);
         //
         $rate_data = Data::post_array_data("rate_data");
         // 
-        $this->_sub_helper->insert_update_data($id,$rate_data);
+        $this->_sub_helper->insert_update_data($id, $rate_data);
         $this->db->_db->commit();
         $this->response($id);
     }
 
 
-    public function getAll(){      
+    public function getAll()
+    {
         // insert and get id
         $data = $this->_helper->getAllData();
         $this->response($data);
@@ -83,15 +87,16 @@ class VendorRateController extends BaseController{
     /**
      * 
      */
-    public function getOne(){  
+    public function getOne()
+    {
         $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
-        if($id < 1){
+        if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
-        }    
+        }
         // insert and get id
         $data = $this->_helper->getOneData($id);
         //
-        if(isset($data->ID)){
+        if (isset($data->ID)) {
             $data->rate_data = $this->_sub_helper->getAllByVendorRateId($data->ID);
         }
         $this->response($data);
@@ -99,11 +104,12 @@ class VendorRateController extends BaseController{
     /**
      * 
      */
-    public function deleteOne(){  
+    public function deleteOne()
+    {
         $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
-        if($id < 1){
+        if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
-        }    
+        }
         // insert and get id
         $this->_helper->deleteOneId($id);
         $out = new \stdClass();

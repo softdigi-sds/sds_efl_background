@@ -102,22 +102,16 @@ class VendorRateHelper extends BaseHelper
         $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t3.vendor_company"];
         $data =  $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
         $hub = $vendor = $consumption = $parking = [];
-        foreach ($data as $dt) {
-            if (isset($dt->ID)) {
-                $hub["value"] = $dt->sd_hubs_id;
-                $hub["label"] = $dt->hub_id;
-                $vendor["value"] = $dt->sd_vendors_id;
-                $vendor["label"] = $dt->vendor_company;
-                $consumption["value"] = $dt->unit_rate_type;
-                $consumption["label"] = $dt->unit_rate_type;
-                $parking["value"] = $dt->parking_rate_type;
-                $parking["label"] = $dt->parking_rate_type;
-                $dt->hub = $hub;
-                $dt->vendor = $vendor;
-                $dt->consumption_type = $consumption;
-                $dt->parking_type = $parking;
-            }
-        }
+        // foreach ($data as $dt) {
+        //     if (isset($dt->ID)) {
+        //         $hub["value"] = $dt->sd_hubs_id;
+        //         $hub["label"] = $dt->hub_id;
+        //         $vendor["value"] = $dt->sd_vendors_id;
+        //         $vendor["label"] = $dt->vendor_company;
+        //         $dt->hub = $hub;
+        //         $dt->vendor = $vendor;
+        //     }
+        // }
         return $data;
     }
     /**
@@ -152,26 +146,37 @@ class VendorRateHelper extends BaseHelper
         $this->deleteId($from, $id);
     }
 
-    public function insert_update_single($_data){      
-        $exist_data = $this->getOneByVendorHsn($_data["sd_hubs_id"],$_data["sd_vendors_id"],$_data["sd_hsn_id"]);
-     
-        if(isset($exist_data->ID)){
+    public function insert_update_single($_data)
+    {
+        $exist_data = $this->getOneByVendorHsn($_data["sd_hubs_id"], $_data["sd_vendors_id"], $_data["sd_hsn_id"]);
+
+        if (isset($exist_data->ID)) {
             // exisitng so need to update
-            $columns_update = ["rate_type","min_start","min_end","price","extra_price","effective_date"];
-            $this->update($columns_update,$_data,$exist_data->ID);
+            $columns_update = ["rate_type", "min_start", "min_end", "price", "extra_price", "effective_date"];
+            $this->update($columns_update, $_data, $exist_data->ID);
             return  $exist_data->ID;
-        }else{
-            $columns_insert = ["sd_hubs_id","sd_vendors_id","sd_hsn_id","rate_type",
-            "min_start","min_end","price","extra_price","effective_date"];
-            $id_inserted = $this->insert($columns_insert,$_data);
+        } else {
+            $columns_insert = [
+                "sd_hubs_id",
+                "sd_vendors_id",
+                "sd_hsn_id",
+                "rate_type",
+                "min_start",
+                "min_end",
+                "price",
+                "extra_price",
+                "effective_date"
+            ];
+            $id_inserted = $this->insert($columns_insert, $_data);
             return  $id_inserted;
         }
     }
 
-    public function insert_update_data($data){
-        $exist_data = $this->getAllVendorHubDate($data["sd_hubs_id"],$data["sd_vendors_id"],$data["effective_date"]);
+    public function insert_update_data($data)
+    {
+        $exist_data = $this->getAllVendorHubDate($data["sd_hubs_id"], $data["sd_vendors_id"], $data["effective_date"]);
         $ids = [];
-        foreach($data["rate_data"] as $rate_data){
+        foreach ($data["rate_data"] as $rate_data) {
             $rate_data["sd_hubs_id"] = $data["sd_hubs_id"];
             $rate_data["sd_vendors_id"] = $data["sd_vendors_id"];
             $rate_data["effective_date"] = $data["effective_date"];
@@ -181,22 +186,22 @@ class VendorRateHelper extends BaseHelper
     }
 
 
-    public function getOneByVendorHsn($hub_id,$vendor_id, $hsn_id)
+    public function getOneByVendorHsn($hub_id, $vendor_id, $hsn_id)
     {
         $from = Table::VENDOR_RATE;
         $select = ["*"];
         $sql = "sd_hubs_id=:hub_id AND sd_vendors_id=:vend_id AND sd_hsn_id=:sd_hsn_id";
-        $data_in = ["hub_id" => $hub_id, "vend_id" => $vendor_id,$hsn_id=>$hsn_id];
+        $data_in = ["hub_id" => $hub_id, "vend_id" => $vendor_id, $hsn_id => $hsn_id];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }
 
-    public function getAllVendorHubDate($hub_id, $vend_id,$effective_date)
+    public function getAllVendorHubDate($hub_id, $vend_id, $effective_date)
     {
         $from = Table::VENDOR_RATE;
         $select = ["*"];
         $sql = "sd_hubs_id=:hub_id AND sd_vendors_id=:vend_id AND effective_date=:effective_date";
-        $data_in = ["hub_id" => $hub_id, "vend_id" => $vend_id,"effective_date"=>$effective_date];
+        $data_in = ["hub_id" => $hub_id, "vend_id" => $vend_id, "effective_date" => $effective_date];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
         return $data;
     }
