@@ -61,7 +61,7 @@ class EflOfficeController extends BaseController{
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
         $columns = ["address_one", "gst_no" ,"pan_no" ,
-        "cin_no"  ,"state"  ,"pin_code","status","cgst","igst","sgst"  ];
+        "cin_no"  ,"state"  ,"pin_code","status"  ];
         // do validations
         $this->_helper->validate(EflOfficeHelper::validations, $columns, $this->post);
         // extra columns

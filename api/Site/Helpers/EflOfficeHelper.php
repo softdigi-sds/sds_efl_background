@@ -110,27 +110,6 @@ class EflOfficeHelper extends BaseHelper
     
             ],
 
-            "cgst" => [
-                [
-                    "type" => SmartConst::VALID_REQUIRED,
-                    "msg" => "Please specify cgst"
-                ]
-        
-                ],
-                "igst" => [
-                    [
-                        "type" => SmartConst::VALID_REQUIRED,
-                        "msg" => "Please specify igst"
-                    ]
-            
-                    ],
-                    "sgst" => [
-                        [
-                            "type" => SmartConst::VALID_REQUIRED,
-                            "msg" => "Please specify sgst"
-                        ]
-                
-                        ]
     ];
 
 
