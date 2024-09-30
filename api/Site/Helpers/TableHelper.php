@@ -34,4 +34,5 @@ class TableHelper
    const EFL_CONSUMPTION = "sd_efl_consumption";	
    const EFL_VEHICLES ="sd_efl_vehicles";
    const INVOICE = "sd_invoice";
+   const EFLHSNS = "sd_efl_hsns";
 }

@@ -189,6 +189,13 @@ class CommonRouter
         $this->_routes["/site/get_all_select"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAllSelect"];
         // getOrgOnePdf
     }
+    private function efl_hsns_routes()
+    {
+        $controller = "EfllHsnsController";
+        $this->_routes["/efl_hsns/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
+        $this->_routes["/efl_hsns/get_all_select"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAllSelect"];
+        
+    }
     
     private function get_all_Routes()
     {
@@ -209,6 +216,7 @@ class CommonRouter
         $this->efl_vehicles_routes();
         $this->invoice_routes();
         $this->site_routes();
+        $this->efl_hsns_routes();
         return $this->_routes;
     }
 

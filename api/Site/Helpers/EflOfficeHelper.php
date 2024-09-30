@@ -32,6 +32,9 @@ class EflOfficeHelper extends BaseHelper
         "cin_no"  => SmartConst::SCHEMA_VARCHAR,
         "state"  => SmartConst::SCHEMA_VARCHAR,
         "pin_code"  => SmartConst::SCHEMA_VARCHAR,
+        "cgst"=> SmartConst::SCHEMA_FLOAT,
+        "igst"=> SmartConst::SCHEMA_FLOAT,
+        "sgst"=> SmartConst::SCHEMA_FLOAT,
         "status"    => SmartConst::SCHEMA_INTEGER,
         "created_by"  => SmartConst::SCHEMA_CUSER_ID,
         "created_time"  => SmartConst::SCHEMA_CDATETIME,
@@ -105,7 +108,29 @@ class EflOfficeHelper extends BaseHelper
                 "msg" => "Please Enter status"
             ]
     
-        ]
+            ],
+
+            "cgst" => [
+                [
+                    "type" => SmartConst::VALID_REQUIRED,
+                    "msg" => "Please specify cgst"
+                ]
+        
+                ],
+                "igst" => [
+                    [
+                        "type" => SmartConst::VALID_REQUIRED,
+                        "msg" => "Please specify igst"
+                    ]
+            
+                    ],
+                    "sgst" => [
+                        [
+                            "type" => SmartConst::VALID_REQUIRED,
+                            "msg" => "Please specify sgst"
+                        ]
+                
+                        ],
     ];
 
 

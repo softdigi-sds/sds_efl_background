@@ -29,6 +29,7 @@ class VendorsHelper extends BaseHelper
         "vendor_code" => SmartConst::SCHEMA_VARCHAR,
         "vendor_company" => SmartConst::SCHEMA_VARCHAR,
         "vendor_name" => SmartConst::SCHEMA_VARCHAR,
+        "billing_to"=> SmartConst::SCHEMA_VARCHAR,
         "gst_no" => SmartConst::SCHEMA_VARCHAR,
         "pan_no" => SmartConst::SCHEMA_VARCHAR,
         "address_one" => SmartConst::SCHEMA_VARCHAR,        
@@ -84,7 +85,14 @@ class VendorsHelper extends BaseHelper
                 "msg" => "Please Enter status"
             ]
     
-        ]
+            ],
+            "billing_to" => [
+                [
+                    "type" => SmartConst::VALID_REQUIRED,
+                    "msg" => "Please Enter billing to"
+                ]
+        
+            ]
     ];
 
     /**

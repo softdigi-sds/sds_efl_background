@@ -28,7 +28,7 @@ class EflOfficeController extends BaseController{
      */
     public function insert(){
         $columns = [ "office_city" ,"address_one","gst_no" ,"pan_no" ,
-        "cin_no"  ,"state"  ,"pin_code"  ];
+        "cin_no"  ,"state"  ,"pin_code","cgst","igst","sgst"  ];
         // do validations
         $this->_helper->validate(EflOfficeHelper::validations,$columns,$this->post);
         $columns[] = "address_two";
@@ -58,7 +58,7 @@ class EflOfficeController extends BaseController{
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
         $columns = ["address_one", "gst_no" ,"pan_no" ,
-        "cin_no"  ,"state"  ,"pin_code","status" ];
+        "cin_no"  ,"state"  ,"pin_code","status","cgst","igst","sgst"  ];
         // do validations
         $this->_helper->validate(EflOfficeHelper::validations, $columns, $this->post);
         // extra columns
@@ -109,7 +109,7 @@ class EflOfficeController extends BaseController{
         $this->_helper->deleteOneId($id);
         $out = new \stdClass();
         $out->msg = "Removed Successfully";
-        $this->response($out);
+        $this->response(data: $out);
 
     }    
      /**

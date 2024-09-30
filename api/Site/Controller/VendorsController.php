@@ -28,7 +28,7 @@ class VendorsController extends BaseController{
         $validate_columns = ["sd_hub_id","vendor_code","vendor_company","gst_no","pin_code"];
         // do validations
         $this->_helper->validate(VendorsHelper::validations,$validate_columns,$this->post);
-        $columns = ["sd_hub_id","vendor_code","vendor_company","vendor_name","gst_no","pan_no","address_one","address_two","state_name","pin_code","status","created_by","created_time"];
+        $columns = ["sd_hub_id","vendor_code","vendor_company","vendor_name","billing_to","gst_no","pan_no","address_one","address_two","state_name","pin_code","status","created_by","created_time"];
         $this->post["status"] = 5;
         $this->post["sd_hub_id"] = Data::post_select_value($this->post["sd_hub_id"]);
         $this->post["state_name"] = Data::post_select_value($this->post["state_name"]);
@@ -52,7 +52,7 @@ class VendorsController extends BaseController{
         if($id < 1){
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["gst_no","pin_code","status"];
+        $columns = ["gst_no","pin_code","status","billing_to"];
         // do validations
         $this->_helper->validate(VendorsHelper::validations,$columns,$this->post);
         // insert and get id
