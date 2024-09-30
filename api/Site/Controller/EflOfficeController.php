@@ -28,13 +28,16 @@ class EflOfficeController extends BaseController{
      */
     public function insert(){
         $columns = [ "office_city" ,"address_one","gst_no" ,"pan_no" ,
-        "cin_no"  ,"state"  ,"pin_code","cgst","igst","sgst"  ];
+        "cin_no"  ,"state"  ,"pin_code"  ];
         // do validations
         $this->_helper->validate(EflOfficeHelper::validations,$columns,$this->post);
         $columns[] = "address_two";
         $columns[] = "status";
         $columns[] = "created_by" ;
         $columns[] = "created_time" ;
+        $columns[] = "cgst" ;
+        $columns[] =  "igst";
+        $columns[] = "sgst" ;
         $this->post["state"] = Data::post_select_value($this->post["state"]);
         $this->post["status"] = 5;
         // check office already exist

@@ -45,7 +45,7 @@ class Router
         // Get the current URL
         $this->_currentUrl = $_SERVER['REQUEST_URI'];
         //
-        $this->_currentUrl = str_replace("/api", "", $this->_currentUrl);
+        $this->_currentUrl = str_replace("/sds_efl_background/api", "", $this->_currentUrl);
         // get routes
         $this->get_routes();
         // process and return routes
