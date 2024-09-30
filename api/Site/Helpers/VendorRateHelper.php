@@ -27,14 +27,12 @@ class VendorRateHelper extends BaseHelper
     const schema = [
         "sd_hubs_id" => SmartConst::SCHEMA_INTEGER,
         "sd_vendors_id" => SmartConst::SCHEMA_INTEGER,
-        "unit_rate_type" => SmartConst::SCHEMA_VARCHAR,
-        "min_units" => SmartConst::SCHEMA_INTEGER,
-        "unit_rate" => SmartConst::SCHEMA_FLOAT,
-        "extra_unit_rate" => SmartConst::SCHEMA_FLOAT,        
-        "parking_rate_type" => SmartConst::SCHEMA_VARCHAR,
-        "parking_min_count" => SmartConst::SCHEMA_INTEGER,
-        "parking_rate_vehicle" => SmartConst::SCHEMA_FLOAT,
-        "parking_extra_rate_vehicle" => SmartConst::SCHEMA_FLOAT,
+        "sd_hsn_id" => SmartConst::SCHEMA_INTEGER,
+        "rate_type" => SmartConst::SCHEMA_INTEGER,
+        "min_start" => SmartConst::SCHEMA_INTEGER,
+        "min_end" => SmartConst::SCHEMA_INTEGER,
+        "price" => SmartConst::SCHEMA_FLOAT,
+        "extra_price" => SmartConst::SCHEMA_FLOAT,
         "effective_date" => SmartConst::SCHEMA_DATE,
         "created_time" => SmartConst::SCHEMA_CDATETIME,
         "created_by" => SmartConst::SCHEMA_CUSER_ID,
@@ -56,63 +54,28 @@ class VendorRateHelper extends BaseHelper
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter Vendor ID"
             ]
-    
+
         ],
-        "unit_rate_type" => [
+        "sd_hsn_id" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "HSN Required"
+            ]
+
+        ],
+        "rate_type" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter unit rate type"
             ]
-    
-            ],
-        "min_units" => [
-            [
-                "type" => SmartConst::VALID_REQUIRED,
-                "msg" => "Please Enter units per minutes"
-            ]
-    
-        ],
-        "unit_rate" => [
-            [
-                "type" => SmartConst::VALID_REQUIRED,
-                "msg" => "Please Enter rate per unit"
-            ]
-    
-        ],
-        "extra_unit_rate" => [
-            [
-                "type" => SmartConst::VALID_REQUIRED,
-                "msg" => "Please Enter extra units"
-            ]
-    
-        ],
-        "parking_rate_type" => [
-            [
-                "type" => SmartConst::VALID_REQUIRED,
-                "msg" => "Please Enter parking rate type"
-            ]
-    
-        ],
-        "parking_min_count" => [
-            [
-                "type" => SmartConst::VALID_REQUIRED,
-                "msg" => "Please Enter parking minutes"
-            ]
-    
-        ],
-        "parking_rate_vehicle" => [
-            [
-                "type" => SmartConst::VALID_REQUIRED,
-                "msg" => "Please Enter parking rate vehicle"
-            ]
-    
+
         ],
         "effective_date" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter effective date"
             ]
-    
+
         ]
     ];
 
@@ -133,49 +96,43 @@ class VendorRateHelper extends BaseHelper
     /**
      * 
      */
-    public function getAllData($sql = "", $data_in = [],$select=[],$group_by = "", $count = false,$single=false)
+    public function getAllData($sql = "", $data_in = [], $select = [], $group_by = "", $count = false, $single = false)
     {
-        $from = Table::VENDOR_RATE." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.sd_hubs_id=t2.ID LEFT JOIN ".Table::VENDORS." t3 ON t1.sd_vendors_id=t3.ID ";
+        $from = Table::VENDOR_RATE . " t1 LEFT JOIN " . Table::HUBS . " t2 ON t1.sd_hubs_id=t2.ID LEFT JOIN " . Table::VENDORS . " t3 ON t1.sd_vendors_id=t3.ID ";
         $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t3.vendor_company"];
         $data =  $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
         $hub = $vendor = $consumption = $parking = [];
-        foreach($data as $dt )
-        {    if(isset($dt->ID)){
-            $hub["value"] = $dt->sd_hubs_id;
-            $hub["label"] = $dt->hub_id;
-
-            $vendor["value"] = $dt->sd_vendors_id;
-            $vendor["label"] = $dt->vendor_company;
-
-            $consumption["value"] = $dt->unit_rate_type;
-            $consumption["label"] = $dt->unit_rate_type;
-
-            $parking["value"] = $dt->parking_rate_type;
-            $parking["label"] = $dt->parking_rate_type;
-            
-            $dt->hub = $hub;
-            $dt->vendor = $vendor; 
-            $dt->consumption_type = $consumption;
-            $dt->parking_type = $parking; 
-           
+        foreach ($data as $dt) {
+            if (isset($dt->ID)) {
+                $hub["value"] = $dt->sd_hubs_id;
+                $hub["label"] = $dt->hub_id;
+                $vendor["value"] = $dt->sd_vendors_id;
+                $vendor["label"] = $dt->vendor_company;
+                $consumption["value"] = $dt->unit_rate_type;
+                $consumption["label"] = $dt->unit_rate_type;
+                $parking["value"] = $dt->parking_rate_type;
+                $parking["label"] = $dt->parking_rate_type;
+                $dt->hub = $hub;
+                $dt->vendor = $vendor;
+                $dt->consumption_type = $consumption;
+                $dt->parking_type = $parking;
+            }
         }
-    
-    }
-    return $data;
+        return $data;
     }
     /**
      * 
      */
     public function getOneData($id)
     {
-        $from = Table::VENDOR_RATE." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.sd_hubs_id=t2.ID LEFT JOIN ".Table::VENDORS." t3 ON t1.sd_vendors_id=t3.ID ";
+        $from = Table::VENDOR_RATE . " t1 LEFT JOIN " . Table::HUBS . " t2 ON t1.sd_hubs_id=t2.ID LEFT JOIN " . Table::VENDORS . " t3 ON t1.sd_vendors_id=t3.ID ";
         $select = ["t1.*, t2.hub_id, t3.vendor_company"];
         $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
         $group_by = "";
         $order_by = "";
         $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
-        if(isset($data->ID)){
+        if (isset($data->ID)) {
             $data->hub = [];
             $data->hub["value"] = $data->sd_hubs_id;
             $data->hub["label"] = $data->hub_id;
@@ -186,14 +143,66 @@ class VendorRateHelper extends BaseHelper
         }
         return $data;
     }
-     /**
+    /**
      * 
      */
     public function deleteOneId($id)
     {
         $from = Table::VENDOR_RATE;
-        $this->deleteId($from,$id);
+        $this->deleteId($from, $id);
     }
+
+    public function insert_update_single($_data){      
+        $exist_data = $this->getOneByVendorHsn($_data["sd_hubs_id"],$_data["sd_vendors_id"],$_data["sd_hsn_id"]);
+     
+        if(isset($exist_data->ID)){
+            // exisitng so need to update
+            $columns_update = ["rate_type","min_start","min_end","price","extra_price","effective_date"];
+            $this->update($columns_update,$_data,$exist_data->ID);
+            return  $exist_data->ID;
+        }else{
+            $columns_insert = ["sd_hubs_id","sd_vendors_id","sd_hsn_id","rate_type",
+            "min_start","min_end","price","extra_price","effective_date"];
+            $id_inserted = $this->insert($columns_insert,$_data);
+            return  $id_inserted;
+        }
+    }
+
+    public function insert_update_data($data){
+        $exist_data = $this->getAllVendorHubDate($data["sd_hubs_id"],$data["sd_vendors_id"],$data["effective_date"]);
+        $ids = [];
+        foreach($data["rate_data"] as $rate_data){
+            $rate_data["sd_hubs_id"] = $data["sd_hubs_id"];
+            $rate_data["sd_vendors_id"] = $data["sd_vendors_id"];
+            $rate_data["effective_date"] = $data["effective_date"];
+            $ids[] = $this->insert_update_single($rate_data);
+        }
+        // now comapare the ids and remove the data
+    }
+
+
+    public function getOneByVendorHsn($hub_id,$vendor_id, $hsn_id)
+    {
+        $from = Table::VENDOR_RATE;
+        $select = ["*"];
+        $sql = "sd_hubs_id=:hub_id AND sd_vendors_id=:vend_id AND sd_hsn_id=:sd_hsn_id";
+        $data_in = ["hub_id" => $hub_id, "vend_id" => $vendor_id,$hsn_id=>$hsn_id];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        return $data;
+    }
+
+    public function getAllVendorHubDate($hub_id, $vend_id,$effective_date)
+    {
+        $from = Table::VENDOR_RATE;
+        $select = ["*"];
+        $sql = "sd_hubs_id=:hub_id AND sd_vendors_id=:vend_id AND effective_date=:effective_date";
+        $data_in = ["hub_id" => $hub_id, "vend_id" => $vend_id,"effective_date"=>$effective_date];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
+        return $data;
+    }
+
+
+
     /**
      * 
      */
@@ -224,6 +233,5 @@ class VendorRateHelper extends BaseHelper
         $data_in = ["hub_id" => $hub_id, "vend_id" => $vend_id,];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
-    
     }
 }
