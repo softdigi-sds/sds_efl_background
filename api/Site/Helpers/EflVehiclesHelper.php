@@ -135,15 +135,16 @@ class EflVehiclesHelper extends BaseHelper
         $_venoder_helper = new VendorsHelper($this->db);
         $data = $_venoder_helper->getVendorsByHubId($hub_id);
         foreach ($data as $ven_data) {
-            if (isset($ven_data->ID)) {
+           // if (isset($ven_data->ID)) {
                 $select = ["vehicle_count AS count"];
                 $from = Table::EFL_VEHICLES;
                 $sql = " sd_hub_id=:ID AND sd_vendors_id=:ven_id AND sd_date=:date";
                 $data_in = ["ID" => $hub_id, "ven_id" => $ven_data->ID, "date" => $date];
                 $count = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
-                $ven_data->count = isset($count->count) ? $count->count : 0;
+                $ven_data->sd_vendors_id = $ven_data->ID;
+                $ven_data->vehicle_count = isset($count->count) ? $count->count : 0;
                 $ven_data->date = $date;
-            }
+           // }
         }
         return $data;
     }

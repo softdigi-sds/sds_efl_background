@@ -25,7 +25,7 @@ class EflVehiclesController extends BaseController{
      */
     public function insert(){
        
-        $consump_data = $this->post;
+        $consump_data = Data::post_array_data("input_data");
         if(empty($consump_data)){
              \CustomErrorHandler::triggerInvalid("Provided data dosen't contain any information !!");
         }
