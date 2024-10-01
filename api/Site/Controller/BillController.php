@@ -6,17 +6,21 @@ use Core\BaseController;
 
 use Core\Helpers\SmartAuthHelper;
 use Site\Helpers\BillHelper;
+use Site\Helpers\InvoiceHelper;
 
 
 
 class BillController extends BaseController{
   
   private BillHelper $_helper;
+  private InvoiceHelper $_invoice_helper;
     function __construct($params)
     {
         parent::__construct($params);
         // 
         $this->_helper = new BillHelper($this->db);
+        //
+        $this->_invoice_helper = new InvoiceHelper($this->db);
     }
 
    /**
@@ -73,6 +77,9 @@ class BillController extends BaseController{
         }    
         // insert and get id
         $data = $this->_helper->getOneData($id);
+        if(isset($data->ID)){
+            $data->invoice_data =  $this->_invoice_helper->getInvoiceByBillId($data->ID);
+        }
         $this->response($data);
     }
     /**

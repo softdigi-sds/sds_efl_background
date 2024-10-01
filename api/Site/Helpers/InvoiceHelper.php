@@ -143,7 +143,9 @@ class InvoiceHelper extends BaseHelper
      */
     public function getInvoiceByBillId($bill_id)
     {
-        $from = Table::INVOICE . " t1 LEFT JOIN " . Table::VENDORS . " t2 ON t1.sd_vendor_id=t2.ID LEFT JOIN " . Table::HUBS . " t3 ON t1.sd_hub_id=t3.ID ";
+        $from = Table::INVOICE . " t1 
+        LEFT JOIN " . Table::VENDORS . " t2 ON t1.sd_vendor_id=t2.ID 
+        LEFT JOIN " . Table::HUBS . " t3 ON t1.sd_hub_id=t3.ID ";
         $select = ["t1.*, t2.vendor_company, t3.hub_id "];
         $sql = "t1.sd_bill_id=:bill_id";
         $data_in = ["bill_id" => $bill_id];
