@@ -125,8 +125,7 @@ class EflVehiclesHelper extends BaseHelper
         }
         else{
             $this->insert($insert_cols, $data);
-        }
-    
+        }    
     }
 
     

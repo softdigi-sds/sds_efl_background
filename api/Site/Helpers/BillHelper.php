@@ -24,8 +24,8 @@ use Site\Helpers\TableHelper as Table;
 class BillHelper extends BaseHelper
 {
     const schema = [
-        "bill_start_date" => SmartConst::SCHEMA_CDATE,
-        "bill_end_date" => SmartConst::SCHEMA_CDATE,
+        "bill_start_date" => SmartConst::SCHEMA_DATE,
+        "bill_end_date" => SmartConst::SCHEMA_DATE,
         "created_by"=> SmartConst::SCHEMA_CUSER_ID,
         "created_time" => SmartConst::SCHEMA_CDATETIME,
     ];

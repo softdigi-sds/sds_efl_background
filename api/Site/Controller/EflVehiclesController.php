@@ -6,7 +6,10 @@ use Core\BaseController;
 
 use Core\Helpers\SmartData as Data;
 use Core\Helpers\SmartAuthHelper;
+use Core\Helpers\SmartExcellHelper;
+use Core\Helpers\SmartFileHelper;
 use Site\Helpers\EflVehiclesHelper;
+use Site\Helpers\ImportHelper;
 
 
 
@@ -14,11 +17,14 @@ class EflVehiclesController extends BaseController
 {
 
     private EflVehiclesHelper $_helper;
+    private ImportHelper $_import_helper;
     function __construct($params)
     {
         parent::__construct($params);
         // 
         $this->_helper = new EflVehiclesHelper($this->db);
+        //
+        $this->_import_helper = new ImportHelper($this->db);
     }
 
     /**
@@ -144,5 +150,32 @@ class EflVehiclesController extends BaseController
         // $hub_id = Data::post_select_value($id);
         $data = $this->_helper->getCountByHubAndDate($hub_id, $month, $year);
         $this->response($data);
+    }
+
+    public function importExcel()
+    {
+        $excel_import = Data::post_array_data("excel");
+        if (!is_array($excel_import) || count($excel_import) < 1) {
+            \CustomErrorHandler::triggerInvalid("Please upload Excel to Import");
+        }      
+       // get the excel content
+       $content = isset($excel_import["content"]) ? $excel_import["content"] : "";
+       if(strlen($content) < 10){
+           \CustomErrorHandler::triggerInvalid("Please upload Excel to Import");
+       }
+       //
+       $insert_id = $this->_import_helper->insertData("VEHICLES");
+       // excel path 
+       $store_path = "excel_import" . DS . $insert_id . DS . "import.xlsx";
+       // 
+       $dest_path = SmartFileHelper::storeFile($content,$store_path);
+       // 
+       $this->_import_helper->updatePath($insert_id,$store_path);
+       // read the excel and process
+       $excel = new SmartExcellHelper( $dest_path,0);      
+       $_data = $excel->getData($this->_import_helper->importColumnsVehicleCount(),2);
+       var_dump( $_data );
+       
+
     }
 }
