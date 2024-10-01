@@ -161,7 +161,7 @@ class EflConsumptionController extends BaseController
             \CustomErrorHandler::triggerInvalid("Please upload Excel to Import");
         }
         //
-        $insert_id = $this->_import_helper->insertData("VEHICLES");
+        $insert_id = $this->_import_helper->insertData("CONSUMPTION");
         // excel path 
         $store_path = "excel_import" . DS . $insert_id . DS . "import.xlsx";
         // 
@@ -170,11 +170,11 @@ class EflConsumptionController extends BaseController
         $this->_import_helper->updatePath($insert_id, $store_path);
         // read the excel and process
         $excel = new SmartExcellHelper($dest_path, 0);
-        $_data = $excel->getData($this->_import_helper->importColumnsVehicleCount(), 2);
+        $_data = $excel->getData($this->_import_helper->importConsumptionColumns(), 2);
         $out = [];
         foreach ($_data as $obj) {
-            $vendor_data = $this->_vendor_helper->checkVendorByCodeCompany($obj["vendor"], "##");
-            if ($obj["hub_id"] == "" || $obj["vendor"] == "" || $obj["date"] == "") {
+            $vendor_data = $this->_vendor_helper->checkVendorByCodeCompany("", $obj["vendor"]);
+            if ($obj["vendor"] == "" || $obj["date"] == "") {
                 $obj["status"] = 10;
                 $obj["msg"] = "Improper Data";
             } else {
@@ -184,9 +184,9 @@ class EflConsumptionController extends BaseController
                         "sd_hub_id" => $vendor_data->sd_hub_id,
                         "sd_vendors_id" => $vendor_data->ID,
                         "sd_date" => $obj["date"],
-                        "vehicle_count" => $obj["count"]
+                        "unit_count" => $obj["count"]
                     ];
-                  //  $this->_helper->insertUpdateNew($_vehicle_data);
+                    $this->_helper->insertUpdateNew($_vehicle_data);
                     $obj["status"] = 5;
                 } else {
                     $obj["status"] = 10;

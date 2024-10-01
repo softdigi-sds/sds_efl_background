@@ -132,6 +132,26 @@ class EflConsumptionHelper extends BaseHelper
         }
     }
 
+    public function insertUpdateNew($_data){      
+        $insert_columns = ["sd_hub_id", "sd_vendors_id", "sd_date", "unit_count", "created_by", "created_time"];
+        $update_columns = ["unit_count", "last_modified_by", "last_modified_time"];
+        $exist_data = $this->checkExists($_data["sd_vendors_id"], $_data["sd_date"]);
+        if (isset($exist_data->ID)) {
+            $this->update(  $update_columns, $_data, $exist_data->ID);
+        } else {
+            $this->insert($insert_columns , $_data);
+        }
+    }
+
+
+    public function checkExists($vendor_id, $date)
+    {
+        $sql = "sd_vendors_id=:sd_vendors_id AND sd_date=:sd_date ";
+        $data_in = [ "sd_vendors_id" =>$vendor_id, "sd_date" =>$date];
+        $exist_data = $this->getAllData($sql, $data_in, ["ID"], "", false, true);
+        return $exist_data;
+    }
+
 
     public function getVendorsByHubId($hub_id, $date)
     {

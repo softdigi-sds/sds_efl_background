@@ -111,17 +111,17 @@ class ImportHelper extends BaseHelper
         $columns = [
             [
                 "letter" => "B",
-                "index" => "vendor",
+                "index" => "hub_id",
                 "empty" => true
             ],
             [
                 "letter" => "C",
-                "index" => "hub_id"
+                "index" => "vendor"
             ],
             [
                 "letter" => "D",
                 "index" => "date",
-                "type"=>"date"
+                "type" => "date"
             ],
             [
                 "letter" => "E",
@@ -130,6 +130,4 @@ class ImportHelper extends BaseHelper
         ];
         return $columns;
     }
-
-
 }
