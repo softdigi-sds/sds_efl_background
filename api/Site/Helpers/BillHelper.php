@@ -28,6 +28,12 @@ class BillHelper extends BaseHelper
         "bill_end_date" => SmartConst::SCHEMA_DATE,
         "created_by"=> SmartConst::SCHEMA_CUSER_ID,
         "created_time" => SmartConst::SCHEMA_CDATETIME,
+        "total_invoices" => SmartConst::SCHEMA_INTEGER,
+        "unit_amount" => SmartConst::SCHEMA_FLOAT,
+        "vehicle_amount" => SmartConst::SCHEMA_FLOAT,
+        "others" => SmartConst::SCHEMA_FLOAT,
+        "gst_amount" => SmartConst::SCHEMA_FLOAT,
+        "total_amount" => SmartConst::SCHEMA_FLOAT
     ];
     /**
      * 
@@ -72,9 +78,9 @@ class BillHelper extends BaseHelper
      */
     public function getAllData($sql = "", $data_in = [],$select=[],$group_by = "", $count = false,$single=false)
     {
-        $from = Table::BILL." t1 INNER JOIN ".Table::INVOICE." t2 ON t1.ID=t2.sd_bill_id ";
-        $sql = " t1.ID > 0 GROUP BY t2.sd_bill_id ";
-        $select = !empty($select) ? $select : ["t1.*, SUM(t2.unit_amount) AS unit_amt, SUM(t2.vehicle_amount) AS vehicle_amt "];
+        $from = Table::BILL." t1";
+        $sql = "";
+        $select = !empty($select) ? $select : ["t1.*"];
        return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
     }
 
@@ -84,9 +90,9 @@ class BillHelper extends BaseHelper
      */
     public function getOneData($id)
     {
-        $from = Table::BILL." t1 INNER JOIN ".Table::INVOICE." t2 ON t1.ID=t2.sd_bill_id ";
-        $select = ["t1.*, SUM(t2.unit_amount) AS unit_amt, SUM(t2.vehicle_amount) AS vehicle_amt "];
-        $sql = " t1.ID=:ID GROUP BY t2.sd_bill_id ";
+        $from = Table::BILL." t1";
+        $select = ["t1.*"];
+        $sql = " t1.ID=:ID";
         $data_in = ["ID" => $id];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
@@ -98,6 +104,16 @@ class BillHelper extends BaseHelper
     {
         $from = Table::BILL;
         $this->deleteId($from,$id);
+    }
+
+    /**
+     * 
+     */
+    public function updateBillData($id,$data){
+        $columns = [
+            "total_invoices","unit_amount","vehicle_amount","others","gst_amount","total_amount"
+        ];
+        $this->update($columns,$data,$id);
     }
   
 }

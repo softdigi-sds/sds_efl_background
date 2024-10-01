@@ -184,13 +184,15 @@ class EflConsumptionHelper extends BaseHelper
         return $count;
     }
 
-    public function getConsumptionInvoiceByDate($strt_date, $end_date)
+    public function getConsumptionInvoiceByDateVendor($vendor_id,$strt_date, $end_date)
     {
-        $select = [" t1.*,SUM(t1.unit_count) AS count "];
+        $select = ["SUM(t1.unit_count) AS count "];
         $from = Table::EFL_CONSUMPTION . " t1 ";
-        $sql = "  t1.sd_date BETWEEN :strt_date AND :end_date GROUP BY t1.sd_vendors_id";
-        $data_in = ["strt_date" => $strt_date, "end_date" => $end_date];
-        $date = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
-        return $date;
+        $sql = " t1.sd_vendors_id=:id AND t1.sd_date BETWEEN :strt_date AND :end_date";
+        $data_in = ["id"=>$vendor_id,  "strt_date" => $strt_date, "end_date" => $end_date];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, [], false);
+       // var_dump($data_in);
+        //var_dump($data);
+        return isset($data->count) ? $data->count : 0;
     }
 }

@@ -197,7 +197,8 @@ class SmartModel
         foreach ($this->_columns as $column) {
             $final_data[$column] = $this->process_single_column($column);
         }
-      //  var_dump($final_data);
+       // var_dump($final_data);
+       // exit();
         return $final_data;
     }
     /**
@@ -235,11 +236,16 @@ class SmartModel
     }
 
     private function get_date_value($value){
+       // echo "value " . $value;
         if(is_array($value)){
             // it is array format set to date format 
             $date_arr = $value;                           
             return $date_arr["year"] ."-" . $date_arr["month"] . "-" . $date_arr["day"];
         }else{
+            $dateTime = \DateTime::createFromFormat('Y-m-d\TH:i:s.u\Z',$value, new \DateTimeZone('UTC'));
+            if($dateTime){
+                return $dateTime->format('Y-m-d');
+            }
             // date format has to be changed to set to db
             return $value;
         }
