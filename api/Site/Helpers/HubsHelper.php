@@ -160,5 +160,16 @@ class HubsHelper extends BaseHelper
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }
+
+public function getHubID($hub_id)
+    {
+        $from = Table::HUBS;
+        $select = ["ID"];
+        $sql = "hub_id=:ID";
+        $data_in = ["ID" => $hub_id];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        return !empty($data) ? intval($data->ID ): 0 ;
+    }
+
     
 }

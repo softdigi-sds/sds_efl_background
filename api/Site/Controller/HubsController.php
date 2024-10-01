@@ -132,4 +132,20 @@ class HubsController extends BaseController
         $data = $this->_helper->getAllData("", [], $select);
         $this->response($data);
     }
+    public function getHubID()
+{
+    // Get hub_id from the post request
+    $hub_id = isset($this->post["hub_id"]) ? intval($this->post["hub_id"]) : 0;
+
+    // Check if the hub_id is valid (greater than 0)
+    if ($hub_id < 1) {
+        \CustomErrorHandler::triggerInvalid("Invalid Hub ID");
+    }
+
+    // Call the helper function to get the Hub ID
+    $data = $this->_helper->getHubID($hub_id);
+
+    // Return the Hub ID if found, otherwise return 0
+    $this->response([ "hub_id" => $data  ]);
+}
 }

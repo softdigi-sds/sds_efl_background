@@ -97,6 +97,8 @@ class CommonRouter
         $this->_routes["/hubs/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/hubs/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
         $this->_routes["/hubs/get_all_select"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAllSelect"];
+        $this->_routes["/hubs/get_hub_id"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getHubID"];
+
     }
     private function hub_groups_routes()
     {

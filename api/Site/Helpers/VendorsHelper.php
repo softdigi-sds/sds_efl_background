@@ -170,4 +170,5 @@ class VendorsHelper extends BaseHelper
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
         return $data;
     }
+  
 }
