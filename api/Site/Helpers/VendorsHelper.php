@@ -155,12 +155,14 @@ class VendorsHelper extends BaseHelper
     public function checkVendorByCodeCompany($code, $company)
     {
         $from = Table::VENDORS;
-        $select = ["ID"];
+        $select = ["ID,sd_hub_id"];
         $sql = "vendor_code=:code OR vendor_company=:company";
         $data_in = ["code" => $code, "company" => $company];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }
+
+
     public function getVendorsByHubId($id)
     {
         $from = Table::VENDORS;

@@ -105,5 +105,31 @@ class ImportHelper extends BaseHelper
         return $columns;
     }
 
-    
+
+    public function importConsumptionColumns()
+    {
+        $columns = [
+            [
+                "letter" => "B",
+                "index" => "vendor",
+                "empty" => true
+            ],
+            [
+                "letter" => "C",
+                "index" => "hub_id"
+            ],
+            [
+                "letter" => "D",
+                "index" => "date",
+                "type"=>"date"
+            ],
+            [
+                "letter" => "E",
+                "index" => "count",
+            ]
+        ];
+        return $columns;
+    }
+
+
 }
