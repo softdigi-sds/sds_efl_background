@@ -125,11 +125,35 @@ class BillController extends BaseController
         $out->msg = "Removed Successfully";
         $this->response($out);
     }
+
+    public function getExcelContent($path)
+    {
+        $excel = new SmartExcellHelper($path, 0);
+        $_data = $excel->getData($this->_import_helper->importAckColumns(), 2);
+        return $_data;
+        // foreach ($_data as $obj) {
+        //     //var_dump($obj);
+        //     // echo $obj["invoice_number"] . "<br/>";
+        // }
+        //var_dump($data);
+    }
+
+    private function checkUpdateInvoiceData($id, $obj)
+    {
+        $invoice_number = $obj["nameonly"];
+        $invoice_id = str_replace("-", "/", $invoice_number);
+        $invoiceId = $this->_invoice_helper->getInvoiceId($id, $invoice_id);
+        if ($invoice_number == "EFL-TS-453-24-25") {
+            $invoice_data =  $this->getExcelContent($obj["path"]);
+        }
+    }
+
     /**
      * 
      */
     public function importZip()
     {
+        $id = 1;
         $excel_import = Data::post_array_data("excel");
         if (!is_array($excel_import) || count($excel_import) < 1) {
             \CustomErrorHandler::triggerInvalid("Please upload Zip to Import");
@@ -152,5 +176,15 @@ class BillController extends BaseController
         //
         SmartFileHelper::extractZip($dest_path, "");
         // $this->response($out);
+        $xlsx_files = SmartFileHelper::getFilesDirectory($zip_dir, 'xlsx');
+        //var_dump($xlsx_files);
+        if (count($xlsx_files) < 1) {
+            // \CustomErrorHandler::triggerInvalid("Please upload a valid zip file");
+        }
+        foreach ($xlsx_files as $obj) {
+            //$invoice_number = $obj["nameonly"];
+            $this->checkUpdateInvoiceData($id, $obj);
+        }
+        // 
     }
 }

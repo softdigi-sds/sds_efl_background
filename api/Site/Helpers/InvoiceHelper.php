@@ -361,6 +361,14 @@ class InvoiceHelper extends BaseHelper
         $data = $this->getAll(["*"], TABLE::INVOICE, $sql, "", "", $data_in, true, []);
         return $data;
     }
+
+    public function getInvoiceId($bill_id, $invoice_number)
+    {
+        $sql = " sd_bill_id=:bill_id AND invoice_number=:invoice_number";
+        $data_in = ["bill_id" => $bill_id, "invoice_number" => $invoice_number];
+        $data = $this->getAll(["*"], TABLE::INVOICE, $sql, "", "", $data_in, true, []);
+        return isset($data->ID) ? $data->ID : 0;
+    }
     /**
      * 
      */

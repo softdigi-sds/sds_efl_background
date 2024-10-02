@@ -165,7 +165,9 @@ class SmartExcellHelper
     {
         $this->init_excel();
         $out = [];
-        for ($i = $startRow; $i < $this->_last_row; $i++) {
+        // var_dump($columns);
+        //echo "i = ". $i . " last "
+        for ($i = $startRow; $i <= $this->_last_row; $i++) {
             $obj = [];
             $empty = false;
             foreach ($columns as $single_column) {

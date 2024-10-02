@@ -153,4 +153,27 @@ class SmartFileHelper
             echo 'Failed to open the ZIP file.';
         }
     }
+
+    static public function getFilesDirectory($directory, $extension)
+    {
+        // Get all files and directories in the specified directory
+        $full_dir = self::getDataPath() . $directory;
+        // echo "full directory " .  $full_dir;
+        $files = scandir($full_dir);
+        // var_dump($files);
+        $xlsxFiles = [];
+
+        foreach ($files as $file) {
+            // Skip if it's not a file or if it doesn't have .xlsx extension
+            if (is_file($full_dir  . DIRECTORY_SEPARATOR . $file) && pathinfo($file, PATHINFO_EXTENSION) === $extension) {
+                // Store the file name and full path
+                $xlsxFiles[] = [
+                    'name' => $file,
+                    'nameonly' => pathinfo($full_dir  . DIRECTORY_SEPARATOR . $file, PATHINFO_FILENAME),
+                    'path' => realpath($full_dir  . DIRECTORY_SEPARATOR . $file)
+                ];
+            }
+        }
+        return  $xlsxFiles;
+    }
 }
