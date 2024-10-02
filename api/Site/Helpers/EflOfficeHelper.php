@@ -26,15 +26,15 @@ class EflOfficeHelper extends BaseHelper
     const schema = [
         "office_city" => SmartConst::SCHEMA_VARCHAR,
         "address_one" => SmartConst::SCHEMA_TEXT,
-        "address_two"=> SmartConst::SCHEMA_TEXT,
+        "address_two" => SmartConst::SCHEMA_TEXT,
         "gst_no" => SmartConst::SCHEMA_VARCHAR,
         "pan_no" => SmartConst::SCHEMA_VARCHAR,
         "cin_no"  => SmartConst::SCHEMA_VARCHAR,
         "state"  => SmartConst::SCHEMA_VARCHAR,
         "pin_code"  => SmartConst::SCHEMA_VARCHAR,
-        "cgst"=> SmartConst::SCHEMA_FLOAT,
-        "igst"=> SmartConst::SCHEMA_FLOAT,
-        "sgst"=> SmartConst::SCHEMA_FLOAT,
+        "cgst" => SmartConst::SCHEMA_FLOAT,
+        "igst" => SmartConst::SCHEMA_FLOAT,
+        "sgst" => SmartConst::SCHEMA_FLOAT,
         "status"    => SmartConst::SCHEMA_INTEGER,
         "created_by"  => SmartConst::SCHEMA_CUSER_ID,
         "created_time"  => SmartConst::SCHEMA_CDATETIME,
@@ -50,65 +50,68 @@ class EflOfficeHelper extends BaseHelper
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter office city"
             ]
-            ],
-            
-        
-        
-        "address_one" => [    
+        ],
+
+
+
+        "address_one" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter address one"
-            ]],
-    
-        
+            ]
+        ],
+
+
         "address_two" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter address two"
-            ]],
-    
-    
-    "gst_no"=> [
-        [
-            "type"=> SmartConst::VALID_REQUIRED,
-            "msg"=> "Please Enter gst no"
-        ]],
-
-        "pan_no"=> [
-            [
-                "type"=> SmartConst::VALID_REQUIRED,
-                "msg"=> "Please Enter pan no"
             ]
-        
-            ],
-        "cin_no"=> [
-        [
-            "type"=> SmartConst::VALID_REQUIRED,
-            "msg"=> "Please Enter cin no"
-        ]
-    
         ],
-        "state"=> [
+
+
+        "gst_no" => [
             [
-                "type"=> SmartConst::VALID_REQUIRED,
-                "msg"=> "Please Specify state"
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Enter gst no"
             ]
-        
-            ],
-        "pin_code"=> [
+        ],
+
+        "pan_no" => [
             [
-                "type"=> SmartConst::VALID_REQUIRED,
-                "msg"=> "Please Enter pincode"
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Enter pan no"
             ]
-        
-            ],
+
+        ],
+        "cin_no" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Enter cin no"
+            ]
+
+        ],
+        "state" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Specify state"
+            ]
+
+        ],
+        "pin_code" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Enter pincode"
+            ]
+
+        ],
         "status" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter status"
             ]
-    
-            ],
+
+        ],
 
     ];
 
@@ -118,7 +121,7 @@ class EflOfficeHelper extends BaseHelper
      */
     public function insert(array $columns, array $data)
     {
-        return $this->insertDb(self::schema, Table:: EFLOFFICE, $columns, $data);
+        return $this->insertDb(self::schema, Table::EFLOFFICE, $columns, $data);
     }
     /**
      * 
@@ -130,11 +133,11 @@ class EflOfficeHelper extends BaseHelper
     /**
      * 
      */
-    public function getAllData($sql = "", $data_in = [],$select=[],$group_by = "", $count = false,$single=false)
+    public function getAllData($sql = "", $data_in = [], $select = [], $group_by = "", $count = false, $single = false)
     {
-        $from = Table::EFLOFFICE." t1 INNER JOIN ".Table::STATEDB." t2 ON t1.state=t2.ID ";
+        $from = Table::EFLOFFICE . " t1 INNER JOIN " . Table::STATEDB . " t2 ON t1.state=t2.ID ";
         $select = !empty($select) ? $select : ["t1.*, t2.state_name"];
-       // $order_by="last_modified_time DESC";
+        // $order_by="last_modified_time DESC";
         return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
     }
 
@@ -143,24 +146,28 @@ class EflOfficeHelper extends BaseHelper
      * 
      */
     public function getOneData($id)
-    { 
-        $from = Table::EFLOFFICE." t1 INNER JOIN ".Table::STATEDB." t2 ON t1.state=t2.ID ";
+    {
+        $from = Table::EFLOFFICE . " t1 INNER JOIN " . Table::STATEDB . " t2 ON t1.state=t2.ID ";
         $select = ["t1.*, t2.state_name"];
         $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
         $group_by = "";
         $order_by = "";
         $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
+        if (isset($data->ID)) {
+            $state = ["value" => $data->state, "label" => $data->state_name];
+            $data->state = $state;
+        }
         return $data;
     }
-    
-     /**
+
+    /**
      * 
      */
     public function deleteOneId($id)
     {
         $from = Table::EFLOFFICE;
-        $this->deleteId($from,$id);
+        $this->deleteId($from, $id);
     }
     /**
      * 
@@ -174,5 +181,4 @@ class EflOfficeHelper extends BaseHelper
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }
-  
 }

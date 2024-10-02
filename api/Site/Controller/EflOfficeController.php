@@ -40,13 +40,8 @@ class EflOfficeController extends BaseController
         ];
         // do validations
         $this->_helper->validate(EflOfficeHelper::validations, $columns, $this->post);
-        $columns[] = "address_two";
-        $columns[] = "status";
-        $columns[] = "created_by";
-        $columns[] = "created_time";
-        $columns[] = "cgst";
-        $columns[] =  "igst";
-        $columns[] = "sgst";
+        $other_columns = ["address_two", "status", "created_by", "created_time", "cgst", "igst", "sgst"];
+        $columns = array_merge($columns, $other_columns);
         $this->post["state"] = Data::post_select_value("state");
         $this->post["status"] = 5;
         // check office already exist
@@ -80,12 +75,10 @@ class EflOfficeController extends BaseController
         ];
         // do validations
         $this->_helper->validate(EflOfficeHelper::validations, $columns, $this->post);
-        // extra columns
-        $columns[] = "address_two";
-        $columns[] = "last_modified_by";
-        $columns[] =  "last_modified_time";
+        $other_columns = ["address_two", "last_modified_by", "last_modified_time", "created_time", "cgst", "igst", "sgst"];
+        $columns = array_merge($columns, $other_columns);
         // data
-        $this->post["state"] = Data::post_select_value($this->post["state"]);
+        $this->post["state"] = Data::post_select_value("state");
         // begin transition
         $this->db->_db->Begin();
         // insert and get id
