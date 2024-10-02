@@ -9,7 +9,8 @@ use Core\Helpers\SmartExcellHelper;
 use Core\Helpers\SmartFileHelper;
 use Site\Helpers\BillHelper;
 use Site\Helpers\InvoiceHelper;
-
+use Site\Helpers\ImportHelper;
+use Core\Helpers\SmartData as Data;
 
 
 class BillController extends BaseController
@@ -17,6 +18,7 @@ class BillController extends BaseController
 
     private BillHelper $_helper;
     private InvoiceHelper $_invoice_helper;
+    private ImportHelper $_import_helper;
     function __construct($params)
     {
         parent::__construct($params);
@@ -24,6 +26,8 @@ class BillController extends BaseController
         $this->_helper = new BillHelper($this->db);
         //
         $this->_invoice_helper = new InvoiceHelper($this->db);
+        //
+        $this->_import_helper = new ImportHelper($this->db);
     }
 
     /**
@@ -124,4 +128,29 @@ class BillController extends BaseController
     /**
      * 
      */
+    public function importZip()
+    {
+        $excel_import = Data::post_array_data("excel");
+        if (!is_array($excel_import) || count($excel_import) < 1) {
+            \CustomErrorHandler::triggerInvalid("Please upload Zip to Import");
+        }
+        // get the excel content
+        $content = isset($excel_import["content"]) ? $excel_import["content"] : "";
+        if (strlen($content) < 10) {
+            \CustomErrorHandler::triggerInvalid("Please upload Zip to Import");
+        }
+        //
+        $insert_id = $this->_import_helper->insertData("IMPORT");
+        // excel path 
+        $store_path = "excel_import" . DS . $insert_id . DS . "import.zip";
+        //
+        $zip_dir = "excel_import" . DS . $insert_id . DS;
+        // 
+        $dest_path = SmartFileHelper::storeFile($content, $store_path);
+        // 
+        $this->_import_helper->updatePath($insert_id, $store_path);
+        //
+        SmartFileHelper::extractZip($dest_path, "");
+        // $this->response($out);
+    }
 }

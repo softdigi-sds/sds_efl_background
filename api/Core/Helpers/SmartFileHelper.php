@@ -134,4 +134,23 @@ class SmartFileHelper
             \CustomErrorHandler::triggerInternalError("Error Storing File");
         }
     }
+
+    static public function extractZip($zipFilePath, $extractToPath = "")
+    {
+        $zip = new \ZipArchive;
+        if ($extractToPath === "") {
+            $extractToPath = dirname($zipFilePath);
+        }
+        //$zipFilePath = 'path/to/your/file.zip'; // Path to your ZIP file
+        //$extractToPath = 'path/to/extract/destination/'; // Directory where to extract
+        //echo " zip path " . $zipFilePath;
+        if ($zip->open($zipFilePath) === TRUE) {
+            // Extract the ZIP file to the specified directory
+            $zip->extractTo($extractToPath);
+            $zip->close();
+            //echo 'Extraction successful!';
+        } else {
+            echo 'Failed to open the ZIP file.';
+        }
+    }
 }
