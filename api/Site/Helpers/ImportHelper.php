@@ -110,23 +110,55 @@ class ImportHelper extends BaseHelper
     {
         $columns = [
             [
-                "letter" => "B",
+                "letter" => "G",
                 "index" => "hub_id",
                 "empty" => true
             ],
             [
-                "letter" => "C",
+                "letter" => "E",
                 "index" => "vendor"
             ],
             [
-                "letter" => "D",
+                "letter" => "P",
                 "index" => "date",
                 "type" => "date"
             ],
             [
-                "letter" => "E",
+                "letter" => "W",
                 "index" => "count",
             ]
+        ];
+        return $columns;
+    }
+
+    public function importAckColumns()
+    {
+        $columns = [
+            [
+                "letter" => "D",
+                "index" => "invoice_number",
+                "empty" => true
+            ],
+            [
+                "letter" => "G",
+                "index" => "irn_no"
+            ],
+            [
+                "letter" => "H",
+                "index" => "qr_code",
+            ],
+            [
+                "letter" => "I",
+                "index" => "ack_no",
+            ],
+            [
+                "letter" => "J",
+                "index" => "ack_date",
+            ],
+            [
+                "letter" => "K",
+                "index" => "signed_invoice",
+            ],
         ];
         return $columns;
     }

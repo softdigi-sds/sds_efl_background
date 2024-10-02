@@ -6,11 +6,14 @@
  * and open the template in the editor.
  */
 
+ini_set('memory_limit', '  1024M');
+ini_set('max_execution_time', 600);
+
 use Core\Helpers\SmartAuthHelper;
 
 error_reporting(E_ALL);
 // directory seperator
-define("DS","/");
+define("DS", "/");
 
 include "CorsEnable.php";
 // inlcude the error handle which handles all the files
@@ -78,19 +81,19 @@ class IndexMain
     //
     private $_parameters;
     //
-    private $_method="GET";
+    private $_method = "GET";
     //
-    private $_auth=[];
+    private $_auth = [];
     //
     private $_base_path = "\\Site\\Controller\\";
     // controller instance
     private $_controller;
     // input parameters 
-    private $_input_params=[];
+    private $_input_params = [];
 
     function __construct()
     {
-    
+
         // get route parameters
         $this->_route = \Core\Router::getRoute();
         //       
@@ -98,8 +101,9 @@ class IndexMain
         $this->load_api_function();
     }
 
-    private function check_api_auth(){
-        if(!\Core\Helpers\SmartAuthHelper::checkRole($this->_auth)){
+    private function check_api_auth()
+    {
+        if (!\Core\Helpers\SmartAuthHelper::checkRole($this->_auth)) {
             \CustomErrorHandler::triggerUnAuth();
         }
     }
@@ -111,32 +115,32 @@ class IndexMain
         // var_dump($controller_arr);
         // exit();
         //  
-        if(count($controller_arr)===5){            
-            list($this->_method,$this->_auth,$this->_controller_name,$this->_action_name,$this->_input_params) =  $controller_arr;            
-        } else if(count($controller_arr)===4){
+        if (count($controller_arr) === 5) {
+            list($this->_method, $this->_auth, $this->_controller_name, $this->_action_name, $this->_input_params) =  $controller_arr;
+        } else if (count($controller_arr) === 4) {
             // added this to send some parameters to controller
-            if(is_array($controller_arr[3])){
-                list($this->_method,$this->_controller_name,$this->_action_name,$this->_input_params) =  $controller_arr;
-            }else{
-                list($this->_method,$this->_auth,$this->_controller_name,$this->_action_name) =  $controller_arr;
-            }            
-        }else if(count($controller_arr)===3){
-            list($this->_method,$this->_controller_name,$this->_action_name) =  $controller_arr;
-        } else if(count($controller_arr)===2) {
-            list($this->_controller_name,$this->_action_name) =  $controller_arr;
-        }else{
-			\CustomErrorHandler::triggerNotFound("Invalid API Action.");
-		} 
-        if(!empty($this->_auth)){
+            if (is_array($controller_arr[3])) {
+                list($this->_method, $this->_controller_name, $this->_action_name, $this->_input_params) =  $controller_arr;
+            } else {
+                list($this->_method, $this->_auth, $this->_controller_name, $this->_action_name) =  $controller_arr;
+            }
+        } else if (count($controller_arr) === 3) {
+            list($this->_method, $this->_controller_name, $this->_action_name) =  $controller_arr;
+        } else if (count($controller_arr) === 2) {
+            list($this->_controller_name, $this->_action_name) =  $controller_arr;
+        } else {
+            \CustomErrorHandler::triggerNotFound("Invalid API Action.");
+        }
+        if (!empty($this->_auth)) {
             // check authorization first
             $this->check_api_auth();
         }
         //check method type
-        $this->check_method();   
+        $this->check_method();
         // load the controller
         $this->_parameters = isset($this->_route[1]) ? $this->_route[1] : [];
-        if(!empty($this->_input_params)){
-            $this->_parameters = array_merge($this->_parameters,$this->_input_params);
+        if (!empty($this->_input_params)) {
+            $this->_parameters = array_merge($this->_parameters, $this->_input_params);
         }
         // load settings before controller calling
         \Core\Helpers\SmartSiteSettings::loadSettings();
@@ -149,11 +153,12 @@ class IndexMain
     /**
      * 
      */
-    private function check_method(){
+    private function check_method()
+    {
         $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : "";
-        if($method!==$this->_method){
+        if ($method !== $this->_method) {
             ob_clean();
-           \CustomErrorHandler::triggerInvalidRequest();
+            \CustomErrorHandler::triggerInvalidRequest();
         }
     }
     /**
@@ -167,17 +172,16 @@ class IndexMain
             \CustomErrorHandler::triggerNotFound("Module With Name: Not Available", E_USER_NOTICE);
         }
         $this->_controller = new $mod_class_name($this->_parameters);
-        
     }
 
     private function load_action()
-    {       
+    {
         // method exits
         if (!method_exists($this->_controller, $this->_action_name)) {
             \CustomErrorHandler::triggerNotFound("API function:  Not Available Module With Name:");
         }
         // call the action
-        call_user_func(array( $this->_controller, $this->_action_name),  $this->_parameters );
+        call_user_func(array($this->_controller, $this->_action_name),  $this->_parameters);
     }
 }
 

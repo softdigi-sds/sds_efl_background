@@ -172,6 +172,7 @@ class EflConsumptionController extends BaseController
         $excel = new SmartExcellHelper($dest_path, 0);
         $_data = $excel->getData($this->_import_helper->importConsumptionColumns(), 2);
         $out = [];
+        $dates = [];
         foreach ($_data as $obj) {
             $vendor_data = $this->_vendor_helper->checkVendorByCodeCompany("", $obj["vendor"]);
             if ($obj["vendor"] == "" || $obj["date"] == "") {
@@ -180,12 +181,16 @@ class EflConsumptionController extends BaseController
             } else {
                 if (isset($vendor_data->ID)) {
                     // vendor existed insert or update the data
+                    $index = $vendor_data->ID . "_" . $obj["date"];
+                    $prev_count = isset($dates[$index]) ? $dates[$index] : 0;
+                    $new_count =  $prev_count  + $obj["count"];
                     $_vehicle_data = [
                         "sd_hub_id" => $vendor_data->sd_hub_id,
                         "sd_vendors_id" => $vendor_data->ID,
                         "sd_date" => $obj["date"],
-                        "unit_count" => $obj["count"]
+                        "unit_count" =>  $new_count
                     ];
+                    $dates[$index] =  $new_count;
                     $this->_helper->insertUpdateNew($_vehicle_data);
                     $obj["status"] = 5;
                 } else {
