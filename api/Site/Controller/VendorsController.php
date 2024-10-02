@@ -118,4 +118,18 @@ class VendorsController extends BaseController
         $data = $this->_helper->getAllData($sql, $data_in, $select);
         $this->response($data);
     }
+    public function getVendorCompany()
+    {
+        
+        $vendor_company = isset($this->post["vendor_company"]) ? trim($this->post["vendor_company"]) : "";
+    
+        
+        if (strlen($vendor_company) < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid vendor company");
+        }
+
+        $data = $this->_helper->getVendorCompany($vendor_company);
+    
+        $this->response($data);
+    }
 }

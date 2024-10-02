@@ -172,5 +172,14 @@ class VendorsHelper extends BaseHelper
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
         return $data;
     }
+    public function getVendorCompany($vendor_company)
+    {
+        $from = Table::VENDORS;
+        $select = ["ID"];
+        $sql = "vendor_company = :vendor_company"; 
+        $data_in = ["vendor_company" => $vendor_company]; 
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        return !empty($data) ? intval($data->ID) : 0;
+    }
   
 }
