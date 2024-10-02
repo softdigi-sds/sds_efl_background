@@ -170,7 +170,8 @@ class CommonRouter
         $this->_routes["/invoice/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/invoice/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
         $this->_routes["/invoice/generate_invoice"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "generate"];
-        $this->_routes["/invoice/get_one_invoice"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getInvoiceByBillID"];
+        $this->_routes["/invoice/get_one_invoice"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getInvoiceByBillID"];   
+        $this->_routes["/invoice/get_pdf"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getPdf"];
     }
     private function efl_vehicles_routes()
     {

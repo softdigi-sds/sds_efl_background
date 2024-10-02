@@ -110,6 +110,12 @@ class InvoiceHelper extends BaseHelper
         ],
 
     ];
+    const FILE_FOLDER = "downloads";
+    const FILE_NAME = "invoice.pdf";
+    public static function getFullFile($id)
+    {
+        return self::FILE_FOLDER . DS . $id . DS . self::FILE_NAME;
+    }
 
 
     /**
@@ -394,4 +400,5 @@ class InvoiceHelper extends BaseHelper
             return $this->insert($insert_columns, $data);
         }
     }
+    
 }

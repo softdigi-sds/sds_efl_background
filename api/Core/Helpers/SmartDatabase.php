@@ -66,15 +66,18 @@ class SmartDatabase {
             PDO::ATTR_PERSISTENT    => true,
             PDO::ATTR_ERRMODE       => PDO::ERRMODE_EXCEPTION
         );
+        // echo "here";exit();
         // Create a new PDO instanace
         try{
             $this->dbh = new PDO($dsn, $this->_user, $this->_pass, $options);
         }
+// echo "here";exit();
         // Catch any errors
         catch(\PDOException $e){
             $this->trigger_error_message($e);
         } 
     }
+    
     //
     public function Begin(){
         if ($this->dbh->inTransaction()) {
