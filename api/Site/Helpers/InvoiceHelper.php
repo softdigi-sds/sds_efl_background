@@ -27,6 +27,9 @@ class InvoiceHelper extends BaseHelper
         "sd_bill_id" => SmartConst::SCHEMA_INTEGER,
         "sd_hub_id" => SmartConst::SCHEMA_INTEGER,
         "sd_vendor_id" => SmartConst::SCHEMA_INTEGER,
+        "invoice_fin_year" => SmartConst::SCHEMA_VARCHAR,
+        "invoice_serial_number" => SmartConst::SCHEMA_VARCHAR,
+        "invoice_number" => SmartConst::SCHEMA_VARCHAR,
         "total_units" => SmartConst::SCHEMA_FLOAT,
         "total_vehicles" => SmartConst::SCHEMA_INTEGER,
         "unit_amount" => SmartConst::SCHEMA_FLOAT,
@@ -211,34 +214,34 @@ class InvoiceHelper extends BaseHelper
     /**
      *  function get the start and end date details and update teh invoice table
      */
-    public function insertInvoice($bill_id,$bill_data)
+    public function insertInvoice($bill_id, $bill_data)
     {
-       
+
         // get the vendors data 
         $vendorHelper = new VendorsHelper($this->db);
         $vendors = $vendorHelper->getAllData("status=5", [], ["t1.ID,t2.ID as hub_id"]);
         $start_date = $bill_data->bill_start_date;
-        $end_date = $bill_data->bill_end_date;      
+        $end_date = $bill_data->bill_end_date;
         // loop over the venodrs 
         $dt = [
-            "total_invoices"=>0,
-            "unit_amount"=>0,
-            "vehicle_amount"=>0,
-            "others"=>0,
-            "gst_amount"=>0,
-            "total_amount"=>0,
-        ];      
-       
+            "total_invoices" => 0,
+            "unit_amount" => 0,
+            "vehicle_amount" => 0,
+            "others" => 0,
+            "gst_amount" => 0,
+            "total_amount" => 0,
+        ];
+
         foreach ($vendors as $ven_data) {
-            $_data = $this->prepareSingleVendorData($bill_id,$ven_data,$start_date,$end_date);
-            if($_data["total_taxable"] > 0){
+            $_data = $this->prepareSingleVendorData($bill_id, $ven_data, $start_date, $end_date);
+            if ($_data["total_taxable"] > 0) {
                 $this->insertUpdateSingle($_data);
                 $dt["unit_amount"] += $_data["unit_amount"];
                 $dt["vehicle_amount"]  += $_data["vehicle_amount"];
                 $dt["others"]  += $_data["total_others"];
                 $dt["gst_amount"]  += $_data["gst_amount"];
-                $dt["total_amount"]  += $_data["total_amount"];                             
-                $dt["total_invoices"] ++;
+                $dt["total_amount"]  += $_data["total_amount"];
+                $dt["total_invoices"]++;
             }
         }
         return $dt;
@@ -389,9 +392,20 @@ class InvoiceHelper extends BaseHelper
                 "status",
                 "gst_percentage",
                 "gst_amount",
-                "total_amount"
+                "total_amount",
             ];
-            return $this->insert($insert_columns, $data);
+            $id = $this->insert($insert_columns, $data);
+            $up_columns = [
+                "invoice_fin_year",
+                "invoice_serial_number",
+                "invoice_number",
+            ];
+            $up_data = [
+                "invoice_fin_year" => "24-25",
+                "invoice_serial_number" => $id,
+                "invoice_number" => "EFL/" . $id . "/24-25",
+            ];
+            $this->update($up_columns, $up_data, $id);
         }
     }
 }

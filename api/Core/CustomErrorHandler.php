@@ -30,7 +30,8 @@ class CustomErrorHandler extends ErrorException
         }
         return self::$_instance;
     }
-    static private function rollBackDb(){
+    static private function rollBackDb()
+    {
         $db = SmartDatabase::get_instance();
         $db->RollBack();
     }
@@ -39,7 +40,7 @@ class CustomErrorHandler extends ErrorException
      */
     static private function display_output($json, $error_code)
     {
-        // debug_print_backtrace();
+        debug_print_backtrace();
         self::rollBackDb();
         ob_clean();
         http_response_code($error_code);
@@ -85,7 +86,7 @@ class CustomErrorHandler extends ErrorException
     {
         $json = new stdClass();
         $json->status = "Unauthorized Access";
-        $json->message= " You Cannot Access This module";
+        $json->message = " You Cannot Access This module";
         self::display_output($json, 401);
     }
     /**
@@ -95,7 +96,7 @@ class CustomErrorHandler extends ErrorException
     {
         $json = new stdClass();
         $json->status = "Invalid Request Type";
-        $json->message= " Request type is not Invalid";
+        $json->message = " Request type is not Invalid";
         self::display_output($json, 405);
     }
     /**
@@ -105,7 +106,7 @@ class CustomErrorHandler extends ErrorException
     {
         $json = new stdClass();
         $json->status = "Not Found";
-        $json->message= strlen($msg) > 2 ? $msg : "Not Found";
+        $json->message = strlen($msg) > 2 ? $msg : "Not Found";
         self::display_output($json, 405);
     }
     /**
@@ -146,7 +147,6 @@ class CustomErrorHandler extends ErrorException
         }
         die();
     }
-
 }
 // we are handling errors here 
 set_error_handler(array("CustomErrorHandler", "errorHandler"));

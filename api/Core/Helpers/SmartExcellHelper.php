@@ -7,8 +7,8 @@
 
 namespace Core\Helpers;
 
-//require 'vendor/excel/autoload.php';
-require 'vendor/PhpSpreadsheet/IOFactory.php';
+require 'vendor/excel8/autoload.php';
+//require 'vendor/PhpSpreadsheet/IOFactory.php';
 
 // use PhpOffice\PhpSpreadsheet\Spreadsheet;
 // use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -16,6 +16,8 @@ require 'vendor/PhpSpreadsheet/IOFactory.php';
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 /**
  * Description of SmartExcellNew
@@ -36,18 +38,44 @@ class SmartExcellHelper
     {
         $this->_excel_path   = $excel_path;
         $this->_sheet_number = $sheetno;
-        if (!file_exists($this->_excel_path)) {
-            \CustomErrorHandler::exceptionHandler("Invalid Excel File Path " . $this->_excel_path);
-        }
+
         //
-        $this->init_excel();
+        // $this->init_excel();
+    }
+
+    public function createExcelFromData($data)
+    {
+        // Create a new Spreadsheet object
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $headers = array_keys((array)$data[0]);
+        // var_dump($headers);exit();
+        $sheet->fromArray($headers, NULL, 'A1');
+        $rowNumber = 2;
+        foreach ($data as $object) {
+            $rowData = (array)$object;
+            // var_dump(array_values($rowData));exit();
+            $sheet->fromArray(array_values($rowData), 77, 'A' . $rowNumber);
+            $rowNumber++;
+        }
+        $writer = new Xlsx($spreadsheet);
+        $outputFileName =  $this->_excel_path;
+        $writer->save($outputFileName);
+
+        // Return the file path or message
+        return $this->_excel_path;
+        // echo "Excel file created successfully: $outputFileName";
     }
 
     /**
      * 
      */
-    private function init_excel()
+    public function init_excel()
     {
+        if (!file_exists($this->_excel_path)) {
+            \CustomErrorHandler::exceptionHandler("Invalid Excel File Path " . $this->_excel_path);
+        }
         try {
             $inputFileType = IOFactory::identify($this->_excel_path);
             /**  Create a new Reader of the type that has been identified  * */
@@ -82,19 +110,45 @@ class SmartExcellHelper
 
     public function getDate($value)
     {
-
+        //  echo "date value " . $value . ' <br/>';
         // Check if the value is numeric (Excel date number)
         if (is_numeric($value)) {
             // Convert Excel date number to DateTime object
-            $dateTime =\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value);
+            $dateTime = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value);
             return $dateTime->format('Y-m-d'); // Return the formatted date
         } elseif (is_string($value)) {
             // Try to create a DateTime object from a string
             $dateTime = \DateTime::createFromFormat('Y-m-d', $value);
 
-            // If that fails, try a different format (you can add more formats as needed)
+
+            // If that fails, try 'd/m/Y' format
             if (!$dateTime) {
                 $dateTime = \DateTime::createFromFormat('d/m/Y', $value);
+            }
+
+            // If that fails, try 'Y-m-d H:i:s.u' format (for datetime with milliseconds)
+            if (!$dateTime) {
+                $dateTime = \DateTime::createFromFormat('Y-m-d H:i:s.u', $value);
+            }
+
+            // If that fails, try 'Y-m-d H:i:s' format (for datetime without milliseconds)
+            if (!$dateTime) {
+                $dateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $value);
+            }
+
+            // If that fails, try 'd/m/Y H:i:s' format (European date format with time)
+            if (!$dateTime) {
+                $dateTime = \DateTime::createFromFormat('d/m/Y H:i:s', $value);
+            }
+
+            // If that fails, try 'm/d/Y' format (US date format)
+            if (!$dateTime) {
+                $dateTime = \DateTime::createFromFormat('m/d/Y', $value);
+            }
+
+            // If that fails, try 'm/d/Y H:i:s' format (US date format with time)
+            if (!$dateTime) {
+                $dateTime = \DateTime::createFromFormat('m/d/Y H:i:s', $value);
             }
 
             // Check if a DateTime object was created
@@ -107,9 +161,10 @@ class SmartExcellHelper
     }
 
 
-    public function getData($columns,$startRow=1)
+    public function getData($columns, $startRow = 1)
     {
-        $out = []; 
+        $this->init_excel();
+        $out = [];
         for ($i = $startRow; $i < $this->_last_row; $i++) {
             $obj = [];
             $empty = false;
@@ -117,11 +172,11 @@ class SmartExcellHelper
                 $letter = $single_column["letter"];
                 $prp_name = $single_column["index"];
                 $value = "";
-                if(isset($single_column["type"]) && $single_column["type"]=="date"){
+                if (isset($single_column["type"]) && $single_column["type"] == "date") {
                     $value =  $this->getDate($this->get_cell_value($letter, $i));
-                }else{
+                } else {
                     $value =  $this->get_cell_value($letter, $i);
-                }              
+                }
                 if (isset($single_column["empty"]) && ($value == null || $value == "")) {
                     $empty = true;
                 }

@@ -110,21 +110,21 @@ class ImportHelper extends BaseHelper
     {
         $columns = [
             [
-                "letter" => "B",
+                "letter" => "G",
                 "index" => "hub_id",
                 "empty" => true
             ],
             [
-                "letter" => "C",
+                "letter" => "E",
                 "index" => "vendor"
             ],
             [
-                "letter" => "D",
+                "letter" => "P",
                 "index" => "date",
                 "type" => "date"
             ],
             [
-                "letter" => "E",
+                "letter" => "W",
                 "index" => "count",
             ]
         ];
