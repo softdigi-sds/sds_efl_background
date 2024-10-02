@@ -26,7 +26,7 @@ class BillHelper extends BaseHelper
     const schema = [
         "bill_start_date" => SmartConst::SCHEMA_DATE,
         "bill_end_date" => SmartConst::SCHEMA_DATE,
-        "created_by"=> SmartConst::SCHEMA_CUSER_ID,
+        "created_by" => SmartConst::SCHEMA_CUSER_ID,
         "created_time" => SmartConst::SCHEMA_CDATETIME,
         "total_invoices" => SmartConst::SCHEMA_INTEGER,
         "unit_amount" => SmartConst::SCHEMA_FLOAT,
@@ -44,18 +44,19 @@ class BillHelper extends BaseHelper
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Specify bill start date"
             ]
-            ],
-            
-        
-        
-        "bill_end_date" => [    
+        ],
+
+
+
+        "bill_end_date" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Specify bill end date"
-            ]]
-    
-        
-      
+            ]
+        ]
+
+
+
     ];
 
 
@@ -64,7 +65,7 @@ class BillHelper extends BaseHelper
      */
     public function insert(array $columns, array $data)
     {
-        return $this->insertDb(self::schema, Table:: BILL, $columns, $data);
+        return $this->insertDb(self::schema, Table::BILL, $columns, $data);
     }
     /**
      * 
@@ -76,12 +77,12 @@ class BillHelper extends BaseHelper
     /**
      * 
      */
-    public function getAllData($sql = "", $data_in = [],$select=[],$group_by = "", $count = false,$single=false)
+    public function getAllData($sql = "", $data_in = [], $select = [], $group_by = "", $count = false, $single = false)
     {
-        $from = Table::BILL." t1";
+        $from = Table::BILL . " t1";
         $sql = "";
         $select = !empty($select) ? $select : ["t1.*"];
-       return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
+        return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
     }
 
 
@@ -90,30 +91,35 @@ class BillHelper extends BaseHelper
      */
     public function getOneData($id)
     {
-        $from = Table::BILL." t1";
+        $from = Table::BILL . " t1";
         $select = ["t1.*"];
         $sql = " t1.ID=:ID";
         $data_in = ["ID" => $id];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }
-     /**
+    /**
      * 
      */
     public function deleteOneId($id)
     {
         $from = Table::BILL;
-        $this->deleteId($from,$id);
+        $this->deleteId($from, $id);
     }
 
     /**
      * 
      */
-    public function updateBillData($id,$data){
+    public function updateBillData($id, $data)
+    {
         $columns = [
-            "total_invoices","unit_amount","vehicle_amount","others","gst_amount","total_amount"
+            "total_invoices",
+            "unit_amount",
+            "vehicle_amount",
+            "others",
+            "gst_amount",
+            "total_amount"
         ];
-        $this->update($columns,$data,$id);
+        $this->update($columns, $data, $id);
     }
-  
 }

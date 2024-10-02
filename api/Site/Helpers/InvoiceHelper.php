@@ -45,6 +45,11 @@ class InvoiceHelper extends BaseHelper
         "gst_percentage" => SmartConst::SCHEMA_FLOAT,
         "gst_amount" => SmartConst::SCHEMA_FLOAT,
         "total_amount" => SmartConst::SCHEMA_FLOAT,
+        "irn_number" => SmartConst::SCHEMA_VARCHAR,
+        "signed_qr_code" => SmartConst::SCHEMA_TEXT,
+        "ack_no" => SmartConst::SCHEMA_VARCHAR,
+        "ack_date" => SmartConst::SCHEMA_DATE,
+        "signed_invoice" => SmartConst::SCHEMA_TEXT,
         "status" => SmartConst::SCHEMA_INTEGER,
     ];
     /**
@@ -113,12 +118,6 @@ class InvoiceHelper extends BaseHelper
         ],
 
     ];
-    const FILE_FOLDER = "downloads";
-    const FILE_NAME = "invoice.pdf";
-    public static function getFullFile($id)
-    {
-        return self::FILE_FOLDER . DS . $id . DS . self::FILE_NAME;
-    }
 
 
     /**
@@ -225,7 +224,11 @@ class InvoiceHelper extends BaseHelper
 
         // get the vendors data 
         $vendorHelper = new VendorsHelper($this->db);
-        $vendors = $vendorHelper->getAllData("status=5", [], ["t1.ID,t2.ID as hub_id"]);
+        $vendors = $vendorHelper->getAllData(
+            "status=5",
+            [],
+            ["t1.ID,t2.ID as hub_id,t3.short_name"]
+        );
         $start_date = $bill_data->bill_start_date;
         $end_date = $bill_data->bill_end_date;
         // loop over the venodrs 
@@ -353,6 +356,7 @@ class InvoiceHelper extends BaseHelper
         $_data["gst_percentage"] = 100;
         $_data["gst_amount"] = 100;
         $_data["total_amount"] =  $_data["total_taxable"]  +   $_data["gst_amount"];
+        $_data["short_name"] = $ven_data["short_name"];
         return $_data;
     }
 
@@ -374,6 +378,12 @@ class InvoiceHelper extends BaseHelper
         $data_in = ["bill_id" => $bill_id, "invoice_number" => $invoice_number];
         $data = $this->getAll(["*"], TABLE::INVOICE, $sql, "", "", $data_in, true, []);
         return isset($data->ID) ? $data->ID : 0;
+    }
+
+    public function updateInvoiceData($id, $_data)
+    {
+        $columns = array_keys($_data);
+        $this->update($columns, $_data, $id);
     }
     /**
      * 
@@ -414,13 +424,14 @@ class InvoiceHelper extends BaseHelper
                 "invoice_serial_number",
                 "invoice_number",
             ];
+            $fin_year = "24-25";
+            $invoice_number = "EFL/" . $data["short_name"] . DS . $id . "/24-25";
             $up_data = [
-                "invoice_fin_year" => "24-25",
+                "invoice_fin_year" => $fin_year,
                 "invoice_serial_number" => $id,
-                "invoice_number" => "EFL/" . $id . "/24-25",
+                "invoice_number" => $invoice_number,
             ];
             $this->update($up_columns, $up_data, $id);
         }
     }
-    
 }

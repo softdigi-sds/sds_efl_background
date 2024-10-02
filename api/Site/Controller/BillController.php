@@ -142,9 +142,24 @@ class BillController extends BaseController
     {
         $invoice_number = $obj["nameonly"];
         $invoice_id = str_replace("-", "/", $invoice_number);
+        $invoice_id = str_replace("24/25", "24-25", $invoice_id);
+        //echo " invoice id " . $invoice_id;
         $invoiceId = $this->_invoice_helper->getInvoiceId($id, $invoice_id);
-        if ($invoice_number == "EFL-TS-453-24-25") {
-            $invoice_data =  $this->getExcelContent($obj["path"]);
+        //echo "invoice ID " . $invoiceId;
+        if ($invoiceId > 0) {
+            $_data =  $this->getExcelContent($obj["path"]);
+            $invoice_data = isset($_data[0]) ? $_data[0] : [];
+            if (count($invoice_data) > 0) {
+                $_in_data = [
+                    "irn_number" => $invoice_data["irn_no"],
+                    "signed_qr_code" => $invoice_data["signed_qr_code"],
+                    "ack_no" => $invoice_data["ack_no"],
+                    "ack_date" => $invoice_data["ack_date"],
+                    "signed_invoice" => $invoice_data["signed_invoice"],
+                    "status" => 10
+                ];
+                $this->_invoice_helper->updateInvoiceData($invoiceId, $_in_data);
+            }
         }
     }
 
@@ -153,7 +168,7 @@ class BillController extends BaseController
      */
     public function importZip()
     {
-        $id = 1;
+        $id = Data::post_data("id", "INTEGER");
         $excel_import = Data::post_array_data("excel");
         if (!is_array($excel_import) || count($excel_import) < 1) {
             \CustomErrorHandler::triggerInvalid("Please upload Zip to Import");
@@ -179,12 +194,13 @@ class BillController extends BaseController
         $xlsx_files = SmartFileHelper::getFilesDirectory($zip_dir, 'xlsx');
         //var_dump($xlsx_files);
         if (count($xlsx_files) < 1) {
-            // \CustomErrorHandler::triggerInvalid("Please upload a valid zip file");
+            \CustomErrorHandler::triggerInvalid("Please upload a valid zip file");
         }
         foreach ($xlsx_files as $obj) {
             //$invoice_number = $obj["nameonly"];
             $this->checkUpdateInvoiceData($id, $obj);
         }
         // 
+        $this->responseMsg("Imported Successfully");
     }
 }
