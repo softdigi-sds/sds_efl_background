@@ -439,6 +439,7 @@ class InvoiceHelper extends BaseHelper
 
     public function generateInvoicePdf($id){
         $html = InvoicePdf::getHtml([]);
+       // echo $html;
         $path = "invoice" . DS . $id . DS . "invoice.pdf";
         SmartPdfHelper::genPdf($html,$path);
     }

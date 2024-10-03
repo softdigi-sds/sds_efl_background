@@ -10,16 +10,15 @@ use Site\Helpers\InvoiceHelper;
 use Site\Helpers\BillHelper;
 use site\View\InvoicePdf;
 use Core\Helpers\PdfHelper;
-
-
-
+use Core\Helpers\SmartFileHelper;
+use Core\Helpers\SmartPdfHelper;
 
 class InvoiceController extends BaseController
 {
 
     private InvoiceHelper $_helper;
     private BillHelper $_bill_helper;
-    
+
     private InvoicePdf $_invoice_pdf_helper;
     function __construct($params)
     {
@@ -71,9 +70,9 @@ class InvoiceController extends BaseController
         $bill_data = $this->_bill_helper->getOneData($bill_id);
         //var_dump($bill_data);
         // generate and insert invoice
-        $dt = $this->_helper->insertInvoice($bill_id,$bill_data);
+        $dt = $this->_helper->insertInvoice($bill_id, $bill_data);
         // update the bill table with the update details
-        $this->_bill_helper->updateBillData($bill_id,$dt);
+        $this->_bill_helper->updateBillData($bill_id, $dt);
         $this->db->_db->commit();
         $this->response($bill_id);
     }
@@ -149,12 +148,22 @@ class InvoiceController extends BaseController
     /**
      * 
      */
+    public function downloadInvoice()
+    {
+        $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+        if ($id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid ID");
+        }
+        $path = "invoice" . DS . $id . DS . "invoice.pdf";
+        //
+        $path = SmartFileHelper::getDataPath() .  $path;
+        $this->responseFileBase64($path);
+    }
 
-   
-   
+
     public function getPdf()
     {
-        
+
         $data = [
             'ack_no' => '112421792792326',
             'ack_date' => '10-09-2024 13:22:00',
@@ -180,20 +189,23 @@ class InvoiceController extends BaseController
             ],
             // Add more data fields as required
         ];
-        if ($data < 1) {
-            \CustomErrorHandler::triggerInvalid("Provide Data ");
-        }
-        $id = $data["ID"];
-        $location = $this->_helper->getFullFile($id);
-        $html = $this->_invoice_pdf_helper->getHtml($data);
-        try {
-            PdfHelper::genPdf($html, $location);
-            $this->response("pdf created successfully");
-        } catch (\Exception $e) {
-            $this->response($e);
-        }
+        $id = 3;
+        // $html = InvoicePdf::getHtml([]);
+        // $path = "invoice" . DS . $id . DS . "invoice.pdf";
+        // SmartPdfHelper::genPdf($html,$path);
+        $this->_helper->generateInvoicePdf($id);
+        exit();
+        // if ($data < 1) {
+        //     \CustomErrorHandler::triggerInvalid("Provide Data ");
+        // }
+        // $id = $data["ID"];
+        // $location = $this->_helper->getFullFile($id);
+        // $html = $this->_invoice_pdf_helper->getHtml($data);
+        // try {
+        //     PdfHelper::genPdf($html, $location);
+        //     $this->response("pdf created successfully");
+        // } catch (\Exception $e) {
+        //     $this->response($e);
+        // }
+    }
 }
-
-}
-
-

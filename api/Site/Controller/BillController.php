@@ -152,13 +152,14 @@ class BillController extends BaseController
             if (count($invoice_data) > 0) {
                 $_in_data = [
                     "irn_number" => $invoice_data["irn_no"],
-                    "signed_qr_code" => $invoice_data["signed_qr_code"],
+                    "signed_qr_code" => isset($invoice_data["signed_qr_code"]) ? $invoice_data["signed_qr_code"] :"",
                     "ack_no" => $invoice_data["ack_no"],
                     "ack_date" => $invoice_data["ack_date"],
                     "signed_invoice" => $invoice_data["signed_invoice"],
                     "status" => 10
                 ];
                 $this->_invoice_helper->updateInvoiceData($invoiceId, $_in_data);
+                $this->_invoice_helper->generateInvoicePdf($invoiceId);
             }
         }
     }

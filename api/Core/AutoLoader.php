@@ -9,7 +9,9 @@ class AutoLoader
         spl_autoload_register(function ($class) {
             $classPath =  str_replace('\\', '/', $class) . '.php';
             //  echo "class name ". $classPath ."<br/>";
-            if (strpos($classPath, 'PhpOffice') !== false || strpos($classPath, 'mPDF') !== false) {
+            if (strpos($classPath, 'Mpdf') !== false) {
+               
+            }else if (strpos($classPath, 'PhpOffice') !== false) {
                 $baseDir = 'vendor/PhpSpreadsheet/';
                 // For PhpSpreadsheet classes, prepend the base directory
                 $file = $baseDir . str_replace('PhpOffice/PhpSpreadsheet/', '', $classPath);
