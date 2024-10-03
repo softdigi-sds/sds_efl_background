@@ -26,7 +26,7 @@ class HubsHelper extends BaseHelper
     const schema = [
         "hub_id" => SmartConst::SCHEMA_VARCHAR,
         "hub_name" => SmartConst::SCHEMA_VARCHAR,
-        "hub_location"=> SmartConst::SCHEMA_TEXT,
+        "hub_location" => SmartConst::SCHEMA_TEXT,
         "sd_efl_office_id" => SmartConst::SCHEMA_INTEGER,
         "created_by"  => SmartConst::SCHEMA_CUSER_ID,
         "created_time"  => SmartConst::SCHEMA_CDATETIME,
@@ -42,30 +42,33 @@ class HubsHelper extends BaseHelper
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter hub id"
             ]
-            ],
-            
-        
-        
-       "hub_name" => [    
+        ],
+
+
+
+        "hub_name" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter hub name"
-            ]],
-    
+            ]
+        ],
+
         "hub_location" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter hub location"
-            ]],
-    
-    
-        "sd_efl_office_id"=> [
-        [
-            "type"=> SmartConst::VALID_REQUIRED,
-            "msg"=> "Please Enter sd efl office id"
-        ]],
+            ]
+        ],
 
-        
+
+        "sd_efl_office_id" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Enter sd efl office id"
+            ]
+        ],
+
+
     ];
 
 
@@ -86,22 +89,22 @@ class HubsHelper extends BaseHelper
     /**
      * 
      */
-    public function getAllData($sql = "", $data_in = [],$select=[],$group_by = "", $count = false,$single=false)
+    public function getAllData($sql = "", $data_in = [], $select = [], $group_by = "", $count = false, $single = false)
     {
-        $from = Table::HUBS." t1 INNER JOIN ".Table::EFLOFFICE." t2 ON t1.sd_efl_office_id=t2.ID ";
+        $from = Table::HUBS . " t1 
+        INNER JOIN " . Table::EFLOFFICE . " t2 ON t1.sd_efl_office_id=t2.ID ";
         $select = !empty($select) ? $select : ["t1.*, t2.office_city "];
-       // $order_by="last_modified_time DESC";
-        $data =  $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
+        // $order_by="last_modified_time DESC";
+        $data =  $this->getAll($select, $from, $sql, $group_by, "office_city ASC", $data_in, $single, [], $count);
         $city = [];
-        foreach($data as $dt )
-        {    if(isset($dt->ID)){
-            $city["value"] = $dt->sd_efl_office_id;
-            $city["label"] = $dt->office_city;
-            $_hub_grp_helper = new HubGroupsHelper($this->db);
-            $dt->role = $_hub_grp_helper->getSelectedRolesWithHubId($dt->ID);
-            $dt->city = $city; 
-           
-        }
+        foreach ($data as $dt) {
+            if (isset($dt->ID)) {
+                //$city["value"] = $dt->sd_efl_office_id;
+                //$city["label"] = $dt->office_city;
+                $_hub_grp_helper = new HubGroupsHelper($this->db);
+                $dt->role = $_hub_grp_helper->getSelectedRolesWithHubId($dt->ID);
+                //$dt->city = $city;
+            }
         }
         return $data;
     }
@@ -112,28 +115,28 @@ class HubsHelper extends BaseHelper
      */
     public function getOneData($id)
     {
-        $from = Table::HUBS." t1 INNER JOIN ".Table::EFLOFFICE." t2 ON t1.sd_efl_office_id=t2.ID ";
+        $from = Table::HUBS . " t1 INNER JOIN " . Table::EFLOFFICE . " t2 ON t1.sd_efl_office_id=t2.ID ";
         $select = ["t1.*, t2.office_city "];
         $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
         $group_by = "";
         $order_by = "";
         $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
-        if(isset($data->ID)){
+        if (isset($data->ID)) {
             $_hub_grp_helper = new HubGroupsHelper($this->db);
             $data->role = $_hub_grp_helper->getSelectedRolesWithHubId($data->ID);
-            $city_id = $data->sd_efl_office_id;           
-            $data->sd_efl_office_id = ["value"=> $city_id,"label"=> $data->office_city];
+            $city_id = $data->sd_efl_office_id;
+            $data->sd_efl_office_id = ["value" => $city_id, "label" => $data->office_city];
         }
         return $data;
     }
-     /**
+    /**
      * 
      */
     public function deleteOneId($id)
     {
         $from = Table::HUBS;
-        $this->deleteId($from,$id);
+        $this->deleteId($from, $id);
     }
     /**
      * 
@@ -160,15 +163,13 @@ class HubsHelper extends BaseHelper
         return $data;
     }
 
-public function getHubID($hub_id)
+    public function getHubID($hub_id)
     {
         $from = Table::HUBS;
         $select = ["ID"];
         $sql = "hub_id=:ID";
         $data_in = ["ID" => $hub_id];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
-        return !empty($data) ? intval($data->ID ): 0 ;
+        return !empty($data) ? intval($data->ID) : 0;
     }
-
-    
 }

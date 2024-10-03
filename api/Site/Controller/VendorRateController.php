@@ -82,6 +82,11 @@ class VendorRateController extends BaseController
     {
         // insert and get id
         $data = $this->_helper->getAllData();
+        $out = [];
+        foreach($data as $obj){
+           $obj->rates =  $this->_sub_helper->getAllByVendorRateId($obj->ID);
+           $out[] = $obj;
+        }
         $this->response($data);
     }
     /**

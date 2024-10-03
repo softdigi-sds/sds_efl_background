@@ -138,7 +138,7 @@ class EflOfficeHelper extends BaseHelper
         $from = Table::EFLOFFICE . " t1 INNER JOIN " . Table::STATEDB . " t2 ON t1.state=t2.ID ";
         $select = !empty($select) ? $select : ["t1.*, t2.state_name"];
         // $order_by="last_modified_time DESC";
-        return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
+        return $this->getAll($select, $from, $sql, $group_by, "office_city ASC", $data_in, $single, [], $count);
     }
 
 

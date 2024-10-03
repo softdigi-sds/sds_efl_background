@@ -118,7 +118,7 @@ class SmartModel
      */
     public function OrderBy(string $sql)
     {
-        $this->_group_sql = $sql;
+        $this->_order_sql = $sql;
         return $this;
     }
 
