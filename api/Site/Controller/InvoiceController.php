@@ -8,7 +8,7 @@ use Core\BaseController;
 use Core\Helpers\SmartAuthHelper;
 use Site\Helpers\InvoiceHelper;
 use Site\Helpers\BillHelper;
-use site\View\InvoicePdf;
+use Site\View\InvoicePdf;
 use Core\Helpers\PdfHelper;
 use Core\Helpers\SmartFileHelper;
 use Core\Helpers\SmartPdfHelper;
@@ -207,5 +207,6 @@ class InvoiceController extends BaseController
         // } catch (\Exception $e) {
         //     $this->response($e);
         // }
+        
     }
 }
