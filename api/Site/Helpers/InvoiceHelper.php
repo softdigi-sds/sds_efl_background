@@ -10,9 +10,10 @@ namespace Site\Helpers;
 
 use Core\BaseHelper;
 use Core\Helpers\SmartConst;
-
+use Core\Helpers\SmartPdfHelper;
 //
 use Site\Helpers\TableHelper as Table;
+use Site\View\InvoicePdf;
 
 /**
  * Description of Data
@@ -356,7 +357,7 @@ class InvoiceHelper extends BaseHelper
         $_data["gst_percentage"] = 100;
         $_data["gst_amount"] = 100;
         $_data["total_amount"] =  $_data["total_taxable"]  +   $_data["gst_amount"];
-        $_data["short_name"] = $ven_data["short_name"];
+        $_data["short_name"] = $ven_data->short_name;
         return $_data;
     }
 
@@ -433,5 +434,12 @@ class InvoiceHelper extends BaseHelper
             ];
             $this->update($up_columns, $up_data, $id);
         }
+    }
+
+
+    public function generateInvoicePdf($id){
+        $html = InvoicePdf::getHtml([]);
+        $path = "invoice" . DS . $id . DS . "invoice.pdf";
+        SmartPdfHelper::genPdf($html,$path);
     }
 }

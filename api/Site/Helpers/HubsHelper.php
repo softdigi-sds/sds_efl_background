@@ -122,9 +122,8 @@ class HubsHelper extends BaseHelper
         if(isset($data->ID)){
             $_hub_grp_helper = new HubGroupsHelper($this->db);
             $data->role = $_hub_grp_helper->getSelectedRolesWithHubId($data->ID);
-            $data->city = [];
-            $data->city["value"] = $data->sd_efl_office_id;
-            $data->city["label"] = $data->office_city;
+            $city_id = $data->sd_efl_office_id;           
+            $data->sd_efl_office_id = ["value"=> $city_id,"label"=> $data->office_city];
         }
         return $data;
     }
