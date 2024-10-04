@@ -437,10 +437,15 @@ class InvoiceHelper extends BaseHelper
     }
 
 
-    public function generateInvoicePdf($id){
-        $html = InvoicePdf::getHtml([]);
-       // echo $html;
+    public function generateInvoicePdf($id)
+    {
+        $data = [
+            "ack_no" => "GST NUMBER",
+            "ack_date" => "2023-04-01"
+        ];
+        $html = InvoicePdf::getHtml($data);
+        // echo $html;
         $path = "invoice" . DS . $id . DS . "invoice.pdf";
-        SmartPdfHelper::genPdf($html,$path);
+        SmartPdfHelper::genPdf($html, $path);
     }
 }

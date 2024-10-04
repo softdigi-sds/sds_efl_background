@@ -28,7 +28,7 @@ class InvoicePdf
     return isset($this->data[$index]) ? $this->data[$index] : "";
   }
 
-  private function getIndex($dt,$index)
+  private function getIndex($dt, $index)
   {
     return isset($dt[$index]) ? $dt[$index] : "";
   }
@@ -62,23 +62,23 @@ class InvoicePdf
           <th>TCS (Rs)</th>
           <th>Total</th>
         </tr>
-        <?php foreach($_data as $key=>$obj) { ?>
-        <tr>
-          <td><?php echo $key+1; ?> </td>
-          <td><?php echo $this->getIndex($obj,"hsn_info") ?>
-           (from <?php echo $this->getIndex($obj,"start_date") ?> to
-            <?php echo $this->getIndex($obj,"end_date") ?>)</td>
-          <td><?php echo $this->getIndex($obj,"quantity")?> </td>
-          <td><?php echo $this->getIndex($obj,"quantity")?></td>
-          <td><?php echo $this->getIndex($obj,"quantity")?> </td>
-          <td><?php echo $this->getIndex($obj,"quantity")?></td>
-          <td><?php echo $this->getIndex($obj,"quantity")?></td>
-          <td><?php echo $this->getIndex($obj,"quantity")?> </td>
-          <td><?php echo $this->getIndex($obj,"quantity")?></td>
-          <td><?php echo $this->getIndex($obj,"quantity")?></td>
-          <td><?php echo $this->getIndex($obj,"quantity")?> </td>
-          <td><?php echo $this->getIndex($obj,"quantity")?></td>
-        </tr>      
+        <?php foreach ($_data as $key => $obj) { ?>
+          <tr>
+            <td><?php echo $key + 1; ?> </td>
+            <td><?php echo $this->getIndex($obj, "hsn_info") ?>
+              (from <?php echo $this->getIndex($obj, "start_date") ?> to
+              <?php echo $this->getIndex($obj, "end_date") ?>)</td>
+            <td><?php echo $this->getIndex($obj, "quantity") ?> </td>
+            <td><?php echo $this->getIndex($obj, "quantity") ?></td>
+            <td><?php echo $this->getIndex($obj, "quantity") ?> </td>
+            <td><?php echo $this->getIndex($obj, "quantity") ?></td>
+            <td><?php echo $this->getIndex($obj, "quantity") ?></td>
+            <td><?php echo $this->getIndex($obj, "quantity") ?> </td>
+            <td><?php echo $this->getIndex($obj, "quantity") ?></td>
+            <td><?php echo $this->getIndex($obj, "quantity") ?></td>
+            <td><?php echo $this->getIndex($obj, "quantity") ?> </td>
+            <td><?php echo $this->getIndex($obj, "quantity") ?></td>
+          </tr>
         <?php } ?>
       </table>
     </div>
@@ -113,10 +113,10 @@ class InvoicePdf
         <h2>8-2-601,Street No : 10, Banjara hills,HYDERABAD,Delhi-500034</h2>
         <div>
           <div class="flex-container">
-            
+
             <div>
-              <p style="text-align: left;">ACK No:112421792792326</p>
-              <p style="text-align: left;">ACK Date: 10-09-2024 13:22:00</p>
+              <p style="text-align: left;">ACK No:<?php echo $this->get("ack_no") ?></p>
+              <p style="text-align: left;">ACK Date: <?php echo $this->get("ack_date") ?></p>
               <p style="text-align: left;"> IRN No: f0996c5de697a29f3eb0499fa045bd1df0f</p>
               <p style="text-align: left;">d23e558b015db32854e196ecfb62c</p>
             </div>
@@ -125,6 +125,16 @@ class InvoicePdf
       </div>
 
       <table style="width:100%">
+        <tr>
+          <td>
+            <p><b>GSTIN:36AAICT7241B1ZH</b></p> <br />
+            <p><b>Tax is payable under reverse charge: No</b></p> <br />
+
+          </td>
+          <td>
+            <p><b>Vehicle No:</b></p> <br />
+          </td>
+        </tr>
         <tr>
           <th>GSTIN:36AAICT7241B1ZH</th>
           <th>Vehicle No:</th>
