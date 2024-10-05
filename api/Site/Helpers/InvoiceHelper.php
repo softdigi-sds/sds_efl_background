@@ -440,10 +440,49 @@ class InvoiceHelper extends BaseHelper
     public function generateInvoicePdf($id)
     {
         $data = [
+            'address'=>'ADDRESS',
             "ack_no" => "GST NUMBER",
-            "ack_date" => "2023-04-01"
+            "ack_date" => "2023-04-01",
+            'irn_no' => 'IRN NUMBER',
+            'additional_info' => 'IRN NUMBER',
+            'invoice_number' => 'INVOICE NUMBER',
+            'invoice_date' => '10/09/2024',
+            'date_of_supply' => '10/09/2024',
+            'items' => [
+                [
+                    'sl_no' => "SERAIL NUMBER",
+                    'description' => 'GOODS/SERVICES',
+                    'hsn_code' => 'HSN CODE',
+                    'quantity' => 'QUANTITY',
+                    'unit' => 'NOS',
+                    'unit_price' => 'UNIT PRICE',
+                    'taxable_amount' => 'TAXABLE AMT',
+                    'tax_details' => 'TAX DETAILS',
+                    'tcs' => '0.0',
+                    'total' => 'TOTAL'
+                ],
+
+                
+            ],
+            'itemamt'=> [
+                [
+                 'tax_amt'  =>'82340.35',
+                 'cgst_amt' =>'0.00',
+                 'sgst_amt' =>'0.00',
+                 'igst_amt' => '14821.26',
+                 'cees_amt' =>'0.00 ',
+                 'state_cees' =>'0.00',
+                  'roundoff_amt' =>'0',
+               'other_charge' =>'0.00',
+           'total_inv_amt' =>'97161.61',
+                ],
+
+                
+            ],
+      
         ];
         $html = InvoicePdf::getHtml($data);
+    //    $html = '<p>hello </p>';
         // echo $html;
         $path = "invoice" . DS . $id . DS . "invoice.pdf";
         SmartPdfHelper::genPdf($html, $path);

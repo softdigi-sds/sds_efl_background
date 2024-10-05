@@ -6,7 +6,7 @@
  */
 
 namespace Site\View;
-
+// use Site\images\qr_code;
 
 
 
@@ -43,11 +43,11 @@ class InvoicePdf
   {
     $_data = [];
     ob_start();
-?>
+    ?>
     <div>
 
       <h2>Goods Details</h2>
-      <table style="width:100%">
+      <table style="width:100%;" border="1">
         <tr>
           <th>Sl.No</th>
           <th>Description of Goods/Services</th>
@@ -67,7 +67,8 @@ class InvoicePdf
             <td><?php echo $key + 1; ?> </td>
             <td><?php echo $this->getIndex($obj, "hsn_info") ?>
               (from <?php echo $this->getIndex($obj, "start_date") ?> to
-              <?php echo $this->getIndex($obj, "end_date") ?>)</td>
+              <?php echo $this->getIndex($obj, "end_date") ?>)
+            </td>
             <td><?php echo $this->getIndex($obj, "quantity") ?> </td>
             <td><?php echo $this->getIndex($obj, "quantity") ?></td>
             <td><?php echo $this->getIndex($obj, "quantity") ?> </td>
@@ -82,7 +83,7 @@ class InvoicePdf
         <?php } ?>
       </table>
     </div>
-  <?php
+    <?php
     $html = ob_get_clean();
     return $html;
   }
@@ -92,176 +93,192 @@ class InvoicePdf
   public function get_html()
   {
     ob_start();
-  ?>
+    ?>
 
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>Document</title>
       <style>
-
+        .head{
+          display: flex;
+        }
       </style>
 
     </head>
 
     <body>
+      <div>
+        <img style="width:170px;" src="Site/view/images/logo.jpeg" alt="logo code">
+      </div>
       <div style="text-align:center">
-        <h1>TAX INVOICE</h1>
+        <h3>TAX INVOICE</h3>
         <h3 style="text-align: right;">ORIGINAL FOR RECIPIENT</h3>
-        <h2>(As per Rule 46 of CGST Rules, 2017)</h2>
-        <h2>TTL ELECTRIC FUEL PRIVATE LIMITED</h2>
-        <h2>8-2-601,Street No : 10, Banjara hills,HYDERABAD,Delhi-500034</h2>
-        <div>
-          <div class="flex-container">
-
-            <div>
-              <p style="text-align: left;">ACK No:<?php echo $this->get("ack_no") ?></p>
-              <p style="text-align: left;">ACK Date: <?php echo $this->get("ack_date") ?></p>
-              <p style="text-align: left;"> IRN No: f0996c5de697a29f3eb0499fa045bd1df0f</p>
-              <p style="text-align: left;">d23e558b015db32854e196ecfb62c</p>
-            </div>
-          </div>
+        <h3>(As per Rule 46 of CGST Rules, 2017)</h3>
+        <h3>TTL ELECTRIC FUEL PRIVATE LIMITED</h3>
+        <h3><?php echo $this->get("address") ?></h>
+        <div style="border:1px solid black;">
+          <table style="width:100%;">
+            <tr>
+              <td style="text-align: left;">
+                <p>ACK No:<?php echo $this->get("ack_no") ?></p>
+                <p>ACK Date: <?php echo $this->get("ack_date") ?></p>
+                <p> IRN No:<?php echo $this->get("irn_no") ?></p>
+                <p><?php echo $this->get("additional_info") ?></p>
+              </td>
+              <td style="text-align: right;">
+                <img style="width:150px; text-align: right;" src="Site/view/images/qr_code.jpg" alt="qr code">
+              </td>
+            </tr>
+          </table>
         </div>
       </div>
 
-      <table style="width:100%">
+
+      <table style="width:100%" border="1">
         <tr>
+
           <td>
             <p><b>GSTIN:36AAICT7241B1ZH</b></p> <br />
             <p><b>Tax is payable under reverse charge: No</b></p> <br />
-
+            <p><b>Invoice No: <?php echo $this->get("invoice_number") ?></b></p> <br />
+            <p><b>Invoice Date: <?php echo $this->get("invoice_date") ?></b></p> <br />
+            <p><b>Place of Supply: Delhi</b></p> <br />
+            <p><b>Due Date: 09/05/0024</b></p> <br />
           </td>
           <td>
+
             <p><b>Vehicle No:</b></p> <br />
+            <p><b>LR No:</b></p><br />
+            <p><b>Transporter:</b></p><br />
+            <p><b>Date of Supply: <?php echo $this->get("date_of_supply") ?></b></p><br />
+            <p><b>Shipped From: DL</b> </p><br />
+            <p><b>Transporter ID:</b></p><br />
+
           </td>
         </tr>
+
+
         <tr>
-          <th>GSTIN:36AAICT7241B1ZH</th>
-          <th>Vehicle No:</th>
+          <td>
+            <p><b>Receiver (Billed to)</b></p>
+          </td>
+          <td>
+            <p><b>Consignee (Shipped to)</b></p>
+          </td>
         </tr>
+
+
+
         <tr>
-          <th>Tax is payable under reverse charge: No</th>
-          <th>LR No:</th>
+          <td>
+            <p>REINVENT AGROCHAIN PRIVATE LIMITED,<br />
+              Lower Ground Floor, C-10, South Extension Part 2, Delhi 110049,</p><br />
+            <p><b>State/State Code: Delhi/07</b></p><br />
+            <p><b>GSTIN: 07AALCR6444B1ZE</b></p>
+          </td>
+          <td>
+            <p>REINVENT AGROCHAIN PRIVATE LIMITED,</p><br />
+            Lower Ground Floor, C-10, South Extension Part 2, , Delhi110049,</p><br />
+            <p><b>State/State Code: Delhi/07</b></p><br />
+            <p><b>GSTIN: 07AALCR6444B1ZE</b></p>
+          </td>
         </tr>
-        <tr>
-          <th>Invoice No: EFL/TS/428/24-25</th>
-          <th>Transporter:</th>
-        </tr>
-        <tr>
-          <th>Invoice Date: 10/09/2024</th>
-          <th>Date of Supply: 10/09/2024</th>
-        </tr>
-        <tr>
-          <th>Place of Supply: Delhi</th>
-          <th>Shipped From: DL</th>
-        </tr>
-        <tr>
-          <th>Due Date: 09/05/0024</th>
-          <th>Transporter ID:</th>
-        </tr>
-        <tr>
-          <th>Receiver (Billed to)</th>
-          <th>Consignee (Shipped to)</th>
-        </tr>
-        <tr>
-          <th>
-            <p>REINVENT AGROCHAIN PRIVATE LIMITED,</p>
-            Lower Ground Floor, C-10, South Extension Part 2, Delhi 110049,
-            <p>State/State Code: Delhi/07</p>
-            GSTIN: 07AALCR6444B1ZE
-          </th>
-          <th>
-            <p>REINVENT AGROCHAIN PRIVATE LIMITED,</p>
-            Lower Ground Floor, C-10, South Extension Part 2, Delhi 110049,
-            <p>State/State Code: Delhi/07</p>
-            GSTIN: 07AALCR6444B1ZE
-          </th>
-        </tr>
+
+
       </table>
 
-      <table>
-        <tr>
-          <!-- <th>Receiver (Billed to) </th> -->
-          <th>Consignee (Shipped to)</th>
-        </tr>
-      </table>
       <?php echo $this->gettable() ?>
 
-      <div>
 
-        <table style="width:100%">
+
+
+      <div style="padding-top:10px">
+        <br />
+        <br />
+        <table style="width:100%; " border="1">
           <tr>
             <th>Tax'ble Amt</th>
             <th>CGST Amt</th>
             <th>SGST Amt </th>
             <th>IGST Amt</th>
             <th>CESS Amt</th>
-            <th>State CESS
-              Amt</th>
-            <th>Round off
-              Amt</th>
-            <th>Other
-              Charges</th>
-            <th>Total Inv.
-              Amt</th>
-
-
+            <th>State CESS Amt</th>
+            <th>Round off Amt</th>
+            <th>Other Charges</th>
+            <th>Total Inv. Amt</th>
           </tr>
           <tr>
-            <td>82340.35 </td>
-            <td>0.00 </td>
-            <td>0.00 </td>
-            <td>14821.26 </td>
-            <td>0.00</td>
-            <td>0.00</td>
-            <td>0</td>
-            <td>0.00</td>
-            <td>97161.61</td>
+            <td><?php echo $this->get("tax_amt") ?></td>
+            <td><?php echo $this->get("cgst_amt") ?> </td>
+            <td><?php echo $this->get("sgst_amt") ?></td>
+            <td><?php echo $this->get("igst_amt") ?> </td>
+            <td><?php echo $this->get("cees_amt") ?></td>
+            <td><?php echo $this->get("state_cees") ?></td>
+            <td><?php echo $this->get("roundoff_amt") ?></td>
+            <td><?php echo $this->get("other_charge") ?></td>
+            <td><?php echo $this->get("total_inv_amt") ?></td>
           </tr>
 
         </table>
-
-
-        <br>
-        <br>
-        <br>
-        <hr>
-        <div style="text-align:center">
-          <h2>Corporate Office Address:1-8-303/48/9, TIRUMALA CHAMBERS, PENDERGHAST</h2>
-          <h1>ROAD, SINDHI COLONY, BEGUMPET, HYDERABAD, TELANGANA - 500016</h1>
-          <h2>PAN No: AAICT7241B CIN No: U74999TG2021PTC153003</h2>
-        </div>
       </div>
 
-      <table style="width:100%">
-        <tr>
-          <th colspan="2">Net Invoice Value: Ninety Seven Thousand One Hundred Sixty One Rupees and Sixty One Paisa</th>
-        </tr>
-        <tr>
-          <td colspan="2"> Hub Name :SAROOR NAGAR</td>
-        </tr>
-        <tr>
-          <td colspan="2">Remarks :</td>
-        </tr>
-        <tr>
-          <td>Banker Details: ICICIBANK,HYDERABAD,ACCOUNTNO:777705120721,IFSCCODE:ICIC0000008.</td>
-        </tr>
-        <table>
+  <hr>
+      <div style="text-align:center">
+        <h2>Corporate Office Address:1-8-303/48/9, TIRUMALA CHAMBERS, PENDERGHAST</h2>
+        <h2>ROAD, SINDHI COLONY, BEGUMPET, HYDERABAD, TELANGANA - 500016</h2>
+        <h2>PAN No: AAICT7241B CIN No: U74999TG2021PTC153003</h2>
+      </div>
+
+      
+      <div>
+        <table style="width:100% ; border-collapse:collapse" border="1" >
           <tr>
-            <th>Certified that the particulars are true and correct </th>
-            <th>For TTL ELECTRIC FUEL PRIVATE LIMITED
-              <p>Authorized Signatory</p>
-            </th>
+            <th colspan="2"  style="text-align: left;">Net Invoice Value: Ninety Seven Thousand One Hundred Sixty One Rupees and Sixty One Paisa</th>
+          </tr>
+          <tr>
+            <th colspan="2" style="text-align: left;"> Hub Name :SAROOR NAGAR</th>
+          </tr>
+          <tr>
+            <th colspan="2" style="text-align: left;">Remarks :</th>
+          </tr>
+          <tr>
+            <th colspan="2" style="text-align: left;">Banker Details: ICICIBANK,HYDERABAD,ACCOUNTNO:777705120721,IFSCCODE:ICIC0000008.</th>
+          </tr>
+          <tr>
+            <th>Certified that the particulars are true and correct</th>
+            <th style=" border-bottom: 0;">For TTL ELECTRIC FUEL PRIVATE LIMITED</th>
           </tr>
           <tr>
             <th>Subject to Hyderabad Jurisdiction only </th>
+            <th style=" border-top: 0;">Authorized Signatory</th>
           </tr>
-        </table>
+          
+        
+          </table>
+          </div>
 
+          <!-- <tr>
+            <td>
+              <table>
+                <tr>
+                  <th>Certified that the particulars are true and correct</th>
+                </tr>
+                <tr>
+                  <th>For TTL ELECTRIC FUEL PRIVATE LIMITED</th>
+                </tr>
+              </table>
+            </td>
+            <td>
+              <th>Subject to Hyderabad Jurisdiction only </th>
+              <th>Authorized Signatory</th>
+            </td>
+          </tr> -->
+        
 
     </body>
 
-<?php
+    <?php
     $html = ob_get_contents();
     ob_clean();
     return $html;

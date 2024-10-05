@@ -164,31 +164,7 @@ class InvoiceController extends BaseController
     public function getPdf()
     {
 
-        $data = [
-            'ack_no' => '112421792792326',
-            'ack_date' => '10-09-2024 13:22:00',
-            'irn_no' => 'f0996c5de697a29f3eb0499fa045bd1df0f',
-            'additional_info' => 'd23e558b015db32854e196ecfb62c',
-            'invoice_number' => 'EFL/TS/428/24-25',
-            'invoice_date' => '10/09/2024',
-            'date_of_supply' => '10/09/2024',
-            'items' => [
-                [
-                    'sl_no' => 1,
-                    'description' => 'ELECTRIC VEHICLE PARKING FEE - 3WL (from 21-07-2024 to 20-08-2024)',
-                    'hsn_code' => '996743',
-                    'quantity' => '7.610',
-                    'unit' => 'NOS',
-                    'unit_price' => '4500.000',
-                    'taxable_amount' => '34245.00',
-                    'tax_details' => '18.00 + 0 | 0 + 0',
-                    'tcs' => '0.0',
-                    'total' => '40409.10'
-                ],
-                // Add more items as needed
-            ],
-            // Add more data fields as required
-        ];
+    
         $id = 3;
         // $html = InvoicePdf::getHtml([]);
         // $path = "invoice" . DS . $id . DS . "invoice.pdf";
