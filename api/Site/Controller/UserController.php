@@ -32,14 +32,14 @@ class UserController extends BaseController
     public function insert()
     {
 
-        $columns = ["ename", "mobile_no", "epassword"];
+        $columns = ["ename", "mobile_no", "epassword", "emailid"];
         // do validations
         $this->_helper->validate(UserHelper::validations, $columns, $this->post);
         //
         // here check user id already exists or not 
-        $exists_data = $this->_helper->getOneDataWithUserId($this->post["euserid"]);
+        $exists_data = $this->_helper->getOneDataWithEmailId($this->post["emailid"]);
         if (isset($exists_data->ID)) {
-            \CustomErrorHandler::triggerInvalid("ICNO Already Existed");
+            \CustomErrorHandler::triggerInvalid("Email ID Already Existed");
         }
         $this->db->_db->Begin();
         // add other columns 
@@ -50,6 +50,8 @@ class UserController extends BaseController
         $columns[] = "created_time";
         $columns[] = "change_pass";
         $columns[] = "epassword";
+        $columns[] = "euserid";
+        $this->post["euserid"] = "none";
         $this->post["active_status"] = 5;
         $this->post["change_pass"] = 1;
         $this->post["epassword"] = SmartGeneral::hashPassword($this->post["epassword"]);
@@ -186,31 +188,31 @@ class UserController extends BaseController
     /**
      * admin reset password
      */
-    // public function adminReset()
-    // {
-    //     $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
-    //     if ($id < 1) {
-    //         \CustomErrorHandler::triggerInvalid("Invalid ID");
-    //     }
-    //     // insert and get id
-    //     $data = $this->_helper->getOneData($id);
-    //     //
-    //     if(!isset($data->ID)){
-    //         \CustomErrorHandler::triggerInternalError("ID does not exists");
-    //     }
-    //     //echo "userid " . $data->euserid. "<br/>";
-    //     //
-    //     $post_data = ["epassword"=> SmartGeneral::hashPassword($data->euserid),"change_pass"=>0, "failed_attempts"=>0];
-    //     //
-    //    // var_dump($post_data);
-    //     //
-    //     $columns = ["epassword","change_pass","failed_attempts"];
-    //     //
-    //     $this->_helper->update($columns, $post_data, $id);
-    //     // add log
-    //     $this->addLog("PASSWORD RESETTED","",SmartAuthHelper::getLoggedInUserName()); 
-    //     // retrun success mag
-    //     $this->responseMsg("Reset Successfully");
+//     public function adminReset()
+//     {
+//         $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+//         if ($id < 1) {
+//             \CustomErrorHandler::triggerInvalid("Invalid ID");
+//         }
+//         // insert and get id
+//         $data = $this->_helper->getOneData($id);
+//         //
+//         if(!isset($data->ID)){
+//             \CustomErrorHandler::triggerInternalError("ID does not exists");
+//         }
+//         //echo "userid " . $data->euserid. "<br/>";
+//         //
+//         $post_data = ["epassword"=> SmartGeneral::hashPassword($data->euserid),"change_pass"=>0, "failed_attempts"=>0];
+//         //
+//        // var_dump($post_data);
+//         //
+//         $columns = ["epassword","change_pass","failed_attempts"];
+//         //
+//         $this->_helper->update($columns, $post_data, $id);
+//         // add log
+//         $this->addLog("PASSWORD RESETTED","",SmartAuthHelper::getLoggedInUserName()); 
+//         // retrun success mag
+//         $this->responseMsg("Reset Successfully");
 
     //  }
     public function adminReset()

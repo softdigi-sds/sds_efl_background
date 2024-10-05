@@ -10,6 +10,7 @@ namespace Site\Helpers;
 
 use Core\BaseHelper;
 use Core\Helpers\SmartConst;
+use Core\Helpers\SmartGeneral;
 use Core\Helpers\SmartPdfHelper;
 //
 use Site\Helpers\TableHelper as Table;
@@ -230,6 +231,8 @@ class InvoiceHelper extends BaseHelper
             [],
             ["t1.ID,t2.ID as hub_id,t3.short_name"]
         );
+        //var_dump($vendors);
+        //exit();
         $start_date = $bill_data->bill_start_date;
         $end_date = $bill_data->bill_end_date;
         // loop over the venodrs 
@@ -244,6 +247,8 @@ class InvoiceHelper extends BaseHelper
 
         foreach ($vendors as $ven_data) {
             $_data = $this->prepareSingleVendorData($bill_id, $ven_data, $start_date, $end_date);
+            // var_dump($_data);
+            // exit();
             if ($_data["total_taxable"] > 0) {
                 $this->insertUpdateSingle($_data);
                 $dt["unit_amount"] += $_data["unit_amount"];
@@ -255,76 +260,91 @@ class InvoiceHelper extends BaseHelper
             }
         }
         return $dt;
-        // 
-
-
-        // $invoice_cols = [
-        //     "sd_bill_id",
-        //     "sd_hub_id",
-        //     "sd_vendor_id",
-        //     "total_units",
-        //     "total_vehicles",
-        //     "unit_amount",
-        //     "vehicle_amount",
-        //     "status",
-        //     "gst_percentage",
-        //     "gst_amount",
-        //     "total_amount"
-        // ];
-        // $consumption = new EflConsumptionHelper($this->db);
-        // $vehicle = new EflVehiclesHelper($this->db);
-
-        // $consump_data = $consumption->getConsumptionInvoiceByDate($start_date, $end_date);
-        // $vehicle_data = $vehicle->getVehicleInvoiceByDate($start_date, $end_date);
-        // foreach ($consump_data as $c_data) {
-        //     if (isset($c_data->ID)) {
-        //         $vend_rate = new VendorRateHelper($this->db);
-        //         $rate = $vend_rate->getVendorRateByHubVenID($c_data->sd_hub_id, $c_data->sd_vendors_id);
-        //         $units_amt = !empty($rate) ? ($c_data->count * $rate->unit_rate) : $c_data->count;
-        //         $c_invoice_data = [
-        //             "sd_bill_id" => $bill_id,
-        //             "sd_hub_id" => $c_data->sd_hub_id,
-        //             "sd_vendor_id" => $c_data->sd_vendors_id,
-        //             "total_units" => ($c_data->count),
-        //             "total_vehicles" => 0,
-        //             "unit_amount" => $units_amt,
-        //             "vehicle_amount" => 0,
-        //             "status" => 5,
-        //             "gst_percentage" => 0,
-        //             "gst_amount" => 0,
-        //             "total_amount" => $units_amt
-        //         ];
-        //         $this->insert($invoice_cols, $c_invoice_data);
-        //     }
-        // }
-        // foreach ($vehicle_data as $v_data) {
-        //     if (isset($v_data->ID)) {
-        //         $vend_rate = new VendorRateHelper($this->db);
-        //         $rate = $vend_rate->getVendorRateByHubVenID($v_data->sd_hub_id, $v_data->sd_vendors_id);
-        //         $vehicle_amt = !empty($rate) ? ($v_data->count * $rate->parking_rate_vehicle) : $v_data->count;
-        //         $exist_data = $this->checkInvoiceExistByBillHubAndVenID($bill_id, $v_data->sd_hub_id, $v_data->sd_vendors_id);
-        //         if (isset($exist_data->ID)) {
-        //             $vi_invoice_data = ["total_vehicles" => $v_data->count, "vehicle_amount" => $vehicle_amt, "total_amount" => ($vehicle_amt + $exist_data->unit_amount)];
-        //             $this->update(["total_vehicles", "vehicle_amount", "total_amount"], $vi_invoice_data, $exist_data->ID);
-        //         } else {
-        //             $vu_invoice_data = [
-        //                 "sd_bill_id" => $bill_id,
-        //                 "sd_hub_id" => $v_data->sd_hub_id,
-        //                 "sd_vendor_id" => $v_data->sd_vendors_id,
-        //                 "total_units" => 0,
-        //                 "total_vehicles" => $v_data->count,
-        //                 "unit_amount" => 0,
-        //                 "vehicle_amount" => $vehicle_amt,
-        //                 "status" => 5,
-        //                 "gst_percentage" => 0,
-        //                 "gst_amount" => 0,
-        //                 "total_amount" => $vehicle_amt
-        //             ];
-        //             $this->insert($invoice_cols, $vu_invoice_data);
-        //         }
-        //     }
-        // }
     }
+    public function getVehicleParkingCharge($rates, $vehicle_count)
+    {
+        $charge = 0;
+        foreach ($rates as $obj) {
+            // var_dump($obj->sd_hsn_id["value"]);
+            // only parking and charging this condition is
+            if ($obj->sd_hsn_id["value"] == 1) {
+                // this is only for praking so check vehicle count range and apply
+                if ($obj->rate_type["value"] == 1) {
+                    $charge = $charge + ($vehicle_count * $obj->price);
+                } else if ($obj->rate_type["value"] == 2) {
+                    // minimum type
+                    if ($vehicle_count >= $obj->min_start && $vehicle_count < $obj->min_end) {
+                        $total_count = ($vehicle_count - $obj->min_start + 1);
+                        // echo " v " . $vehicle_count . " s =" . $obj->min_start . " p " . $obj->price . " t" .  $total_count;
+                        $charge = $charge + ($total_count  * $obj->price);
+                        //echo "charge " . $charge;
+                    }
+                }
+            } else if ($obj->sd_hsn_id["value"] == 2) {
+                // this is only for parking so check vehicle count range and apply
+                // echo " value " . $obj->rate_type["value"] . " <br/>";
+                if ($obj->rate_type["value"] == 1) {
+                    $charge = $charge + ($vehicle_count * $obj->price);
+                } else if ($obj->rate_type["value"] == 2) {
+                    // minimum type
+                    if ($vehicle_count >= $obj->min_start && $vehicle_count < $obj->min_end) {
+                        $total_count = ($vehicle_count - $obj->min_start + 1);
+                        $charge = $charge + ($total_count  * $obj->price);
+                    }
+                }
+            }
+        }
+        // echo "charge = " . $charge . "<br/>";
+        return $charge;
+    }
+
+    public function getVehicleChargingCharge($rates, $vehicle_count, $units)
+    {
+        $charge = 0;
+        foreach ($rates as $obj) {
+            if ($obj->sd_hsn_id["value"] == 1) {
+                // this is only for praking so check vehicle count range and apply
+                $minimum_units = ($obj->min_units_vehicle * 30) * $vehicle_count;
+                $total_units = 0;
+                if ($units > $minimum_units) {
+                    $total_units = $units - $minimum_units;
+                }
+                if ($obj->rate_type["value"] == 2) {
+                    $charge = ($total_units * $obj->extra_price);
+                }
+            } else if ($obj->sd_hsn_id["value"] == 3) {
+                // this is only for charging 
+                //echo " value = " . $obj->sd_hsn_id["value"] . " units " . $units;
+                if ($obj->rate_type["value"] == 1) {
+                    $charge = ($units * $obj->price);
+                }
+            }
+        }
+        return $charge;
+    }
+
+
+    public function getVendorRateValues($hub_id, $vendor_id,  $vehicle_count, $unit_count, $end_date)
+    {
+        $rateHelper = new VendorRateHelper($this->db);
+        $rateSubHelper = new VendorRateSubHelper($this->db);
+        $date = SmartGeneral::getCurrentDbDate();
+        $rateHelper = $rateHelper->getVendorHubDetails($hub_id, $vendor_id, $end_date);
+        // var_dump($rateHelper);
+        $parking_charges = 0;
+        $units_charge = 0;
+        if (isset($rateHelper->ID)) {
+            $vendor_rates = $rateSubHelper->getAllByVendorRateId($rateHelper->ID);
+            // var_dump($vendor_rates);
+            $parking_charges = $this->getVehicleParkingCharge(
+                $vendor_rates,
+                $vehicle_count
+            );
+            $units_charge = $this->getVehicleChargingCharge($vendor_rates, $vehicle_count, $unit_count);
+        }
+        return [$parking_charges, $units_charge];
+    }
+
 
     public function prepareSingleVendorData($bill_id, $ven_data, $start_date, $end_date)
     {
@@ -337,25 +357,32 @@ class InvoiceHelper extends BaseHelper
         // get vehicle count with dates
         $_data["total_vehicles"] = $this->getVehicleCountWithVendor($ven_data->ID, $start_date, $end_date);
         // calculate amount now 
-        $_data["unit_amount"] = $_data["total_units"]  * 10;
+        list($parking_amount, $unit_amount) = $this->getVendorRateValues(
+            $ven_data->hub_id,
+            $ven_data->ID,
+            $_data["total_vehicles"],
+            $_data["total_units"],
+            $end_date
+        );
+        $_data["unit_amount"] = $unit_amount;
         // calculate vehicle amount now 
-        $_data["vehicle_amount"] = $_data["total_vehicles"]  * 100;
+        $_data["vehicle_amount"] = $parking_amount;
         // rent amount
-        $_data["rent_amount"] = 100;
+        $_data["rent_amount"] = 0;
         //
-        $_data["other_one_amount"] = 100;
+        $_data["other_one_amount"] = 0;
         //
-        $_data["other_two_amount"] = 100;
+        $_data["other_two_amount"] = 0;
         //
         $_data["total_others"] =   $_data["rent_amount"]  +   $_data["other_one_amount"] +  $_data["other_two_amount"];
         //
         $_data["total_taxable"] = $_data["unit_amount"] +  $_data["vehicle_amount"] +  $_data["total_others"];
         //
-        $_data["sgst"] = 100;
-        $_data["cgst"] = 100;
-        $_data["igst"] = 100;
-        $_data["gst_percentage"] = 100;
-        $_data["gst_amount"] = 100;
+        $_data["sgst"] = 9;
+        $_data["cgst"] = 9;
+        $_data["igst"] = 18;
+        $_data["gst_percentage"] = 18;
+        $_data["gst_amount"] = $_data["total_taxable"] * ($_data["gst_percentage"] / 100);
         $_data["total_amount"] =  $_data["total_taxable"]  +   $_data["gst_amount"];
         $_data["short_name"] = $ven_data->short_name;
         return $_data;
@@ -440,10 +467,49 @@ class InvoiceHelper extends BaseHelper
     public function generateInvoicePdf($id)
     {
         $data = [
+            'address'=>'ADDRESS',
             "ack_no" => "GST NUMBER",
-            "ack_date" => "2023-04-01"
+            "ack_date" => "2023-04-01",
+            'irn_no' => 'IRN NUMBER',
+            'additional_info' => 'IRN NUMBER',
+            'invoice_number' => 'INVOICE NUMBER',
+            'invoice_date' => '10/09/2024',
+            'date_of_supply' => '10/09/2024',
+            'items' => [
+                [
+                    'sl_no' => "SERAIL NUMBER",
+                    'description' => 'GOODS/SERVICES',
+                    'hsn_code' => 'HSN CODE',
+                    'quantity' => 'QUANTITY',
+                    'unit' => 'NOS',
+                    'unit_price' => 'UNIT PRICE',
+                    'taxable_amount' => 'TAXABLE AMT',
+                    'tax_details' => 'TAX DETAILS',
+                    'tcs' => '0.0',
+                    'total' => 'TOTAL'
+                ],
+
+                
+            ],
+            'itemamt'=> [
+                [
+                 'tax_amt'  =>'82340.35',
+                 'cgst_amt' =>'0.00',
+                 'sgst_amt' =>'0.00',
+                 'igst_amt' => '14821.26',
+                 'cees_amt' =>'0.00 ',
+                 'state_cees' =>'0.00',
+                  'roundoff_amt' =>'0',
+               'other_charge' =>'0.00',
+           'total_inv_amt' =>'97161.61',
+                ],
+
+                
+            ],
+      
         ];
         $html = InvoicePdf::getHtml($data);
+    //    $html = '<p>hello </p>';
         // echo $html;
         $path = "invoice" . DS . $id . DS . "invoice.pdf";
         SmartPdfHelper::genPdf($html, $path);
