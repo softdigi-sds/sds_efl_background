@@ -162,4 +162,80 @@ class ImportHelper extends BaseHelper
         ];
         return $columns;
     }
+
+     public function importHubColumns()
+    {
+        $columns = [
+            [
+                "letter" => "B",
+                "index" => "SD_OFFICE",
+                "empty" => true
+            ],
+            [
+                "letter" => "C",
+                "index" => "HUB_ID"
+            ],
+            [
+                "letter" => "D",
+                "index" => "HUB_NAME"
+            ]
+        ];
+        return $columns;
+    }
+     public function importVendorColumns()
+    {
+        $columns = [
+            [
+                "letter" => "A",
+                "index" => "HUB_ID",
+                "empty" => true
+            ],
+            [
+                "letter" => "B",
+                "index" => "HUB Location"
+            ],
+            [
+                "letter" => "C",
+                "index" => "Vendor"
+            ],
+            [
+                "letter" => "D",
+                "index" => "Customer Code"
+            ],
+            [
+                "letter" => "E",
+                "index" => "Name of the Customer"
+            ],
+            [
+                "letter" => "F",
+                "index" => "BILLING TO"
+            ],
+            [
+                "letter" => "G",
+                "index" => "GST NO."
+            ],
+            [
+                "letter" => "H",
+                "index" => "PAN"
+            ],
+            [
+                "letter" => "K",
+                "index" => "Address 1"
+            ],
+            [
+                "letter" => "L",
+                "index" => "Address 2"
+            ],
+            [
+                "letter" => "M",
+                "index" => "Pin Code"
+            ],
+            [
+                "letter" => "N",
+                "index" => "State"
+            ]
+        ];
+        return $columns;
+    }
+
 }

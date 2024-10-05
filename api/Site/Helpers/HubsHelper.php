@@ -97,14 +97,17 @@ class HubsHelper extends BaseHelper
         // $order_by="last_modified_time DESC";
         $data =  $this->getAll($select, $from, $sql, $group_by, "office_city ASC", $data_in, $single, [], $count);
         $city = [];
-        foreach ($data as $dt) {
-            if (isset($dt->ID)) {
-                //$city["value"] = $dt->sd_efl_office_id;
-                //$city["label"] = $dt->office_city;
-                $_hub_grp_helper = new HubGroupsHelper($this->db);
-                $dt->role = $_hub_grp_helper->getSelectedRolesWithHubId($dt->ID);
-                //$dt->city = $city;
-            }
+        if(!empty($data)){
+            foreach ($data as $dt) {
+                if (isset($dt->ID)) {
+                    //$city["value"] = $dt->sd_efl_office_id;
+                    //$city["label"] = $dt->office_city;
+                    $_hub_grp_helper = new HubGroupsHelper($this->db);
+                    $dt->role = $_hub_grp_helper->getSelectedRolesWithHubId($dt->ID);
+                    //$dt->city = $city;
+                }
+        }
+        
         }
         return $data;
     }
@@ -172,4 +175,24 @@ class HubsHelper extends BaseHelper
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return !empty($data) ? intval($data->ID) : 0;
     }
+      public function insertUpdateNew($_data){
+        $insert_columns = ["hub_id", "hub_name", "sd_efl_office_id", "created_by", "created_time"];
+        $update_columns = [ "last_modified_by", "last_modified_time"];
+        $exist_data = $this->checkExists($_data["sd_efl_office_id"], $_data["hub_id"]);
+        if (isset($exist_data->ID)) {
+            $this->update(  $update_columns, $_data, $exist_data->ID);
+        } else {
+            $this->insert($insert_columns , $_data);
+        }
+    }
+
+
+    public function checkExists($office_id, $hub_id)
+    {
+        $sql = "sd_efl_office_id=:office_id AND hub_id=:hub_id ";
+        $data_in = [ "office_id" =>$office_id, "hub_id" =>$hub_id];
+        $exist_data = $this->getAllData($sql, $data_in, ["t1.ID"], "", false, true);
+        return $exist_data;
+    }
+
 }

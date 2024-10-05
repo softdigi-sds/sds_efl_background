@@ -6,13 +6,20 @@ use Core\BaseController;
 use Site\Helpers\VendorsHelper as VendorsHelper;
 use Core\Helpers\SmartData as Data;
 use Site\Helpers\InvoiceHelper as InvoiceHelper;
-
+use Site\Helpers\HubsHelper;
+use Site\Helpers\StateDbHelper;
+use Core\Helpers\SmartFileHelper;
+use Core\Helpers\SmartExcellHelper;
+use Site\Helpers\ImportHelper;
 
 class VendorsController extends BaseController
 {
 
     private VendorsHelper $_helper;
     private InvoiceHelper $_invoice_helper;
+    private HubsHelper $_hubs_helper;
+    private StateDbHelper $_state_helper;
+    private ImportHelper $_import_helper;
 
     function __construct($params)
     {
@@ -20,6 +27,9 @@ class VendorsController extends BaseController
         // 
         $this->_helper = new VendorsHelper($this->db);
         $this->_invoice_helper = new InvoiceHelper($this->db);
+        $this->_state_helper = new StateDbHelper($this->db);
+        $this->_hubs_helper = new HubsHelper($this->db);
+        $this->_import_helper = new ImportHelper($this->db);
     }
 
     /**
@@ -132,4 +142,68 @@ class VendorsController extends BaseController
     
         $this->response($data);
     }
+
+    public function importExcel()
+    {
+        $excel_import = Data::post_array_data("excel");
+        if (!is_array($excel_import) || count($excel_import) < 1) {
+            \CustomErrorHandler::triggerInvalid("Please upload Excel to Import");
+        }
+        // get the excel content
+        $content = isset($excel_import["content"]) ? $excel_import["content"] : "";
+        if (strlen($content) < 10) {
+            \CustomErrorHandler::triggerInvalid("Please upload Excel to Import");
+        }
+        //
+        $insert_id = $this->_import_helper->insertData("VENDORS");
+        // excel path 
+        $store_path = "excel_import" . DS . $insert_id . DS . "import.xlsx";
+        // 
+        $dest_path = SmartFileHelper::storeFile($content, $store_path);
+        // 
+        $this->_import_helper->updatePath($insert_id, $store_path);
+        // read the excel and process
+        // $dest_path = "E:\Book1.xlsx";
+        $excel = new SmartExcellHelper($dest_path, 2);
+        $_data = $excel->getData($this->_import_helper->importVendorColumns(), 2);
+        $out = [];
+        // var_dump($_data);exit();
+        foreach ($_data as $obj) {
+            $hub_data = $this->_hubs_helper->checkHubExist($obj["HUB_ID"]);
+            $state_data = $this->_state_helper->checkStateExist($obj["State"]);
+            // var_dump($hub_data);exit();
+            if ($obj["Customer Code"] == "" || $obj["HUB_ID"] == "" ) {
+                $obj["status"] = 10;
+                $obj["msg"] = "Improper Data";
+            } else {
+                if (isset($hub_data->ID) && isset($state_data->ID)) {
+                    $_vendor_data = [
+                        "sd_hub_id" => $hub_data->ID,
+                        "vendor_code" => $obj["Customer Code"],
+                        "vendor_company" =>$obj["Vendor"], 
+                        "vendor_name" =>$obj["Name of the Customer"], 
+                        "billing_to" => $obj["BILLING TO"], 
+                        "gst_no" => $obj["GST NO."], 
+                        "pan_no" => $obj["PAN"], 
+                        "address_one" => $obj["Address 1"], 
+                        "address_two" => $obj["Address 2"], 
+                        "state_name" => $state_data->ID, 
+                        "pin_code" => $obj["Pin Code"], 
+                        "status" => 5
+
+                      
+                    ];
+                    // var_dump($_vendor_data);exit();
+                    $this->_helper->insertUpdateNew($_vendor_data);
+                    $obj["status"] = 5;
+                } else {
+                    $obj["status"] = 10;
+                    $obj["msg"] = "Office Does Not Existed";
+                }
+            }
+            $out[] = $obj;
+        }
+        $this->response($out);
+    }
+
 }

@@ -177,5 +177,23 @@ class VendorsHelper extends BaseHelper
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return !empty($data) ? intval($data->ID) : 0;
     }
-  
+    public function insertUpdateNew($_data){
+        $insert_columns = ["sd_hub_id", "vendor_code", "vendor_company", "vendor_name", "billing_to", "gst_no", "pan_no", "address_one", "address_two", "state_name", "pin_code", "status", "created_by", "created_time"];
+        $update_columns = [ "last_modified_by", "last_modified_time"];
+        $exist_data = $this->checkExists($_data["sd_hub_id"], $_data["vendor_code"]);
+        if (isset($exist_data->ID)) {
+            $this->update(  $update_columns, $_data, $exist_data->ID);
+        } else {
+            $this->insert($insert_columns , $_data);
+        }
+    }
+
+
+    public function checkExists($vendor_code, $hub_id)
+    {
+        $sql = "vendor_code=:vendor_code AND sd_hub_id=:hub_id ";
+        $data_in = [ "vendor_code" =>$vendor_code, "hub_id" =>$hub_id];
+        $exist_data = $this->getAllData($sql, $data_in, ["t1.ID"], "", false, true);
+        return $exist_data;
+    }
 }
