@@ -100,7 +100,7 @@ class VendorRateHelper extends BaseHelper
     {
         $from = Table::VENDOR_RATE . " t1 LEFT JOIN " . Table::HUBS . " t2 ON t1.sd_hubs_id=t2.ID LEFT JOIN " . Table::VENDORS . " t3 ON t1.sd_vendors_id=t3.ID ";
         $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t3.vendor_company"];
-        $data =  $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);      
+        $data =  $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
         return $data;
     }
     /**
@@ -193,6 +193,17 @@ class VendorRateHelper extends BaseHelper
         $sql = "sd_hubs_id=:hub_id AND sd_vendors_id=:vend_id AND effective_date=:effective_date";
         $data_in = ["hub_id" => $hub_id, "vend_id" => $vend_id, "effective_date" => $effective_date];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
+        return $data;
+    }
+
+    public function getVendorHubDetails($hub_id, $vend_id, $effective_date)
+    {
+        // echo  $hub_id . "b " . $vend_id .  "effective_date " . $effective_date;
+        $from = Table::VENDOR_RATE;
+        $select = ["*"];
+        $sql = "sd_hubs_id=:hub_id AND sd_vendors_id=:vend_id";
+        $data_in = ["hub_id" => $hub_id, "vend_id" => $vend_id];
+        $data = $this->getAll($select, $from, $sql, "", "effective_date DESC", $data_in, TRUE, []);
         return $data;
     }
 
