@@ -31,7 +31,9 @@ class VendorRateSubHelper extends BaseHelper
         "min_start" => SmartConst::SCHEMA_INTEGER,
         "min_end" => SmartConst::SCHEMA_INTEGER,
         "price" => SmartConst::SCHEMA_FLOAT,
-        "extra_price" => SmartConst::SCHEMA_FLOAT
+        "extra_price" => SmartConst::SCHEMA_FLOAT,
+        "min_units_vehicle" => SmartConst::SCHEMA_INTEGER,
+        "min_units_type" => SmartConst::SCHEMA_INTEGER
     ];
     /**
      * 
@@ -168,7 +170,7 @@ class VendorRateSubHelper extends BaseHelper
         $exist_data = $this->getOneByVendAndHsn($_data["sd_vendor_rate_id"], $_data["sd_hsn_id"]);
         if (isset($exist_data->ID)) {
             // exisitng so need to update
-            $columns_update = ["rate_type", "min_start", "min_end", "price", "extra_price"];
+            $columns_update = ["rate_type", "min_start", "min_end", "price", "extra_price", "min_units_vehicle"];
             $this->update($columns_update, $_data, $exist_data->ID);
             return  $exist_data->ID;
         } else {
@@ -179,7 +181,8 @@ class VendorRateSubHelper extends BaseHelper
                 "min_start",
                 "min_end",
                 "price",
-                "extra_price"
+                "extra_price",
+                "min_units_vehicle"
             ];
             $id_inserted = $this->insert($columns_insert, $_data);
             return  $id_inserted;

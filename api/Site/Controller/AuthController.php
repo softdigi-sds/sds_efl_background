@@ -62,13 +62,13 @@ class AuthController extends BaseController
         $db->change_pass = $user_data->change_pass;
         $db->expiresInTime = 700;
         $db->id = $user_data->ID;
-        $db->roles = $user_data->role;
+        //$db->roles = $user_data->role;
         $roles = ["USER"];
-        if ($user_data->euserid == "admin") {
+        if ($user_data->euserid === "admin") {
             $roles[] = "ADMIN";
         }
         $roles = $this->getRoles($user_data->ID, $roles);
-        $db->role =  $roles;
+        $db->roles =  $roles;
         return $db;
     }
 
@@ -92,30 +92,31 @@ class AuthController extends BaseController
     /**
      * 
      */
-    public function login(){         
-        $columns = ["emailid","epassword"];
-         // do validations
-         $this->_user_helper->validate(UserHelper::validations,$columns,$this->post);
-         // take the data
-         $emailid = Data::post_data("emailid","STRING"); 
-         // get the data
-         $user_data = $this->_user_helper->getOneDataWithEmailId($emailid);
-         // 
-         if(!isset($user_data->ID)){
+    public function login()
+    {
+        $columns = ["emailid", "epassword"];
+        // do validations
+        $this->_user_helper->validate(UserHelper::validations, $columns, $this->post);
+        // take the data
+        $emailid = Data::post_data("emailid", "STRING");
+        // get the data
+        $user_data = $this->_user_helper->getOneDataWithEmailId($emailid);
+        // 
+        if (!isset($user_data->ID)) {
             \CustomErrorHandler::triggerInvalid("Invalid Email ID");
-         }
-         // get status
-         $status = $user_data->active_status;
-         // check failed password attempts
-         if($emailid!="admin@gmail.com") {
-         $this->_user_helper->checkFailedAttempts($user_data); 
-         }
-         //
-         $password = trim($this->post["epassword"]);
-         //         
-         if(!password_verify($password,$user_data->epassword)){
-            $this->addLog("INVALID PASSWORD","",$user_data->ename); 
-            $this->_user_helper->updateFailedAttempts($user_data); 
+        }
+        // get status
+        $status = $user_data->active_status;
+        // check failed password attempts
+        if ($emailid != "admin@gmail.com") {
+            $this->_user_helper->checkFailedAttempts($user_data);
+        }
+        //
+        $password = trim($this->post["epassword"]);
+        //         
+        if (!password_verify($password, $user_data->epassword)) {
+            $this->addLog("INVALID PASSWORD", "", $user_data->ename);
+            $this->_user_helper->updateFailedAttempts($user_data);
             \CustomErrorHandler::triggerInvalid("Invalid Password");
         }
         // check status active or inactive
@@ -126,7 +127,7 @@ class AuthController extends BaseController
         // update the last login time 
         $this->_user_helper->updateLastLogin($user_data->ID);
         // user data
-        $user_data->role = $emailid!="admin@gmail.com"? ["USER"]:["ADMIN"];  
+        $user_data->role = $emailid != "admin@gmail.com" ? ["USER"] : ["ADMIN"];
         // updating the visitor count
         $this->updateVisitorCount();
         //
@@ -184,20 +185,22 @@ class AuthController extends BaseController
         $backup_file = "test.sql";
         $backup->doBackUp($backup_file);
     }
-   
-    public function testExcel(){
-        $excel_obj = new Excel("E:/Book1.xlsx",0 );
-        $data = $excel_obj->getExcelData();
-        foreach($data as $index => $value){
-            foreach($value as $key =>$dt){
-        echo "$key: $dt <br>";
-            }
-            echo "<br>";
-        }
+
+    public function testExcel()
+    {
+        // $excel_obj = new Excel("E:/Book1.xlsx", 0);
+        // $data = $excel_obj->getExcelData();
+        // foreach ($data as $index => $value) {
+        //     foreach ($value as $key => $dt) {
+        //         echo "$key: $dt <br>";
+        //     }
+        //     echo "<br>";
+        // }
     }
 
-    public function createExcelFromData(){
-        $excel_obj = new Excel("E:/Book1.xlsx",0 );
+    public function createExcelFromData()
+    {
+        $excel_obj = new Excel("E:/Book1.xlsx", 0);
         $data = [
             (object) ['sno' => 1, 'name' => 'Sandy', 'age' => 21],
             (object) ['sno' => 2, 'name' => 'Kenith', 'age' => null],
@@ -206,8 +209,5 @@ class AuthController extends BaseController
             (object) ['sno' => 5, 'name' => 'Sriharry', 'age' => 23],
         ];
         $excel_obj->createExcelFromData($data);
-
     }
-   
-   
 }
