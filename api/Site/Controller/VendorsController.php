@@ -3,6 +3,7 @@
 namespace Site\Controller;
 
 use Core\BaseController;
+use Core\Helpers\SmartData;
 use Site\Helpers\VendorsHelper as VendorsHelper;
 use Core\Helpers\SmartData as Data;
 use Site\Helpers\InvoiceHelper as InvoiceHelper;
@@ -65,6 +66,19 @@ class VendorsController extends BaseController
         $this->response($id);
     }
 
+    public function updateStatus()
+    {
+        $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+        if ($id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid ID");
+        }
+        $status = SmartData::post_data("status", "INTEGER");
+        $columns = ["status"];
+        $data_in = ["status" => $status];
+        $this->_helper->update($columns, $this->post, $id);
+        $this->responseMsg("Status Updated Successfully");
+    }
+
 
     public function getAll()
     {
@@ -120,16 +134,16 @@ class VendorsController extends BaseController
     }
     public function getVendorCompany()
     {
-        
+
         $vendor_company = isset($this->post["vendor_company"]) ? trim($this->post["vendor_company"]) : "";
-    
-        
+
+
         if (strlen($vendor_company) < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid vendor company");
         }
 
         $data = $this->_helper->getVendorCompany($vendor_company);
-    
+
         $this->response($data);
     }
 }
