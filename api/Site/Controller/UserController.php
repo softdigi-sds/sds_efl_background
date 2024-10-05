@@ -32,14 +32,14 @@ class UserController extends BaseController
     public function insert()
     {
 
-        $columns = ["ename", "mobile_no", "epassword"];
+        $columns = ["ename", "mobile_no", "epassword", "emailid"];
         // do validations
         $this->_helper->validate(UserHelper::validations, $columns, $this->post);
         //
         // here check user id already exists or not 
-        $exists_data = $this->_helper->getOneDataWithUserId($this->post["euserid"]);
+        $exists_data = $this->_helper->getOneDataWithEmailId($this->post["emailid"]);
         if (isset($exists_data->ID)) {
-            \CustomErrorHandler::triggerInvalid("ICNO Already Existed");
+            \CustomErrorHandler::triggerInvalid("Email ID Already Existed");
         }
         $this->db->_db->Begin();
         // add other columns 
