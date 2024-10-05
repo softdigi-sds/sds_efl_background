@@ -112,12 +112,20 @@ class InvoicePdf
         <img style="width:170px;" src="Site/view/images/logo.jpeg" alt="logo code">
       </div>
       <div style="text-align:center">
-        <h3>TAX INVOICE</h3>
-        <h3 style="text-align: right;">ORIGINAL FOR RECIPIENT</h3>
+        <table style="width:100%;">
+          <tr>
+            <td style="width:230px;"></td>
+            <td style="text-align: center;"><h3>TAX INVOICE</h3></td>
+            <td style="text-align: right; "><h3>ORIGINAL FOR RECIPIENT</h3></td>
+          </tr>
+        </table>
+        <!-- <h3>TAX INVOICE</h3>
+        <h3 style="text-align: right;">ORIGINAL FOR RECIPIENT</h3> -->
+        
         <h3>(As per Rule 46 of CGST Rules, 2017)</h3>
         <h3>TTL ELECTRIC FUEL PRIVATE LIMITED</h3>
         <h3><?php echo $this->get("address") ?></h>
-        <div style="border:1px solid black;">
+        <div style="border:1px solid black; margin-bottom: 0;">
           <table style="width:100%;">
             <tr>
               <td style="text-align: left;">
@@ -135,7 +143,7 @@ class InvoicePdf
       </div>
 
 
-      <table style="width:100%" border="1">
+      <table style="width:100%; margin-top: 0;" border="1">
         <tr>
 
           <td>
