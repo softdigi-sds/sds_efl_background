@@ -51,6 +51,8 @@ class UserController extends BaseController
         $columns[] = "created_time";
         $columns[] = "change_pass";
         $columns[] = "epassword";
+        $columns[] = "euserid";
+        $this->post["euserid"] = "none";
         $this->post["active_status"] = 5;
         $this->post["change_pass"] = 1;
         $this->post["epassword"] = SmartGeneral::hashPassword($this->post["epassword"]);
@@ -192,33 +194,33 @@ class UserController extends BaseController
     /**
      * admin reset password
      */
-    // public function adminReset()
-    // {
-    //     $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
-    //     if ($id < 1) {
-    //         \CustomErrorHandler::triggerInvalid("Invalid ID");
-    //     }
-    //     // insert and get id
-    //     $data = $this->_helper->getOneData($id);
-    //     //
-    //     if(!isset($data->ID)){
-    //         \CustomErrorHandler::triggerInternalError("ID does not exists");
-    //     }
-    //     //echo "userid " . $data->euserid. "<br/>";
-    //     //
-    //     $post_data = ["epassword"=> SmartGeneral::hashPassword($data->euserid),"change_pass"=>0, "failed_attempts"=>0];
-    //     //
-    //    // var_dump($post_data);
-    //     //
-    //     $columns = ["epassword","change_pass","failed_attempts"];
-    //     //
-    //     $this->_helper->update($columns, $post_data, $id);
-    //     // add log
-    //     $this->addLog("PASSWORD RESETTED","",SmartAuthHelper::getLoggedInUserName()); 
-    //     // retrun success mag
-    //     $this->responseMsg("Reset Successfully");
+//     public function adminReset()
+//     {
+//         $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+//         if ($id < 1) {
+//             \CustomErrorHandler::triggerInvalid("Invalid ID");
+//         }
+//         // insert and get id
+//         $data = $this->_helper->getOneData($id);
+//         //
+//         if(!isset($data->ID)){
+//             \CustomErrorHandler::triggerInternalError("ID does not exists");
+//         }
+//         //echo "userid " . $data->euserid. "<br/>";
+//         //
+//         $post_data = ["epassword"=> SmartGeneral::hashPassword($data->euserid),"change_pass"=>0, "failed_attempts"=>0];
+//         //
+//        // var_dump($post_data);
+//         //
+//         $columns = ["epassword","change_pass","failed_attempts"];
+//         //
+//         $this->_helper->update($columns, $post_data, $id);
+//         // add log
+//         $this->addLog("PASSWORD RESETTED","",SmartAuthHelper::getLoggedInUserName()); 
+//         // retrun success mag
+//         $this->responseMsg("Reset Successfully");
 
-  //  }
+//    }
     public function adminReset()
 {
     $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
