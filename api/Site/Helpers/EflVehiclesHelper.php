@@ -130,14 +130,15 @@ class EflVehiclesHelper extends BaseHelper
         }
     }
 
-    public function insertUpdateNew($_data){
+    public function insertUpdateNew($_data)
+    {
         $insert_columns = ["sd_hub_id", "sd_vendors_id", "sd_date", "vehicle_count", "created_by", "created_time"];
         $update_columns = ["vehicle_count", "last_modified_by", "last_modified_time"];
         $exist_data = $this->checkExists($_data["sd_vendors_id"], $_data["sd_date"]);
         if (isset($exist_data->ID)) {
-            $this->update(  $update_columns, $_data, $exist_data->ID);
+            $this->update($update_columns, $_data, $exist_data->ID);
         } else {
-            $this->insert($insert_columns , $_data);
+            $this->insert($insert_columns, $_data);
         }
     }
 
@@ -145,7 +146,7 @@ class EflVehiclesHelper extends BaseHelper
     public function checkExists($vendor_id, $date)
     {
         $sql = "sd_vendors_id=:sd_vendors_id AND sd_date=:sd_date ";
-        $data_in = [ "sd_vendors_id" =>$vendor_id, "sd_date" =>$date];
+        $data_in = ["sd_vendors_id" => $vendor_id, "sd_date" => $date];
         $exist_data = $this->getAllData($sql, $data_in, ["ID"], "", false, true);
         return $exist_data;
     }
@@ -180,13 +181,14 @@ class EflVehiclesHelper extends BaseHelper
         return $count;
     }
 
-    public function getVehicleInvoiceByDateVendor($ven_id,$strt_date, $end_date)
+    public function getVehicleInvoiceByDateVendor($ven_id, $strt_date, $end_date)
     {
         $select = [" t1.*,SUM(t1.vehicle_count) AS count "];
         $from = Table::EFL_VEHICLES . " t1 ";
         $sql = " t1.sd_vendors_id=:id AND t1.sd_date BETWEEN :strt_date AND :end_date  GROUP BY t1.sd_vendors_id";
-        $data_in = [ "id"=>$ven_id, "strt_date" => $strt_date, "end_date" => $end_date];
+        $data_in = ["id" => $ven_id, "strt_date" => $strt_date, "end_date" => $end_date];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, [], false);
-        return isset($data->count) ? $data->count : 0;
+        $count =  isset($data->count) ? $data->count : 0;
+        return intval($count / 30);
     }
 }

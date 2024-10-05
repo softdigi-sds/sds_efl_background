@@ -200,9 +200,15 @@ class VendorRateSubHelper extends BaseHelper
             // var_dump($rate_data);
             $ids[] = $this->insert_update_single($rate_data);
         }
+        foreach ($exist_data as $obj) {
+            if (!in_array($obj->ID, $ids)) {
+                $this->deleteId(Table::VENDOR_RATE_SUB, $obj->ID);
+            }
+        }
         //exit();
         // now comapare the ids and remove the data
     }
+
 
 
 

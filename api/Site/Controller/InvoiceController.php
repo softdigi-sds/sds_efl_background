@@ -73,6 +73,7 @@ class InvoiceController extends BaseController
         $dt = $this->_helper->insertInvoice($bill_id, $bill_data);
         // update the bill table with the update details
         $this->_bill_helper->updateBillData($bill_id, $dt);
+        // \CustomErrorHandler::triggerInvalid("tesing gg");
         $this->db->_db->commit();
         $this->response($bill_id);
     }
@@ -183,6 +184,6 @@ class InvoiceController extends BaseController
         // } catch (\Exception $e) {
         //     $this->response($e);
         // }
-        
+
     }
 }
