@@ -97,6 +97,7 @@ class CommonRouter
         $this->_routes["/hubs/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
         $this->_routes["/hubs/get_all_select"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAllSelect"];
         $this->_routes["/hubs/get_hub_id"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getHubID"];
+        $this->_routes["/hubs/import_excel"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "importExcel"];
     }
     private function hub_groups_routes()
     {
@@ -128,6 +129,7 @@ class CommonRouter
         $this->_routes["/vendors/get_all_select"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllSelect"];
         $this->_routes["/vendors/get_vendor_comapany"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getVendorCompany"];
         $this->_routes["/vendors/status_update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "updateStatus"];
+        $this->_routes["/vendors/import_excel"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "importExcel"];
     }
     private function vendor_rate_routes()
     {
