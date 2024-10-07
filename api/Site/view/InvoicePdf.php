@@ -139,7 +139,7 @@ class InvoicePdf
               </td>
             </tr>
           </table>
-        </div>
+       
       </div>
 
 
@@ -195,7 +195,7 @@ class InvoicePdf
 
 
       </table>
-
+      </div>
       <?php echo $this->gettable() ?>
 
 

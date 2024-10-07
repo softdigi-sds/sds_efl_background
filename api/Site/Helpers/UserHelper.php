@@ -12,7 +12,8 @@ use Core\BaseHelper;
 use Core\Helpers\SmartConst;
 use Core\Helpers\SmartGeneral;
 use Core\Helpers\SmartLogger;
-//
+
+
 use Core\Helpers\SmartSiteSettings;
 use Site\Helpers\TableHelper as Table;
 
@@ -173,6 +174,15 @@ class UserHelper extends BaseHelper
         $order_by="t1.created_time DESC";
         return $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, false, [], $count);
     }
+   
+    public function getSelectedRolesWithUserId(int $role_id) {
+        $sql = "t1.sd_mt_role_id =:ID";
+        $select = ["t1.sd_mt_role_id as value", "t3.role_name as label"];
+        return $this->getAllData($sql, ["ID" => $role_id], $select);
+    }
+    
+    
+    
     /**
      * 
      */
@@ -277,6 +287,6 @@ class UserHelper extends BaseHelper
         $post = ["failed_attempts"=>$failedCount];
         $this->update($columns,$post,$user_data->ID);
      }   
- 
+   
 
 }

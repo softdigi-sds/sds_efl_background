@@ -20,6 +20,7 @@ class UserController extends BaseController
         parent::__construct($params);
         // 
         $this->_helper = new UserHelper($this->db);
+        
         //
         $this->_user_role_helper = new UserRoleHelper($this->db);
         //
@@ -143,12 +144,35 @@ class UserController extends BaseController
         $this->response("Profile Details Updated Successfully");
     }
 
-    public function getAll()
-    {
-        // insert and get id
+    // public function getAll()
+    // {
+    //     // insert and get id
+    //     $data = $this->_helper->getAllData();
+    //     $this->response($data);
+    // }
+    public function getAll() {      
+        // Fetch user data
         $data = $this->_helper->getAllData();
+        
+        foreach($data as $key => $obj) {
+            // Get users based on role id
+            // $obj->users = $this->_user_role_helper->getSelectedUsersWithRoleId($obj->ID);
+            
+            // Get roles based on role id and append to the object
+            $role = $this->_user_role_helper->getSelectedRolesWithUserId($obj->ID);
+            if (!empty($role)) {
+                // Assuming the role is fetched correctly as the first element
+                $obj->role = $role[0];
+            }
+            
+            // Re-assign the modified object back into the data array
+            $data[$key] = $obj;
+        }
+        
+        // Respond with the combined data
         $this->response($data);
     }
+    
     /**
      * 
      */
