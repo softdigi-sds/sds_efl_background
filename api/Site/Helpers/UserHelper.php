@@ -181,12 +181,12 @@ class UserHelper extends BaseHelper
     //     return $this->getAllData($sql, ["ID" => $role_id], $select);
     // }
     public function getSelectedRolesWithUserId(int $role_id) {
-        // Adjust the SQL query to join with the roles table if necessary
-        $sql = "t1.sd_mt_role_id = :ID"; // Assuming `t1` is the users table with role ID
+       
+        $sql = "t1.sd_mt_role_id = :ID"; 
         $select = ["t1.sd_mt_role_id as value", "t3.role_name as label"];
         
-        // Ensure you join with the roles table (assuming it's called 'roles')
-        $from = "users t1 JOIN roles t3 ON t1.sd_mt_role_id = t3.id"; // Adjust 'roles' and 'id' as necessary
+        
+        $from = "users t1 JOIN roles t3 ON t1.sd_mt_role_id = t3.id"; 
     
         return $this->getAllData($sql, ["ID" => $role_id], $select, "", false, $from);
     }

@@ -173,34 +173,39 @@ class UserController extends BaseController
     //     $this->response($data);
     // }
     public function getAll() {      
-        // Fetch user data
         $data = $this->_helper->getAllData();
         
         foreach($data as $key => $obj) {
-            // Get roles based on role id and append to the object
-            $role = $this->_user_role_helper->getSelectedRolesWithUserId($obj->ID);
+            // Get all roles associated with the user ID
+            $roles = $this->_user_role_helper->getSelectedRolesWithUserId($obj->ID);
             
-            if (!empty($role)) {
-                // Assuming role is fetched correctly; if multiple roles are possible, adjust accordingly
-                $obj->role = [
-                    "value" => $role[0]->value,  // Role ID
-                    "label" => $role[0]->label   // Role Name
-                ];
+            // Initialize the roles array
+            $obj->roles = [];
+    
+            if (!empty($roles)) {
+                // Loop through each role and append to the roles array
+                foreach ($roles as $role) {
+                    $obj->roles[] = [
+                        "value" => $role->value,  
+                        "label" => $role->label   
+                    ];
+                }
             } else {
-                // Handle case where no role is found
-                $obj->role = [
+                // Default value if no roles are assigned
+                $obj->roles[] = [
                     "value" => 0,
                     "label" => "No Role Assigned"
                 ];
             }
             
-            // Re-assign the modified object back into the data array
+            // Update the data array
             $data[$key] = $obj;
         }
         
-        // Respond with the combined data
+        // Return the response with an array of roles
         $this->response($data);
     }
+    
     
     /**
      * 
