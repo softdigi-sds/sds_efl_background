@@ -150,19 +150,48 @@ class UserController extends BaseController
     //     $data = $this->_helper->getAllData();
     //     $this->response($data);
     // }
+    // public function getAll() {      
+    //     // Fetch user data
+    //     $data = $this->_helper->getAllData();
+        
+    //     foreach($data as $key => $obj) {
+    //         // Get users based on role id
+    //         // $obj->users = $this->_user_role_helper->getSelectedUsersWithRoleId($obj->ID);
+            
+    //         // Get roles based on role id and append to the object
+    //         $role = $this->_user_role_helper->getSelectedRolesWithUserId($obj->ID);
+    //         if (!empty($role)) {
+    //             // Assuming the role is fetched correctly as the first element
+    //             $obj->role = $role[0];
+    //         }
+            
+    //         // Re-assign the modified object back into the data array
+    //         $data[$key] = $obj;
+    //     }
+        
+    //     // Respond with the combined data
+    //     $this->response($data);
+    // }
     public function getAll() {      
         // Fetch user data
         $data = $this->_helper->getAllData();
         
         foreach($data as $key => $obj) {
-            // Get users based on role id
-            // $obj->users = $this->_user_role_helper->getSelectedUsersWithRoleId($obj->ID);
-            
             // Get roles based on role id and append to the object
             $role = $this->_user_role_helper->getSelectedRolesWithUserId($obj->ID);
+            
             if (!empty($role)) {
-                // Assuming the role is fetched correctly as the first element
-                $obj->role = $role[0];
+                // Assuming role is fetched correctly; if multiple roles are possible, adjust accordingly
+                $obj->role = [
+                    "value" => $role[0]->value,  // Role ID
+                    "label" => $role[0]->label   // Role Name
+                ];
+            } else {
+                // Handle case where no role is found
+                $obj->role = [
+                    "value" => 0,
+                    "label" => "No Role Assigned"
+                ];
             }
             
             // Re-assign the modified object back into the data array
