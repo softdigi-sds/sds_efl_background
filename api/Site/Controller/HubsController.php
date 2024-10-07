@@ -6,9 +6,13 @@ use Core\BaseController;
 
 use Core\Helpers\SmartAuthHelper;
 use Core\Helpers\SmartData as Data;
+use Core\Helpers\SmartFileHelper;
+use Core\Helpers\SmartExcellHelper;
 use Site\Helpers\HubsHelper;
 use Site\Helpers\HubGroupsHelper;
+use Site\Helpers\EflOfficeHelper;
 use Site\Helpers\VendorRateHelper;
+use Site\Helpers\ImportHelper;
 
 
 
@@ -17,6 +21,9 @@ class HubsController extends BaseController
 
     private HubGroupsHelper $_hub_group_helper;
     private HubsHelper $_helper;
+    private EflOfficeHelper $_office_helper;
+    private ImportHelper $_import_helper;
+
     private VendorRateHelper $_vendor_rate_helper;
     function __construct($params)
     {
@@ -25,6 +32,9 @@ class HubsController extends BaseController
         $this->_helper = new HubsHelper($this->db);
         $this->_vendor_rate_helper = new VendorRateHelper($this->db);
         $this->_hub_group_helper = new HubGroupsHelper($this->db);
+        $this->_import_helper = new ImportHelper($this->db);
+        $this->_office_helper = new EflOfficeHelper($this->db);
+
     }
 
     /**
@@ -142,5 +152,55 @@ class HubsController extends BaseController
         $this->response($data);
     }
 
+    public function importExcel()
+    {
+        $excel_import = Data::post_array_data("excel");
+        if (!is_array($excel_import) || count($excel_import) < 1) {
+            \CustomErrorHandler::triggerInvalid("Please upload Excel to Import");
+        }
+        // get the excel content
+        $content = isset($excel_import["content"]) ? $excel_import["content"] : "";
+        if (strlen($content) < 10) {
+            \CustomErrorHandler::triggerInvalid("Please upload Excel to Import");
+        }
+        //
+        $insert_id = $this->_import_helper->insertData("HUBS");
+        // excel path 
+        $store_path = "excel_import" . DS . $insert_id . DS . "import.xlsx";
+        // 
+        $dest_path = SmartFileHelper::storeFile($content, $store_path);
+        // 
+        $this->_import_helper->updatePath($insert_id, $store_path);
+        // read the excel and process
+        // $dest_path = "E:\Book1.xlsx";
+        $excel = new SmartExcellHelper($dest_path, 1);
+        $_data = $excel->getData($this->_import_helper->importHubColumns(), 2);
+        $out = [];
+        // var_dump($_data);exit();
+        foreach ($_data as $obj) {
+            $office_data = $this->_office_helper->checkOfficeExist($obj["SD_OFFICE"]);
+            // var_dump($office_data);exit();
+            if ($obj["HUB_ID"] == "" || $obj["SD_OFFICE"] == "") {
+                $obj["status"] = 10;
+                $obj["msg"] = "Improper Data";
+            } else {
+                if (isset($office_data->ID)) {
+                    $_hub_data = [
+                        "hub_id" => $obj["HUB_ID"],
+                        "hub_name" => $obj["HUB_ID"],
+                        "sd_efl_office_id" => $office_data->ID
+                    ];
+                    // var_dump($_hub_data);exit();
+                    $this->_helper->insertUpdateNew($_hub_data);
+                    $obj["status"] = 5;
+                } else {
+                    $obj["status"] = 10;
+                    $obj["msg"] = "Office Does Not Existed";
+                }
+            }
+            $out[] = $obj;
+        }
+        $this->response($out);
+    }
 
 }

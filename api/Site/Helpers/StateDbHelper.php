@@ -94,4 +94,14 @@ class StateDbHelper extends BaseHelper
         $this->deleteId($from,$id);
     }
 
+    public function checkStateExist($state_name)
+    {
+        $from = Table::STATEDB;
+        $select = ["ID"];
+        $sql = "state_name=:state_name";
+        $data_in = ["state_name" => $state_name];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        return $data;
+    }
+
 }
