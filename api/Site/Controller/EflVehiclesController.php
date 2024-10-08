@@ -11,6 +11,8 @@ use Core\Helpers\SmartFileHelper;
 use Site\Helpers\EflVehiclesHelper;
 use Site\Helpers\ImportHelper;
 use Site\Helpers\VendorsHelper;
+use Site\View\VehiclesPdf;
+use Core\Helpers\SmartPdfHelper;
 
 
 
@@ -20,6 +22,7 @@ class EflVehiclesController extends BaseController
     private EflVehiclesHelper $_helper;
     private ImportHelper $_import_helper;
     private VendorsHelper $_vendor_helper;
+    private VehiclesPdf $_vehicles_pdf_helper;
     function __construct($params)
     {
         parent::__construct($params);
@@ -29,6 +32,8 @@ class EflVehiclesController extends BaseController
         $this->_import_helper = new ImportHelper($this->db);
         //
         $this->_vendor_helper = new VendorsHelper($this->db);
+
+        $this->_vehicles_pdf_helper = new VehiclesPdf($this->db);
     }
 
     /**
@@ -203,5 +208,16 @@ class EflVehiclesController extends BaseController
             $out[] = $obj;
         }
         $this->response($out);
+    }
+    public function VehicleReport()
+    {
+
+    
+        $id = 3;
+        
+        $this->_helper->generateVehiclesPdf($id);
+        exit();
+      
+
     }
 }

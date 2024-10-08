@@ -189,6 +189,7 @@ class CommonRouter
         $this->_routes["/efl_vehicles/get_one_parking_data"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOneParkingData"];
         $this->_routes["/efl_vehicles/get_all_parking_data"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllParkingData"];
         $this->_routes["/efl_vehicles/import_excel"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "importExcel"];
+        $this->_routes["/efl_vehicles/Vehicle_Report"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "VehicleReport"];
     }
 
     private function site_routes()
@@ -206,6 +207,12 @@ class CommonRouter
         $controller = "EfllHsnsController";
         $this->_routes["/efl_hsns/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
         $this->_routes["/efl_hsns/get_all_select"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAllSelect"];
+    }
+    private function meter_readings_routes()
+    {
+        $controller = "MeterReadingsController";
+        $this->_routes["/meter_readings/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
+        $this->_routes["/meter_readings/get_all"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAll"];
     }
 
     private function get_all_Routes()
@@ -228,6 +235,7 @@ class CommonRouter
         $this->invoice_routes();
         $this->site_routes();
         $this->efl_hsns_routes();
+        $this->meter_readings_routes();
         return $this->_routes;
     }
 

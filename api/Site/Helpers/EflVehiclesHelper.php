@@ -10,10 +10,12 @@ namespace Site\Helpers;
 
 use Core\BaseHelper;
 use Core\Helpers\SmartConst;
+use Core\Helpers\SmartPdfHelper;
+use Core\Helpers\SmartGeneral;
 
 //
 use Site\Helpers\TableHelper as Table;
-
+use Site\View\VehiclesPdf;
 /**
  * Description of Data
  * 
@@ -190,5 +192,17 @@ class EflVehiclesHelper extends BaseHelper
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, [], false);
         $count =  isset($data->count) ? $data->count : 0;
         return intval($count / 30);
+    }
+    public function generateVehiclesPdf($id)
+    {
+        $data = [
+            // 'billing'=>'sample',
+        ];
+       
+        $html = VehiclesPdf::getHtml($data);
+    //    $html = '<p>hello </p>';
+    //     echo $html;
+        $path = "Vehicles" . DS . $id . DS . "Vehicles.pdf";
+        SmartPdfHelper::genPdf($html, $path);
     }
 }
