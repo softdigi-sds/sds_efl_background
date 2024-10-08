@@ -38,4 +38,5 @@ class TableHelper
    const EFLHSNS = "sd_efl_hsns";
    const SD_IMPORT ="sd_import";
    const METER_READINGS ="sd_meter_readings";
+   const  VEHICLE_TYPES ="sd_vehicle_types";
 }

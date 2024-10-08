@@ -48,14 +48,7 @@ class MeterReadingsController extends BaseController
      * 
      */
    
-    // public function getAll()
-    // {
-    //     $data = $this->_helper->getAllData();
-    //     $this->response($data);
-    // }
-    /**
-     * 
-     */
+    
   
      public function getAll()
      {
