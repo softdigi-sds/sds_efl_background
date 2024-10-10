@@ -441,6 +441,7 @@ class InvoiceHelper extends BaseHelper
                 "total_vehicles",
                 "unit_amount",
                 "vehicle_amount",
+                "total_taxable",
                 "status",
                 "gst_percentage",
                 "gst_amount",
@@ -467,7 +468,7 @@ class InvoiceHelper extends BaseHelper
     public function generateInvoicePdf($id)
     {
         $data = [
-            'address'=>'ADDRESS',
+            'address' => 'ADDRESS',
             "ack_no" => "GST NUMBER",
             "ack_date" => "2023-04-01",
             'irn_no' => 'IRN NUMBER',
@@ -489,27 +490,27 @@ class InvoiceHelper extends BaseHelper
                     'total' => 'TOTAL'
                 ],
 
-                
+
             ],
-            'itemamt'=> [
+            'itemamt' => [
                 [
-                 'tax_amt'  =>'82340.35',
-                 'cgst_amt' =>'0.00',
-                 'sgst_amt' =>'0.00',
-                 'igst_amt' => '14821.26',
-                 'cees_amt' =>'0.00 ',
-                 'state_cees' =>'0.00',
-                  'roundoff_amt' =>'0',
-               'other_charge' =>'0.00',
-           'total_inv_amt' =>'97161.61',
+                    'tax_amt'  => '82340.35',
+                    'cgst_amt' => '0.00',
+                    'sgst_amt' => '0.00',
+                    'igst_amt' => '14821.26',
+                    'cees_amt' => '0.00 ',
+                    'state_cees' => '0.00',
+                    'roundoff_amt' => '0',
+                    'other_charge' => '0.00',
+                    'total_inv_amt' => '97161.61',
                 ],
 
-                
+
             ],
-      
+
         ];
         $html = InvoicePdf::getHtml($data);
-    //    $html = '<p>hello </p>';
+        //    $html = '<p>hello </p>';
         // echo $html;
         $path = "invoice" . DS . $id . DS . "invoice.pdf";
         SmartPdfHelper::genPdf($html, $path);
