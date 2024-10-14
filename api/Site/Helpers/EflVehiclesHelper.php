@@ -16,6 +16,7 @@ use Core\Helpers\SmartGeneral;
 //
 use Site\Helpers\TableHelper as Table;
 use Site\View\VehiclesPdf;
+
 /**
  * Description of Data
  * 
@@ -34,6 +35,12 @@ class EflVehiclesHelper extends BaseHelper
         "created_time" => SmartConst::SCHEMA_CDATETIME,
         "last_modified_by" => SmartConst::SCHEMA_INTEGER,
         "last_modified_time" => SmartConst::SCHEMA_CDATETIME,
+    ];
+
+    const schema_sub = [
+        "sd_efl_vehicles_id" => SmartConst::SCHEMA_INTEGER,
+        "sd_vehicle_types_id" => SmartConst::SCHEMA_INTEGER,
+        "count" => SmartConst::SCHEMA_INTEGER
     ];
     /**
      * 
@@ -125,10 +132,14 @@ class EflVehiclesHelper extends BaseHelper
         $sql = " sd_hub_id=:sd_hub_id AND sd_vendors_id=:sd_vendors_id AND sd_date=:sd_date ";
         $data_in = ["sd_hub_id" => $data["sd_hub_id"], "sd_vendors_id" => $data["sd_vendors_id"], "sd_date" => $data["sd_date"]];
         $exist_data = $this->getAllData($sql, $data_in, ["ID"], "", false, true);
+        $sub_data = $data["sub_data"];
         if (isset($exist_data->ID)) {
             $this->update($update_cols, $data, $exist_data->ID);
+            // do the sub edditon also
+            $this->insert_update_data($exist_data->ID, $sub_data);
         } else {
-            $this->insert($insert_cols, $data);
+            $id = $this->insert($insert_cols, $data);
+            $this->insert_update_data($id, $sub_data);
         }
     }
 
@@ -160,13 +171,14 @@ class EflVehiclesHelper extends BaseHelper
         $data = $_venoder_helper->getVendorsByHubId($hub_id);
         foreach ($data as $ven_data) {
             // if (isset($ven_data->ID)) {
-            $select = ["vehicle_count AS count"];
+            $select = ["vehicle_count AS count,ID"];
             $from = Table::EFL_VEHICLES;
             $sql = " sd_hub_id=:ID AND sd_vendors_id=:ven_id AND sd_date=:date";
             $data_in = ["ID" => $hub_id, "ven_id" => $ven_data->ID, "date" => $date];
             $count = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
             $ven_data->sd_vendors_id = $ven_data->ID;
             $ven_data->vehicle_count = isset($count->count) ? $count->count : 0;
+            $ven_data->ID = isset($count->ID) ? $count->ID : 0;
             $ven_data->date = $date;
             // }
         }
@@ -175,9 +187,13 @@ class EflVehiclesHelper extends BaseHelper
 
     public function getCountByHubAndDate($id, $month, $year)
     {
-        $select = [" SUM(vehicle_count) AS count, sd_date AS date "];
-        $from = Table::EFL_VEHICLES;
-        $sql = " sd_hub_id=:ID AND  YEAR(sd_date) =:year AND MONTH(sd_date) =:month GROUP BY sd_date ";
+        $select = [
+            "t1.sd_date AS date,
+            DAY(t1.sd_date) AS day_number ",
+            "(SELECT SUM(t2.count) FROM " . Table::EFL_VEHICLES_SUB . " t2 WHERE t2.sd_efl_vehicles_id=t1.ID) as count"
+        ];
+        $from = Table::EFL_VEHICLES . " t1";
+        $sql = "t1.sd_hub_id=:ID AND  YEAR(t1.sd_date) =:year AND MONTH(t1.sd_date) =:month GROUP BY sd_date ";
         $data_in = ["ID" => $id, "month" => $month, "year" => $year];
         $count = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
         return $count;
@@ -198,11 +214,95 @@ class EflVehiclesHelper extends BaseHelper
         $data = [
             // 'billing'=>'sample',
         ];
-       
+
         $html = VehiclesPdf::getHtml($data);
-    //    $html = '<p>hello </p>';
-    //     echo $html;
+        //    $html = '<p>hello </p>';
+        //     echo $html;
         $path = "Vehicles" . DS . $id . DS . "Vehicles.pdf";
         SmartPdfHelper::genPdf($html, $path);
+    }
+
+
+
+    /// sub count details
+
+    public function insertSub(array $columns, array $data)
+    {
+        return $this->insertDb(self::schema_sub, Table::EFL_VEHICLES_SUB, $columns, $data);
+    }
+    /**
+     * 
+     */
+    public function updateSub(array $columns, array $data, int $id)
+    {
+        return $this->updateDb(self::schema_sub, Table::EFL_VEHICLES_SUB, $columns, $data, $id);
+    }
+
+    public function getOneByVehicleId($sd_efl_vehicles_id, $sd_vehicle_types_id)
+    {
+        $from = Table::EFL_VEHICLES_SUB;
+        $select = ["*"];
+        $sql = "sd_efl_vehicles_id=:sd_efl_vehicles_id AND sd_vehicle_types_id=:sd_vehicle_types_id";
+        $data_in = ["sd_efl_vehicles_id" => $sd_efl_vehicles_id, "sd_vehicle_types_id" => $sd_vehicle_types_id];
+        $data = $this->getAll(
+            $select,
+            $from,
+            $sql,
+            "",
+            "",
+            $data_in,
+            true,
+            []
+        );
+        return $data;
+    }
+
+    public function getAllByVehicleCountId($sd_efl_vehicles_id)
+    {
+        $from = Table::EFL_VEHICLES_SUB;
+        $select = ["*"];
+        $sql = "sd_efl_vehicles_id=:id";
+        $data_in = ["id" => $sd_efl_vehicles_id];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
+        return $data;
+    }
+
+    public function insert_update_single($_data)
+    {
+        $exist_data = $this->getOneByVehicleId($_data["sd_efl_vehicles_id"], $_data["sd_vehicle_types_id"]);
+        if (isset($exist_data->ID)) {
+            // exisitng so need to update
+            $columns_update = ["count"];
+            $this->updateSub($columns_update, $_data, $exist_data->ID);
+            return  $exist_data->ID;
+        } else {
+            $columns_insert = [
+                "sd_efl_vehicles_id",
+                "sd_vehicle_types_id",
+                "count",
+            ];
+            // var_dump($_data);
+            // exit();
+            $id_inserted = $this->insertSub($columns_insert, $_data);
+            return  $id_inserted;
+        }
+    }
+
+    public function insert_update_data($sd_efl_vehicles_id, $data)
+    {
+        $exist_data = $this->getAllByVehicleCountId($sd_efl_vehicles_id);
+        $ids = [];
+        foreach ($data as $rate_data) {
+            $rate_data["sd_efl_vehicles_id"] = $sd_efl_vehicles_id;
+            // var_dump($rate_data);
+            $ids[] = $this->insert_update_single($rate_data);
+        }
+        foreach ($exist_data as $obj) {
+            if (!in_array($obj->ID, $ids)) {
+                $this->deleteId(Table::EFL_VEHICLES_SUB, $obj->ID);
+            }
+        }
+        //exit();
+        // now comapare the ids and remove the data
     }
 }

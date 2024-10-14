@@ -36,7 +36,8 @@ class TableHelper
    const EFL_VEHICLES = "sd_efl_vehicles";
    const INVOICE = "sd_invoice";
    const EFLHSNS = "sd_efl_hsns";
-   const SD_IMPORT ="sd_import";
-   const METER_READINGS ="sd_meter_readings";
-   const  VEHICLE_TYPES ="sd_vehicle_types";
+   const SD_IMPORT = "sd_import";
+   const METER_READINGS = "sd_meter_readings";
+   const  VEHICLE_TYPES = "sd_vehicle_types";
+   const EFL_VEHICLES_SUB = "sd_efl_vehicles_sub";
 }

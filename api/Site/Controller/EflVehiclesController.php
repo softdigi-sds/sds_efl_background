@@ -13,7 +13,8 @@ use Site\Helpers\ImportHelper;
 use Site\Helpers\VendorsHelper;
 use Site\View\VehiclesPdf;
 use Core\Helpers\SmartPdfHelper;
-
+use Site\Helpers\HubsHelper;
+use Site\Helpers\VehiclesTypesHelper;
 
 
 class EflVehiclesController extends BaseController
@@ -23,6 +24,9 @@ class EflVehiclesController extends BaseController
     private ImportHelper $_import_helper;
     private VendorsHelper $_vendor_helper;
     private VehiclesPdf $_vehicles_pdf_helper;
+    private VehiclesTypesHelper $_vehiclesTypesHelper;
+    private HubsHelper $_hubs_helper;
+
     function __construct($params)
     {
         parent::__construct($params);
@@ -34,6 +38,10 @@ class EflVehiclesController extends BaseController
         $this->_vendor_helper = new VendorsHelper($this->db);
 
         $this->_vehicles_pdf_helper = new VehiclesPdf($this->db);
+        //
+        $this->_vehiclesTypesHelper = new VehiclesTypesHelper($this->db);
+        //
+        $this->_hubs_helper = new HubsHelper($this->db);
     }
 
     /**
@@ -120,12 +128,21 @@ class EflVehiclesController extends BaseController
         $out->msg = "Removed Successfully";
         $this->response($out);
     }
+
+    private function get_one_vehicle_type_count($_data, $type_id)
+    {
+        foreach ($_data as $obj) {
+            if ($obj->sd_vehicle_types_id == $type_id) {
+                return $obj->count;
+            }
+        }
+        return 0;
+    }
     /**
      * 
      */
     public function getOneParkingData()
     {
-
         // $id = isset($this->post["hub_id"]) ? $this->post["hub_id"] : 0;
         $hub_id = Data::post_select_value("hub_id");
         $date = isset($this->post["date"]) ? trim($this->post["date"]) : "";
@@ -136,7 +153,30 @@ class EflVehiclesController extends BaseController
             \CustomErrorHandler::triggerInvalid("Invalid date ");
         }
         $data = $this->_helper->getVendorsByHubId($hub_id, $date);
-        $this->response($data);
+
+        $out = [];
+        $types = $this->_vehiclesTypesHelper->getAllData();
+        foreach ($data as $obj) {
+            //  var_dump($obj);
+            $vehicles_sub_data = $this->_helper->getAllByVehicleCountId($obj->ID);
+            $_types_data = $types;
+            $_db_out = [];
+            foreach ($_types_data as $key => $type_obj) {
+                $type_obj->count = $this->get_one_vehicle_type_count($vehicles_sub_data, $type_obj->ID);
+                $type_obj->sd_vehicle_types_id = $type_obj->ID;
+                // $_types_data[$key] = $type_obj;
+                $_db_out[] =  $type_obj;
+                /// var_dump($type_obj);
+                //var_dump($vehicles_sub_data);
+                // exit();
+            }
+            //  var_dump($_types_data);
+            //exit();
+            $obj->sub_data =   $_db_out;
+            $out[] = $obj;
+        }
+        // var_dump($out);
+        $this->response($out);
     }
 
 
@@ -160,6 +200,25 @@ class EflVehiclesController extends BaseController
         $data = $this->_helper->getCountByHubAndDate($hub_id, $month, $year);
         $this->response($data);
     }
+
+    public function getAllParkingHubWise()
+    {
+        $month = isset($this->post["month"]) ? intval($this->post["month"]) : "";
+        $year = isset($this->post["year"]) ? intval($this->post["year"]) : "";
+        if ($month < 0 || $year < 0) {
+            \CustomErrorHandler::triggerInvalid("Invalid month or date ");
+        }
+        // get hub details first
+        $hubs = $this->_hubs_helper->getAllData();
+        // loop over and get sub data   
+        foreach ($hubs as $key => $obj) {
+            $obj->sub_data = $this->_helper->getCountByHubAndDate($obj->ID, $month, $year);
+            $hubs[$key] = $obj;
+        }
+        return $hubs;
+    }
+
+
 
     public function importExcel()
     {
@@ -212,12 +271,10 @@ class EflVehiclesController extends BaseController
     public function VehicleReport()
     {
 
-    
+
         $id = 3;
-        
+
         $this->_helper->generateVehiclesPdf($id);
         exit();
-      
-
     }
 }

@@ -42,7 +42,7 @@ class CustomErrorHandler extends ErrorException
     {
         debug_print_backtrace();
         self::rollBackDb();
-        ob_clean();
+        // ob_clean();
         http_response_code($error_code);
         echo json_encode($json);
         exit();
