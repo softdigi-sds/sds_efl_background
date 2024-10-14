@@ -11,7 +11,7 @@ use Core\Helpers\SmartFileHelper;
 use Site\Helpers\EflVehiclesHelper;
 use Site\Helpers\ImportHelper;
 use Site\Helpers\VendorsHelper;
-use Site\View\VehiclesPdf;
+// use Site\View\VehiclesPdf;
 use Core\Helpers\SmartPdfHelper;
 use Site\Helpers\HubsHelper;
 use Site\Helpers\VehiclesTypesHelper;
@@ -23,7 +23,7 @@ class EflVehiclesController extends BaseController
     private EflVehiclesHelper $_helper;
     private ImportHelper $_import_helper;
     private VendorsHelper $_vendor_helper;
-    private VehiclesPdf $_vehicles_pdf_helper;
+    // private VehiclesPdf $_vehicles_pdf_helper;
     private VehiclesTypesHelper $_vehiclesTypesHelper;
     private HubsHelper $_hubs_helper;
 
@@ -37,7 +37,7 @@ class EflVehiclesController extends BaseController
         //
         $this->_vendor_helper = new VendorsHelper($this->db);
 
-        $this->_vehicles_pdf_helper = new VehiclesPdf($this->db);
+        // $this->_vehicles_pdf_helper = new VehiclesPdf($this->db);
         //
         $this->_vehiclesTypesHelper = new VehiclesTypesHelper($this->db);
         //
