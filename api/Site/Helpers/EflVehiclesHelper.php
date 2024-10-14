@@ -185,6 +185,8 @@ class EflVehiclesHelper extends BaseHelper
         return $data;
     }
 
+
+
     public function getCountByHubAndDate($id, $month, $year)
     {
         $select = [
@@ -304,5 +306,26 @@ class EflVehiclesHelper extends BaseHelper
         }
         //exit();
         // now comapare the ids and remove the data
+    }
+
+    public function vehicleTypeCount($efl_vehicles_id){
+        $from = Table::VEHICLE_TYPES ." t1 
+        LEFT JOIN ".Table::EFL_VEHICLES_SUB." t2 ON 
+        t2.sd_vehicle_types_id =t1.ID AND t2.sd_efl_vehicles_id=".$efl_vehicles_id."";
+       // echo  $from;
+        $select = ["t1.*,t1.ID as sd_vehicle_types_id,t2.count"];
+        $sql = "";
+        $data_in = [];
+        $data = $this->getAll(
+            $select,
+            $from,
+            $sql,
+            "",
+            "",
+            $data_in,
+            false,
+            []
+        );
+        return $data;
     }
 }

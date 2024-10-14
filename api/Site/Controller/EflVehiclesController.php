@@ -157,22 +157,24 @@ class EflVehiclesController extends BaseController
         $out = [];
         $types = $this->_vehiclesTypesHelper->getAllData();
         foreach ($data as $obj) {
-            //  var_dump($obj);
-            $vehicles_sub_data = $this->_helper->getAllByVehicleCountId($obj->ID);
-            $_types_data = $types;
-            $_db_out = [];
-            foreach ($_types_data as $key => $type_obj) {
-                $type_obj->count = $this->get_one_vehicle_type_count($vehicles_sub_data, $type_obj->ID);
-                $type_obj->sd_vehicle_types_id = $type_obj->ID;
-                // $_types_data[$key] = $type_obj;
-                $_db_out[] =  $type_obj;
-                /// var_dump($type_obj);
-                //var_dump($vehicles_sub_data);
-                // exit();
-            }
+            $_db_out = $this->_helper->vehicleTypeCount($obj->ID);
+            // var_dump( $_db_out);
+            // exit();
+            // $vehicles_sub_data = $this->_helper->getAllByVehicleCountId($obj->ID);
+            // $_types_data = $types;
+            // $_db_out = [];
+            // foreach ($_types_data as $key => $type_obj) {
+            //     $type_obj->count = $this->get_one_vehicle_type_count($vehicles_sub_data, $type_obj->ID);
+            //     $type_obj->sd_vehicle_types_id = $type_obj->ID;
+            //     // $_types_data[$key] = $type_obj;
+            //     $_db_out[] =  $type_obj;
+            //     /// var_dump($type_obj);
+            //     //var_dump($vehicles_sub_data);
+            //     // exit();
+            // }
             //  var_dump($_types_data);
             //exit();
-            $obj->sub_data =   $_db_out;
+            $obj->sub_data =  is_array($_db_out) ? $_db_out : [] ;
             $out[] = $obj;
         }
         // var_dump($out);
