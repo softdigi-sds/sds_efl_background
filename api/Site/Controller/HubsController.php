@@ -77,6 +77,8 @@ class HubsController extends BaseController
         // do validations
         $this->_helper->validate(HubsHelper::validations, $columns, $this->post);
         // extra columns
+        $columns[] = "longitude";
+        $columns[] = "latitude";
         $columns[] = "last_modified_by";
         $columns[] =  "last_modified_time";
         // begin transition
