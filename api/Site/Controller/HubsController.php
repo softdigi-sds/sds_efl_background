@@ -3,7 +3,7 @@
 namespace Site\Controller;
 
 use Core\BaseController;
-
+use Core\Helpers\SmartData;
 use Core\Helpers\SmartAuthHelper;
 use Core\Helpers\SmartData as Data;
 use Core\Helpers\SmartFileHelper;
@@ -45,6 +45,8 @@ class HubsController extends BaseController
         $columns = ["hub_id", "hub_name", "sd_efl_office_id"];
         // do validations
         $this->_helper->validate(HubsHelper::validations, $columns, $this->post);
+        $columns = ["hub_id", "hub_name", "sd_efl_office_id"];
+        $this->post["status"] = 5;
         $columns[] = "created_by";
         $columns[] = "created_time";
         $this->post["sd_efl_office_id"] = Data::post_select_value("sd_efl_office_id");
@@ -71,7 +73,7 @@ class HubsController extends BaseController
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["hub_name"];
+        $columns = ["hub_name","status"];
         // do validations
         $this->_helper->validate(HubsHelper::validations, $columns, $this->post);
         // extra columns
@@ -93,6 +95,21 @@ class HubsController extends BaseController
         $this->response($id);
     }
     /**
+     * 
+     */
+    public function updateStatus()
+    {
+        $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+        if ($id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid ID");
+        }
+        $status = SmartData::post_data("status", "INTEGER");
+        $columns = ["status"];
+        $data_in = ["status" => $status];
+        $this->_helper->update($columns, $this->post, $id);
+        $this->responseMsg("Status Updated Successfully");
+    }
+     /**
      * 
      */
     public function getAll()

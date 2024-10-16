@@ -27,6 +27,7 @@ class HubsHelper extends BaseHelper
         "hub_id" => SmartConst::SCHEMA_VARCHAR,
         "hub_name" => SmartConst::SCHEMA_VARCHAR,
         "sd_efl_office_id" => SmartConst::SCHEMA_INTEGER,
+        "status" => SmartConst::SCHEMA_INTEGER,
         "created_by"  => SmartConst::SCHEMA_CUSER_ID,
         "created_time"  => SmartConst::SCHEMA_CDATETIME,
         "last_modified_by"  => SmartConst::SCHEMA_CUSER_ID,
@@ -60,7 +61,13 @@ class HubsHelper extends BaseHelper
             ]
         ],
 
-
+        "status" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Enter status"
+            ]
+    
+            ],
     ];
 
 
