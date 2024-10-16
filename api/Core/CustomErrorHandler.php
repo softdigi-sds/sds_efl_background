@@ -96,7 +96,8 @@ class CustomErrorHandler extends ErrorException
     {
         $json = new stdClass();
         $json->status = "Invalid Request Type";
-        $json->message = " Request type is not Invalid";
+        // $json->message = " Request type is not Invalid";
+        $json->message = "Invalid request type: expected POST request";
         self::display_output($json, 405);
     }
     /**
