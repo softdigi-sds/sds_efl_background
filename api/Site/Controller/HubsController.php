@@ -97,7 +97,7 @@ class HubsController extends BaseController
     /**
      * 
      */
-    public function hubUpdateStatus()
+    public function updateStatus()
     {
         $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
         if ($id < 1) {
