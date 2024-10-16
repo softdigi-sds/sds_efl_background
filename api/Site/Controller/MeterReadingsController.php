@@ -52,8 +52,13 @@ class MeterReadingsController extends BaseController
   
      public function getAll()
      {
-  
-         $data = $this->_helper->getAllData();
+        $month = isset($this->post["month"]) ? intval($this->post["month"]) : "";
+        $year = isset($this->post["year"]) ? intval($this->post["year"]) : "";
+        if ($month < 0 || $year < 0) {
+            \CustomErrorHandler::triggerInvalid("Invalid month or date ");
+        }
+          
+        $data = $this->_helper->getAllData();
     
          $this->response($data);
      }
