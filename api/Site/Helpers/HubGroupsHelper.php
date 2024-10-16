@@ -75,8 +75,8 @@ class HubGroupsHelper extends BaseHelper
     public function getAllData($sql = "", $data_in = [], $select_in=[],$group_by = "", $count = false)
     {
         $from = Table::HUB_GROUPS." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.sd_hub_id = t2.ID 
-        LEFT JOIN ".Table::ROLES." t3 ON t1.sd_mt_role_id=t3.ID";
-        $select = ["t1.*","t3.role_name","t2.hub_id","t2.hub_name"];
+        LEFT JOIN ".Table::USERS." t3 ON t1.sd_mt_role_id=t3.ID";
+        $select = ["t1.*","t3.ename","t2.hub_id","t2.hub_name"];
         $order_by="t1.last_modified_time DESC";
         if(!empty($select_in)){
             $select = $select_in;
@@ -130,7 +130,7 @@ class HubGroupsHelper extends BaseHelper
     public function getSelectedRolesWithHubId(int $hub_id){
         
         $sql = "t1.sd_hub_id=:ID";
-        $select = ["t1.sd_mt_role_id as value","t3.role_name as label"];
+        $select = ["t1.sd_mt_role_id as value","t3.ename as label"];
         return $this->getAllData($sql,["ID"=>$hub_id],$select);
     }
     

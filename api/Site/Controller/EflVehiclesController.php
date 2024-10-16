@@ -251,9 +251,9 @@ class EflVehiclesController extends BaseController
                     // vendor existed insert or update the data
                     $sub_data = [
                         $this->prepare_sub_object($obj["two_count"],1),
-                        $this->prepare_sub_object($obj["three_count"],1),
-                        $this->prepare_sub_object($obj["four_count"],1),
-                        $this->prepare_sub_object($obj["ace_count"],1),
+                        $this->prepare_sub_object($obj["three_count"],2),
+                        $this->prepare_sub_object($obj["four_count"],3),
+                        $this->prepare_sub_object($obj["ace_count"],4),
                     ];
                     $_vehicle_data = [
                         "sd_hub_id" => $vendor_data->sd_hub_id,
