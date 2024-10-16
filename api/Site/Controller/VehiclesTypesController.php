@@ -16,15 +16,12 @@ class VehiclesTypesController extends BaseController
 {
 
     private VehiclesTypesHelper $_helper;
-  
+
     function __construct($params)
     {
         parent::__construct($params);
-    
-        $this->_helper = new VehiclesTypesHelper($this->db);
-     
-    
 
+        $this->_helper = new VehiclesTypesHelper($this->db);
     }
 
     /**
@@ -46,17 +43,17 @@ class VehiclesTypesController extends BaseController
     /**
      * 
      */
-   
-  
-     public function getAll()
-     {
-         $data = $this->_helper->getAllData(); 
-         $this->response($data);
-     }
-     /**
+
+
+    public function getAll()
+    {
+        $data = $this->_helper->getAllData();
+        $this->response($data);
+    }
+    /**
      * 
      */
-     public function getOne()
+    public function getOne()
     {
         $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
         if ($id < 1) {
@@ -69,13 +66,7 @@ class VehiclesTypesController extends BaseController
     public function getAllSelect()
     {
         $select = ["t1.ID as value", "t1.vehicle_type as label"];
-        
         $data = $this->_helper->getAllData("", [], $select);
-        
         $this->response($data);
     }
-    
-   
-  
-    }
-
+}

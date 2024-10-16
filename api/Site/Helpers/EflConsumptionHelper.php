@@ -33,6 +33,13 @@ class EflConsumptionHelper extends BaseHelper
         "last_modified_by" => SmartConst::SCHEMA_CUSER_ID,
         "last_modified_time" => SmartConst::SCHEMA_CDATETIME,
     ];
+
+    const schema_sub = [
+        "sd_efl_consumption_id" => SmartConst::SCHEMA_INTEGER,
+        "sd_meter_types_id" => SmartConst::SCHEMA_INTEGER,
+        "count" => SmartConst::SCHEMA_INTEGER
+    ];
+
     /**
      * 
      */
@@ -125,10 +132,13 @@ class EflConsumptionHelper extends BaseHelper
         $sql = " sd_hub_id=:sd_hub_id AND sd_vendors_id=:sd_vendors_id AND sd_date=:sd_date ";
         $data_in = ["sd_hub_id" => $data["sd_hub_id"], "sd_vendors_id" => $data["sd_vendors_id"], "sd_date" => $data["sd_date"]];
         $exist_data = $this->getAllData($sql, $data_in, ["ID"], "", false, true);
+        $sub_data = $data["sub_data"];
         if (isset($exist_data->ID)) {
             $this->update($update_cols, $data, $exist_data->ID);
+            $this->insert_update_data($exist_data->ID, $sub_data);
         } else {
-            $this->insert($insert_cols, $data);
+            $id =  $this->insert($insert_cols, $data);
+            $this->insert_update_data($id, $sub_data);
         }
     }
 
@@ -158,30 +168,36 @@ class EflConsumptionHelper extends BaseHelper
         $_venoder_helper = new VendorsHelper($this->db);
         $data = $_venoder_helper->getVendorsByHubId($hub_id);
         foreach ($data as $ven_data) {
-            if (isset($ven_data->ID)) {
-                $select = ["unit_count AS count"];
+           // if (isset($ven_data->ID)) {
+                $select = ["unit_count AS count,ID"];
                 $from = Table::EFL_CONSUMPTION;
                 $sql = " sd_hub_id=:ID AND sd_vendors_id=:ven_id AND sd_date=:date";
                 $data_in = ["ID" => $hub_id, "ven_id" => $ven_data->ID, "date" => $date];
                 $count = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+                $ven_data->sd_vendors_id = $ven_data->ID;
                 // $ven_data->count = isset($count->count) ? $count->count : 0;
                 $ven_data->unit_count = isset($count->count) ? $count->count : 0;
-                $ven_data->sd_vendors_id = $ven_data->ID;
-                $ven_data->hub_id = $hub_id;
+                $ven_data->ID = isset($count->ID) ? $count->ID : 0;
+               // $ven_data->sd_vendors_id = $ven_data->ID;
+              //  $ven_data->hub_id = $hub_id;
                 $ven_data->date = $date;
-            }
+          //  }
         }
         return $data;
     }
 
     public function getCountByHubAndDate($id, $month, $year)
     {
-        $select = [" SUM(unit_count) AS count, sd_date AS date "];
-        $from = Table::EFL_CONSUMPTION;
-        $sql = " sd_hub_id=:ID AND YEAR(sd_date)=:year AND MONTH(sd_date)=:month GROUP BY sd_date ";
+          $select = [
+            "t2.sd_date AS date, DAY(t2.sd_date) AS day_number ",
+             "SUM(t1.count) as count"
+        ];
+        $from = Table::EFL_CONSUMPTION_SUB . " t1 
+        INNER JOIN ".Table::EFL_CONSUMPTION ." t2 ON t2.ID=t1.sd_efl_consumption_id";
+        $sql = "t2.sd_hub_id=:ID AND  YEAR(t2.sd_date) =:year AND MONTH(t2.sd_date) =:month GROUP BY date ";
         $data_in = ["ID" => $id, "month" => $month, "year" => $year];
-        $count = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
-        return $count;
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
+        return $data;
     }
 
     public function getConsumptionInvoiceByDateVendor($vendor_id,$strt_date, $end_date)
@@ -195,4 +211,114 @@ class EflConsumptionHelper extends BaseHelper
         //var_dump($data);
         return isset($data->count) ? $data->count : 0;
     }
+
+
+
+    /**
+     *  
+     *  SUB HELPER FUNCTIONS
+     * 
+     */
+    public function insertSub(array $columns, array $data)
+    {
+        return $this->insertDb(self::schema_sub, Table::EFL_CONSUMPTION_SUB, $columns, $data);
+    }
+    /**
+     * 
+     */
+    public function updateSub(array $columns, array $data, int $id)
+    {
+        return $this->updateDb(self::schema_sub, Table::EFL_CONSUMPTION_SUB, $columns, $data, $id);
+    }
+
+    public function getOneByConsumptionId($sd_efl_vehicles_id, $sd_vehicle_types_id)
+    {
+        $from = Table::EFL_CONSUMPTION_SUB;
+        $select = ["*"];
+        $sql = "sd_efl_consumption_id=:id AND sd_meter_types_id=:type_id";
+        $data_in = ["id" => $sd_efl_vehicles_id, "type_id" => $sd_vehicle_types_id];
+        $data = $this->getAll(
+            $select,
+            $from,
+            $sql,
+            "",
+            "",
+            $data_in,
+            true,
+            []
+        );
+        return $data;
+    }
+
+    public function getAllByConsumptionCountId($sd_efl_vehicles_id)
+    {
+        $from = Table::EFL_CONSUMPTION_SUB;
+        $select = ["*"];
+        $sql = "sd_efl_consumption_id=:id";
+        $data_in = ["id" => $sd_efl_vehicles_id];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
+        return $data;
+    }
+
+    public function insert_update_single($_data)
+    {
+        $exist_data = $this->getOneByConsumptionId($_data["sd_efl_consumption_id"], $_data["sd_meter_types_id"]);
+        if (isset($exist_data->ID)) {
+            // exisitng so need to update
+            $columns_update = ["count"];
+            $this->updateSub($columns_update, $_data, $exist_data->ID);
+            return  $exist_data->ID;
+        } else {
+            $columns_insert = [
+                "sd_efl_consumption_id",
+                "sd_meter_types_id",
+                "count",
+            ];
+            // var_dump($_data);
+            // exit();
+            $id_inserted = $this->insertSub($columns_insert, $_data);
+            return  $id_inserted;
+        }
+    }
+
+    public function insert_update_data($id, $data)
+    {
+        $exist_data = $this->getAllByConsumptionCountId($id);
+        $ids = [];
+        foreach ($data as $rate_data) {
+            $rate_data["sd_efl_consumption_id"] = $id;
+            // var_dump($rate_data);
+            $ids[] = $this->insert_update_single($rate_data);
+        }
+        foreach ($exist_data as $obj) {
+            if (!in_array($obj->ID, $ids)) {
+                $this->deleteId(Table::EFL_CONSUMPTION_SUB, $obj->ID);
+            }
+        }
+        //exit();
+        // now comapare the ids and remove the data
+    }
+
+    public function ConsumptionTypeCount($id){
+        $from = Table::METER_TYPES ." t1 
+        LEFT JOIN ".Table::EFL_CONSUMPTION_SUB." t2 ON 
+        t2.sd_meter_types_id =t1.ID AND t2.sd_efl_consumption_id=".$id."";
+       // echo  $from;
+        $select = ["t1.*,t1.ID as sd_meter_types_id,t2.count"];
+        $sql = "";
+        $data_in = [];
+        $data = $this->getAll(
+            $select,
+            $from,
+            $sql,
+            "",
+            "",
+            $data_in,
+            false,
+            []
+        );
+        return $data;
+    }
+
+
 }

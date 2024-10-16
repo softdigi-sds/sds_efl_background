@@ -11,7 +11,7 @@ use Core\Helpers\SmartFileHelper;
 use Site\Helpers\EflConsumptionHelper;
 use Site\Helpers\ImportHelper;
 use Site\Helpers\VendorsHelper;
-
+use Site\Helpers\MeterTypesHelper;
 
 class EflConsumptionController extends BaseController
 {
@@ -19,6 +19,7 @@ class EflConsumptionController extends BaseController
     private EflConsumptionHelper $_helper;
     private ImportHelper $_import_helper;
     private VendorsHelper $_vendor_helper;
+    private MeterTypesHelper $_meterTypesHelper;
     function __construct($params)
     {
         parent::__construct($params);
@@ -28,6 +29,7 @@ class EflConsumptionController extends BaseController
         //
         $this->_vendor_helper = new VendorsHelper($this->db);
         //
+        $this->_meterTypesHelper = new MeterTypesHelper($this->db);
 
     }
 
@@ -125,9 +127,18 @@ class EflConsumptionController extends BaseController
         if (strlen($date) < 0) {
             \CustomErrorHandler::triggerInvalid("Invalid date ");
         }
+        $types = $this->_meterTypesHelper->getAllData();
         // $hub_id = Data::post_select_value($hub_id);
         $data = $this->_helper->getVendorsByHubId($hub_id, $date);
-        $this->response($data);
+        foreach ($data as $obj) {
+            $_db_out = $this->_helper->ConsumptionTypeCount($obj->ID);          
+            $obj->sub_data =  is_array($_db_out) ? $_db_out : [] ;
+            //$out[] = $obj;
+        }
+        $out = new \stdClass();
+        $out->data = $data;
+        $out->types = $types;
+        $this->response($out);
     }
     /**
      * 
@@ -149,6 +160,9 @@ class EflConsumptionController extends BaseController
         $data = $this->_helper->getCountByHubAndDate($hub_id, $month, $year);
         $this->response($data);
     }
+
+
+    
     public function importExcel()
     {
         $excel_import = Data::post_array_data("excel");

@@ -188,17 +188,17 @@ class EflVehiclesHelper extends BaseHelper
 
 
     public function getCountByHubAndDate($id, $month, $year)
-    {
+    {       
         $select = [
-            "t1.sd_date AS date,
-            DAY(t1.sd_date) AS day_number ",
-            "(SELECT SUM(t2.count) FROM " . Table::EFL_VEHICLES_SUB . " t2 WHERE t2.sd_efl_vehicles_id=t1.ID) as count"
+            "t2.sd_date AS date, DAY(t2.sd_date) AS day_number ",
+             "SUM(t1.count) as count"
         ];
-        $from = Table::EFL_VEHICLES . " t1";
-        $sql = "t1.sd_hub_id=:ID AND  YEAR(t1.sd_date) =:year AND MONTH(t1.sd_date) =:month GROUP BY sd_date ";
+        $from = Table::EFL_VEHICLES_SUB . " t1 
+        INNER JOIN ".Table::EFL_VEHICLES ." t2 ON t2.ID=t1.sd_efl_vehicles_id";
+        $sql = "t2.sd_hub_id=:ID AND  YEAR(t2.sd_date) =:year AND MONTH(t2.sd_date) =:month GROUP BY date ";
         $data_in = ["ID" => $id, "month" => $month, "year" => $year];
-        $count = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
-        return $count;
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
+        return $data;
     }
 
     public function getVehicleInvoiceByDateVendor($ven_id, $strt_date, $end_date)
