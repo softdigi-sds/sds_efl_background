@@ -26,7 +26,6 @@ class HubsHelper extends BaseHelper
     const schema = [
         "hub_id" => SmartConst::SCHEMA_VARCHAR,
         "hub_name" => SmartConst::SCHEMA_VARCHAR,
-        "hub_location" => SmartConst::SCHEMA_TEXT,
         "sd_efl_office_id" => SmartConst::SCHEMA_INTEGER,
         "created_by"  => SmartConst::SCHEMA_CUSER_ID,
         "created_time"  => SmartConst::SCHEMA_CDATETIME,
@@ -50,13 +49,6 @@ class HubsHelper extends BaseHelper
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter hub name"
-            ]
-        ],
-
-        "hub_location" => [
-            [
-                "type" => SmartConst::VALID_REQUIRED,
-                "msg" => "Please Enter hub location"
             ]
         ],
 
