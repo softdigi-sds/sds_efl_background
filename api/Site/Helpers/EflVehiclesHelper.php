@@ -148,10 +148,13 @@ class EflVehiclesHelper extends BaseHelper
         $insert_columns = ["sd_hub_id", "sd_vendors_id", "sd_date", "vehicle_count", "created_by", "created_time"];
         $update_columns = ["vehicle_count", "last_modified_by", "last_modified_time"];
         $exist_data = $this->checkExists($_data["sd_vendors_id"], $_data["sd_date"]);
+        $sub_data = $_data["sub_data"];
         if (isset($exist_data->ID)) {
             $this->update($update_columns, $_data, $exist_data->ID);
+            $this->insert_update_data($exist_data->ID, $sub_data);
         } else {
-            $this->insert($insert_columns, $_data);
+            $id = $this->insert($insert_columns, $_data);
+            $this->insert_update_data($id, $sub_data);
         }
     }
 

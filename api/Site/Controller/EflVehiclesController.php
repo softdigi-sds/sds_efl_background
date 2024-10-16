@@ -66,7 +66,8 @@ class EflVehiclesController extends BaseController
         foreach ($consump_data as $data) {
             $data["sd_hub_id"] = $hub_id;
             $data["sd_date"] =  $date;
-            $this->_helper->insertUpdate($data, $insert_columns, $update_columns);
+            $this->_helper->insertUpdateNew($data);
+            //$this->_helper->insertUpdate($data, $insert_columns, $update_columns);
         }
         $this->responseMsg(msg: "Parking Report has been appended successfully");
     }
@@ -208,6 +209,14 @@ class EflVehiclesController extends BaseController
     }
 
 
+    private function prepare_sub_object($count,$type_id){
+        $arr = [           
+            "sd_vehicle_types_id"=>$type_id,
+            "count"=>$count
+        ];
+        return $arr;
+    }
+
 
     public function importExcel()
     {
@@ -238,13 +247,20 @@ class EflVehiclesController extends BaseController
                 $obj["status"] = 10;
                 $obj["msg"] = "Improper Data";
             } else {
-                if (isset($vendor_data->ID)) {
+                if (isset($vendor_data->ID)) {                  
                     // vendor existed insert or update the data
+                    $sub_data = [
+                        $this->prepare_sub_object($obj["two_count"],1),
+                        $this->prepare_sub_object($obj["three_count"],1),
+                        $this->prepare_sub_object($obj["four_count"],1),
+                        $this->prepare_sub_object($obj["ace_count"],1),
+                    ];
                     $_vehicle_data = [
                         "sd_hub_id" => $vendor_data->sd_hub_id,
                         "sd_vendors_id" => $vendor_data->ID,
                         "sd_date" => $obj["date"],
-                        "vehicle_count" => $obj["count"]
+                        "vehicle_count" =>0,
+                        "sub_data"=>$sub_data
                     ];
                     $this->_helper->insertUpdateNew($_vehicle_data);
                     $obj["status"] = 5;

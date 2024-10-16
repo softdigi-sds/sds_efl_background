@@ -99,7 +99,19 @@ class ImportHelper extends BaseHelper
             ],
             [
                 "letter" => "D",
-                "index" => "count",
+                "index" => "two_count",
+            ],
+            [
+                "letter" => "E",
+                "index" => "three_count",
+            ],
+            [
+                "letter" => "F",
+                "index" => "four_count",
+            ],
+            [
+                "letter" => "G",
+                "index" => "ace_count",
             ]
         ];
         return $columns;
