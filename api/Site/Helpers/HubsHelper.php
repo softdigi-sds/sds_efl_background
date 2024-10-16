@@ -27,6 +27,8 @@ class HubsHelper extends BaseHelper
         "hub_id" => SmartConst::SCHEMA_VARCHAR,
         "hub_name" => SmartConst::SCHEMA_VARCHAR,
         "sd_efl_office_id" => SmartConst::SCHEMA_INTEGER,
+        "longitude" => SmartConst::SCHEMA_FLOAT,
+        "latitude" => SmartConst::SCHEMA_FLOAT,
         "status" => SmartConst::SCHEMA_INTEGER,
         "created_by"  => SmartConst::SCHEMA_CUSER_ID,
         "created_time"  => SmartConst::SCHEMA_CDATETIME,
