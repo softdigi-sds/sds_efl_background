@@ -242,11 +242,11 @@ class EflVehiclesController extends BaseController
         $_data = $excel->getData($this->_import_helper->importColumnsVehicleCount(), 2);
         $out = [];
         foreach ($_data as $obj) {
-            $vendor_data = $this->_vendor_helper->checkVendorByCodeCompany($obj["vendor"], "##");
-            if ($obj["vendor"] == "" || $obj["date"] == "") {
+            if ($obj["vendor"] == "" || $obj["date"] == "" || $obj["hub_name"] == "") {
                 $obj["status"] = 10;
                 $obj["msg"] = "Improper Data";
             } else {
+                $vendor_data = $this->_vendor_helper->checkVendorByCodeCompanyWithHub("##",$obj["vendor"], $obj["hub_name"]);
                 if (isset($vendor_data->ID)) {                  
                     // vendor existed insert or update the data
                     $sub_data = [
