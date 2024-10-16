@@ -5,7 +5,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/PHPClass.php to edit this template
  */
 
-namespace Site\View;
+namespace Site\view;
 // use Site\images\qr_code;
 
 

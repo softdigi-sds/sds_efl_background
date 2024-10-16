@@ -11,7 +11,7 @@ use Core\Helpers\SmartFileHelper;
 use Site\Helpers\EflVehiclesHelper;
 use Site\Helpers\ImportHelper;
 use Site\Helpers\VendorsHelper;
-use Site\View\VehiclesPdf;
+use Site\view\VehiclesPdf;
 use Core\Helpers\SmartPdfHelper;
 use Site\Helpers\HubsHelper;
 use Site\Helpers\VehiclesTypesHelper;

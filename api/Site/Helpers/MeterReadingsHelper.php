@@ -89,7 +89,7 @@ class MeterReadingsHelper extends BaseHelper
     /**
      * 
      */
-  
+
     // public function getAllData($sql = "", $data_in = [], $select = [], $group_by = "", $count = false, $single = false)
     // {
     //     $from = Table::METER_READINGS;
@@ -99,31 +99,10 @@ class MeterReadingsHelper extends BaseHelper
     // }
 
     public function getAllData($sql = "", $data_in = [], $select = [], $group_by = "", $count = false, $single = false)
-{
-    $from = Table::METER_READINGS;  
-
-
-    $select = !empty($select) ? $select : [Table::METER_READINGS . ".*", Table::HUBS . ".hub_name"];
-
-   
-    $sql = !empty($sql) ? $sql : "LEFT JOIN " . Table::HUBS . " ON " . Table::METER_READINGS . ".sd_hub_id = " . Table::HUBS . ".hub_id";
-
-
-    return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
-}
-
-    
-    
-    
-  
-
-   
-
-
-
-
-
-
-
-  
+    {
+        $from = Table::METER_READINGS;
+        $select = !empty($select) ? $select : [Table::METER_READINGS . ".*", Table::HUBS . ".hub_name"];
+        $sql = !empty($sql) ? $sql : "LEFT JOIN " . Table::HUBS . " ON " . Table::METER_READINGS . ".sd_hub_id = " . Table::HUBS . ".hub_id";
+        return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
+    }
 }
