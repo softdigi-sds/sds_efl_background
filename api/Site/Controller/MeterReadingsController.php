@@ -57,10 +57,14 @@ class MeterReadingsController extends BaseController
         if ($month < 0 || $year < 0) {
             \CustomErrorHandler::triggerInvalid("Invalid month or date ");
         }
-          
-        $data = $this->_helper->getAllData();
-    
-         $this->response($data);
+        $data = $this->_helper->GetAllMeterData($year,$month);   
+      //  $out = [];
+        foreach($data as $obj){
+            $obj->meter_reading = intval($obj->meter_end) - intval($obj->meter_start);  
+            $obj->cms_reading = 0;
+            $obj->deviation =  $obj->meter_reading > 0 ?  (($obj->cms_reading - $obj->meter_reading) / $obj->meter_reading )  * 100 : 0;             
+        } 
+        $this->response($data);
      }
      
    

@@ -105,4 +105,20 @@ class MeterReadingsHelper extends BaseHelper
         $sql = !empty($sql) ? $sql : "LEFT JOIN " . Table::HUBS . " ON " . Table::METER_READINGS . ".sd_hub_id = " . Table::HUBS . ".hub_id";
         return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
     }
+
+
+    public function GetAllMeterData($year,$month){
+        $from = Table::HUBS . " t1 ";
+        $sql = "t1.status=5";
+        $select = [
+            "t1.ID,t1.ID as sd_hub_id,
+             t1.hub_id",
+             "(SELECT t2.meter_start FROM ".TABLE::METER_READINGS." t2 WHERE t2.sd_hub_id=t1.ID 
+             AND t2.meter_year=".$year." AND t2.meter_month=".$month." LIMIT 0,1) as meter_start",
+             "(SELECT t3.meter_end FROM ".TABLE::METER_READINGS." t3 WHERE t3.sd_hub_id=t1.ID 
+             AND t3.meter_year=".$year." AND t3.meter_month=".$month." LIMIT 0,1) as meter_end",
+        ];
+        $data =  $this->getAll($select, $from, $sql,"", "", [], false, [], false);
+        return $data;
+    }
 }
