@@ -204,6 +204,20 @@ class EflVehiclesHelper extends BaseHelper
         return $data;
     }
 
+    public function getCountByHubAndStartEndDate($id, $start_date, $end_date)
+    {       
+        $select = [
+            "t2.sd_date AS date, DAY(t2.sd_date) AS day_number ",
+             "SUM(t1.count) as count"
+        ];
+        $from = Table::EFL_VEHICLES_SUB . " t1 
+        INNER JOIN ".Table::EFL_VEHICLES ." t2 ON t2.ID=t1.sd_efl_vehicles_id";
+        $sql = "t2.sd_hub_id=:ID AND t2.sd_date BETWEEN :start_date AND :end_date GROUP BY date ";
+        $data_in = ["ID" => $id,"start_date"=>$start_date,"end_date"=>$end_date];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
+        return $data;
+    }
+
     public function getVehicleInvoiceByDateVendor($ven_id, $strt_date, $end_date)
     {
         $select = [" t1.*,SUM(t1.vehicle_count) AS count "];

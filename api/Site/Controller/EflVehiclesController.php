@@ -6,8 +6,10 @@ use Core\BaseController;
 
 use Core\Helpers\SmartData as Data;
 use Core\Helpers\SmartAuthHelper;
+use Core\Helpers\SmartData;
 use Core\Helpers\SmartExcellHelper;
 use Core\Helpers\SmartFileHelper;
+use Core\Helpers\SmartDateHelper;
 use Site\Helpers\EflVehiclesHelper;
 use Site\Helpers\ImportHelper;
 use Site\Helpers\VendorsHelper;
@@ -193,19 +195,21 @@ class EflVehiclesController extends BaseController
 
     public function getAllParkingHubWise()
     {
-        $month = isset($this->post["month"]) ? intval($this->post["month"]) : "";
-        $year = isset($this->post["year"]) ? intval($this->post["year"]) : "";
-        if ($month < 0 || $year < 0) {
-            \CustomErrorHandler::triggerInvalid("Invalid month or date ");
-        }
+        $start_date = SmartData::post_data("start_date","DATE");
+        $end_date = SmartData::post_data("end_date","DATE");
         // get hub details first
         $hubs = $this->_hubs_helper->getAllData();
+        $dates = SmartDateHelper::getDatesBetween($start_date,$end_date);
         // loop over and get sub data   
-        foreach ($hubs as $key => $obj) {
-            $obj->sub_data = $this->_helper->getCountByHubAndDate($obj->ID, $month, $year);
-            $hubs[$key] = $obj;
+        foreach ($hubs as $obj) {
+            $obj->sub_data = $this->_helper->getCountByHubAndStartEndDate($obj->ID,  $start_date ,  $end_date);
+           // $hubs[$key] = $obj;
         }
-        return $hubs;
+        $out = new \stdClass();
+        $out->dates =  $dates ;
+        $out->data = $hubs;
+        //return $hubs;
+        $this->response($out);
     }
 
 
