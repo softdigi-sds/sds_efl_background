@@ -124,7 +124,7 @@ class CommonRouter
         $controller = "VendorsController";
         $this->_routes["/vendors/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
         $this->_routes["/vendors/update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
-        $this->_routes["/vendors/get_all"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAll"];
+        $this->_routes["/vendors/get_all"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAll"];
         $this->_routes["/vendors/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/vendors/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
         $this->_routes["/vendors/get_all_select"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllSelect"];

@@ -112,13 +112,34 @@ class VendorsHelper extends BaseHelper
     /**
      * 
      */
-    public function getAllData($sql = "", $data_in = [],$select=[],$group_by = "", $count = false,$single=false)
+    // public function getAllData($sql = "", $data_in = [],$select=[],$group_by = "", $count = false,$single=false)
+    // {
+    //     $from = Table::VENDORS." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.sd_hub_id=t2.ID LEFT JOIN ".Table::STATEDB." t3 ON t1.state_name=t3.ID ";
+    //     $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t2.hub_name, t3.state_name "];
+    //    // $order_by="last_modified_time DESC";
+    //     return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
+    // }
+    public function getAllData($sql = "", $data_in = [], $select = [], $group_by = "", $count = false, $single = false)
     {
-        $from = Table::VENDORS." t1 LEFT JOIN ".Table::HUBS." t2 ON t1.sd_hub_id=t2.ID LEFT JOIN ".Table::STATEDB." t3 ON t1.state_name=t3.ID ";
-        $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t2.hub_name, t3.state_name "];
-       // $order_by="last_modified_time DESC";
+        // Define the tables and joins
+        $from = Table::VENDORS . " t1 LEFT JOIN " . Table::HUBS . " t2 ON t1.sd_hub_id = t2.ID LEFT JOIN " . Table::STATEDB . " t3 ON t1.state_name = t3.ID";
+    
+        // Define the default selection if not provided
+        $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t2.hub_name, t3.state_name"];
+    
+        // Check if there's a condition in $sql
+        if (!empty($sql)) {
+            // Add WHERE clause only if a condition is present
+            $from .= " WHERE " . $sql;
+        }
+    
+        // Execute the query and return the result
         return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
     }
+    
+
+  
+
     /**
      * 
      */
@@ -178,6 +199,8 @@ class VendorsHelper extends BaseHelper
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
         return $data;
     }
+
+
     public function getVendorCompany($vendor_company)
     {
         $from = Table::VENDORS;

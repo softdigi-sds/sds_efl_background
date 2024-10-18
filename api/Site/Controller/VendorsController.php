@@ -90,12 +90,36 @@ class VendorsController extends BaseController
     }
 
 
+    // public function getAll()
+    // {
+    //     // insert and get id
+    //     $data = $this->_helper->getAllData();
+    //     $this->response($data);
+    // }
     public function getAll()
     {
-        // insert and get id
-        $data = $this->_helper->getAllData();
+        // Get hub_id from POST request
+        $hub_id = isset($_POST['hub_id']) ? $_POST['hub_id'] : null;
+    
+        // Prepare SQL query and data inputs
+        $sql = "";
+        $data_in = [];
+    
+        if (!empty($hub_id)) {
+            // If hub_id is provided, add a condition to filter by hub_id
+            $sql = "t1.sd_hub_id = ?";
+            $data_in[] = $hub_id;
+        }
+    
+        // Fetch data using the helper function
+        $data = $this->_helper->getAllData($sql, $data_in);
+    
+        // Send response
         $this->response($data);
     }
+    
+    
+    
     /**
      * 
      */
