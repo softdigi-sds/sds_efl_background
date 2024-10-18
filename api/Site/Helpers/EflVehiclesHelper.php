@@ -218,6 +218,13 @@ class EflVehiclesHelper extends BaseHelper
         return $data;
     }
 
+    public function hubTotal($sub_data){
+        $total = array_reduce($sub_data, function($carry, $item) {
+            return $carry + $item->count;
+        }, 0);
+        return $total;
+    }
+
     public function getVehicleInvoiceByDateVendor($ven_id, $strt_date, $end_date)
     {
         $select = [" t1.*,SUM(t1.vehicle_count) AS count "];

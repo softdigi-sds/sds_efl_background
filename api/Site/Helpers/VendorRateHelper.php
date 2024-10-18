@@ -98,9 +98,10 @@ class VendorRateHelper extends BaseHelper
      */
     public function getAllData($sql = "", $data_in = [], $select = [], $group_by = "", $count = false, $single = false)
     {
-        $from = Table::VENDOR_RATE . " t1 LEFT JOIN " . Table::HUBS . " t2 ON t1.sd_hubs_id=t2.ID LEFT JOIN " . Table::VENDORS . " t3 ON t1.sd_vendors_id=t3.ID ";
+        $from = Table::VENDOR_RATE . " t1 
+        LEFT JOIN " . Table::HUBS . " t2 ON t1.sd_hubs_id=t2.ID LEFT JOIN " . Table::VENDORS . " t3 ON t1.sd_vendors_id=t3.ID ";
         $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t3.vendor_company"];
-        $data =  $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
+        $data =  $this->getAll($select, $from, $sql, $group_by, "t1.effective_date DESC", $data_in, $single, [], $count);
         return $data;
     }
     /**

@@ -126,6 +126,21 @@ class VendorRateSubHelper extends BaseHelper
         $this->deleteId($from, $id);
     }
 
+    public function getTypes($index=0)
+    {
+        $_types = [
+            1 => "Parking & Charging",
+            2 => "Parking",
+            3 => "Charging (AC)",
+            5 => "Charging (DC)",
+            4 => "Rent"
+        ];
+        if($index > 0) {
+            return isset($_types[$index]) ? $_types[$index] : "";
+        }
+        return $_types;
+    }
+
     public function getAllByVendorRateId($sd_vendor_rate_id)
     {
         $from = Table::VENDOR_RATE_SUB;
@@ -133,15 +148,15 @@ class VendorRateSubHelper extends BaseHelper
         $sql = "sd_vendor_rate_id=:id";
         $data_in = ["id" => $sd_vendor_rate_id];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
-        $out = [];
+        // $out = [];
         foreach ($data as $key => $obj) {
             $hsn = $obj->sd_hsn_id;
-            $obj->sd_hsn_id = ["value" => $hsn, "label" => $hsn];
+            $obj->sd_hsn_id = ["value" => $hsn, "label" =>$this->getTypes($hsn)];
             $rate_type = $obj->rate_type;
             $obj->rate_type = ["value" => $rate_type, "label" => $this->getRateTypes($rate_type)];
-            $out[$key] = $obj;
+            // $out[$key] = $obj;
         }
-        return $out;
+        return $data;
     }
 
 
@@ -167,44 +182,45 @@ class VendorRateSubHelper extends BaseHelper
 
     public function insert_update_single($_data)
     {
-        $exist_data = $this->getOneByVendAndHsn($_data["sd_vendor_rate_id"], $_data["sd_hsn_id"]);
-        if (isset($exist_data->ID)) {
-            // exisitng so need to update
-            $columns_update = ["rate_type", "min_start", "min_end", "price", "extra_price", "min_units_vehicle"];
-            $this->update($columns_update, $_data, $exist_data->ID);
-            return  $exist_data->ID;
-        } else {
-            $columns_insert = [
-                "sd_vendor_rate_id",
-                "sd_hsn_id",
-                "rate_type",
-                "min_start",
-                "min_end",
-                "price",
-                "extra_price",
-                "min_units_vehicle"
-            ];
-            $id_inserted = $this->insert($columns_insert, $_data);
-            return  $id_inserted;
-        }
+
+        $columns_insert = [
+            "sd_vendor_rate_id",
+            "sd_hsn_id",
+            "rate_type",
+            "min_start",
+            "min_end",
+            "price",
+            "extra_price",
+            "min_units_vehicle"
+        ];
+        $id_inserted = $this->insert($columns_insert, $_data);
+        return  $id_inserted;
     }
 
     public function insert_update_data($rate_id, $data)
     {
-        $exist_data = $this->getAllByVendorRateId($rate_id);
-        $ids = [];
+        // $exist_data = $this->getAllByVendorRateId($rate_id);
+        //$ids = [];
+        //echo "<br/><br/><br/> aLL";
+        // var_dump($data);
+        $this->deleteBySql(Table::VENDOR_RATE_SUB, "sd_vendor_rate_id=:id", ["id" => $rate_id]);
         foreach ($data as $rate_data) {
+
             $rate_data["sd_vendor_rate_id"] = $rate_id;
             $rate_data["sd_hsn_id"] = isset($rate_data["sd_hsn_id"]) && isset($rate_data["sd_hsn_id"]["value"]) ? $rate_data["sd_hsn_id"]["value"] : 0;
             $rate_data["rate_type"] = isset($rate_data["rate_type"]) && isset($rate_data["rate_type"]["value"]) ? $rate_data["rate_type"]["value"] : 0;
+            //echo "<br/><br/><br/> sINGLE";
             // var_dump($rate_data);
+
             $ids[] = $this->insert_update_single($rate_data);
         }
-        foreach ($exist_data as $obj) {
-            if (!in_array($obj->ID, $ids)) {
-                $this->deleteId(Table::VENDOR_RATE_SUB, $obj->ID);
-            }
-        }
+        //   echo " <br/><br/><br/> iNSERT IDS ";
+        //  var_dump($ids);
+        // foreach ($exist_data as $obj) {
+        //     if (!in_array($obj->ID, $ids)) {
+        //         $this->deleteId(Table::VENDOR_RATE_SUB, $obj->ID);
+        //     }
+        // }
         //exit();
         // now comapare the ids and remove the data
     }

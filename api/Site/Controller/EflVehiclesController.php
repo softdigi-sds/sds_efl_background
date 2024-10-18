@@ -203,6 +203,8 @@ class EflVehiclesController extends BaseController
         // loop over and get sub data   
         foreach ($hubs as $obj) {
             $obj->sub_data = $this->_helper->getCountByHubAndStartEndDate($obj->ID,  $start_date ,  $end_date);
+            $obj->total = $this->_helper->hubTotal($obj->sub_data);
+            $obj->average = count($dates) > 0 ? round( $obj->total / count($dates),2) : 0;
            // $hubs[$key] = $obj;
         }
         $out = new \stdClass();
