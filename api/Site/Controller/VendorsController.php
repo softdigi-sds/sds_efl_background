@@ -98,17 +98,25 @@ class VendorsController extends BaseController
     // }
     public function getAll()
     {
-        // Get hub_id from POST request
+        
         $hub_id = isset($_POST['hub_id']) ? $_POST['hub_id'] : null;
-    
-        // Prepare SQL query and data inputs
+        $office_id = isset($_POST['office_id']) ? $_POST['office_id'] : null; 
+       
         $sql = "";
         $data_in = [];
     
         if (!empty($hub_id)) {
-            // If hub_id is provided, add a condition to filter by hub_id
-            $sql = "t1.sd_hub_id = ?";
+            $sql .= "t1.sd_hub_id = ?";
             $data_in[] = $hub_id;
+        }
+    
+
+        if (!empty($office_id)) {
+            if (!empty($sql)) {
+                $sql .= " AND "; 
+            }
+            $sql .= "t1.sd_office_id = :id";  
+            $data_in['id'] = $office_id;      
         }
     
         // Fetch data using the helper function
@@ -117,6 +125,7 @@ class VendorsController extends BaseController
         // Send response
         $this->response($data);
     }
+    
     
     
     
