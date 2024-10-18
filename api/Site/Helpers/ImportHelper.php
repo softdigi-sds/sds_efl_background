@@ -136,6 +136,10 @@ class ImportHelper extends BaseHelper
                 "index" => "vendor"
             ],
             [
+                "letter" => "M",
+                "index" => "point_type",
+            ],
+            [
                 "letter" => "P",
                 "index" => "date",
                 "type" => "date"

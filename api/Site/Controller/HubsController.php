@@ -73,7 +73,7 @@ class HubsController extends BaseController
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["hub_name","status"];
+        $columns = ["hub_name","status","hub_id"];
         // do validations
         $this->_helper->validate(HubsHelper::validations, $columns, $this->post);
         // extra columns
