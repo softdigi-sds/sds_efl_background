@@ -99,21 +99,16 @@ class VendorsController extends BaseController
     public function getAll()
     {
         // Get hub_id from POST request
-        $hub_id = isset($_POST['hub_id']) ? $_POST['hub_id'] : null;
-    
+        $hub_id = SmartData::post_data("hub_id","INTEGER");
         // Prepare SQL query and data inputs
         $sql = "";
-        $data_in = [];
-    
-        if (!empty($hub_id)) {
-            // If hub_id is provided, add a condition to filter by hub_id
-            $sql = "t1.sd_hub_id = ?";
-            $data_in[] = $hub_id;
-        }
-    
+        $data_in = [];    
+        if (intval($hub_id) > 0) {         
+            $sql = "t1.sd_hub_id=:id";
+            $data_in["id"] = $hub_id;
+        }    
         // Fetch data using the helper function
-        $data = $this->_helper->getAllData($sql, $data_in);
-    
+        $data = $this->_helper->getAllData($sql, $data_in);    
         // Send response
         $this->response($data);
     }

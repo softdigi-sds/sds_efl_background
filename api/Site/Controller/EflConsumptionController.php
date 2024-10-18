@@ -161,7 +161,13 @@ class EflConsumptionController extends BaseController
         $this->response($data);
     }
 
-
+    private function prepare_sub_object($count,$type_id){
+        $arr = [           
+            "sd_meter_types_id"=>$type_id,
+            "count"=>$count
+        ];
+        return $arr;
+    }
     
     public function importExcel()
     {
@@ -197,12 +203,15 @@ class EflConsumptionController extends BaseController
                     // vendor existed insert or update the data
                     $index = $vendor_data->ID . "_" . $obj["date"];
                     $prev_count = isset($dates[$index]) ? $dates[$index] : 0;
-                    $new_count =  $prev_count  + $obj["count"];
+                    $new_count =  $prev_count  + $obj["count"];   
                     $_vehicle_data = [
                         "sd_hub_id" => $vendor_data->sd_hub_id,
                         "sd_vendors_id" => $vendor_data->ID,
                         "sd_date" => $obj["date"],
                         "unit_count" =>  $new_count
+                    ];
+                    $sub_data = [
+                        $this->prepare_sub_object($new_count,1),                        
                     ];
                     $dates[$index] =  $new_count;
                     $this->_helper->insertUpdateNew($_vehicle_data);
