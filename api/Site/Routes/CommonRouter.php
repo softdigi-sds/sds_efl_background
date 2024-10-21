@@ -192,6 +192,9 @@ class CommonRouter
         $this->_routes["/efl_vehicles/get_all_parking_data_hub"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllParkingHubWise"];
         $this->_routes["/efl_vehicles/import_excel"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "importExcel"];
         $this->_routes["/efl_vehicles/Vehicle_Report"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "VehicleReport"];
+        $this->_routes["/efl_vehicles/get_report_dashboard"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getDashBoardHubWise"];
+        $this->_routes["/efl_vehicles/get_report_date"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getDashBoardHubWiseDate"];
+   
     }
 
     private function site_routes()

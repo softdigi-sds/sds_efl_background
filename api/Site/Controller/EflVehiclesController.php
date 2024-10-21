@@ -213,6 +213,44 @@ class EflVehiclesController extends BaseController
         //return $hubs;
         $this->response($out);
     }
+    /**
+     *  function gets the count of vehicle report for hubs whether the data is updated or not
+     * 
+     * 
+     */
+    public function getDashBoardHubWise()
+    {
+        $start_date = SmartData::post_data("start_date","DATE");
+        $end_date = SmartData::post_data("end_date","DATE");    
+        $dates = SmartDateHelper::getDatesBetween($start_date,$end_date);
+        $hubs = $this->_hubs_helper->getAllData("t1.status=5");
+        $out = [];
+        foreach($dates as $date_single){
+            $hub_data = $this->_helper->getHubViseVehicleWithDate($date_single);
+            $obj = new \stdClass();
+            $obj->date = $date_single;
+            $hub_count = is_array( $hub_data) ? count($hub_data) : 0;
+            if($hub_count===$hubs){
+                $obj->status = 3; //  nothing is updated
+            }else if($hub_count==0){
+                $obj->status = 1; //  all is updated
+            }else{
+                $obj->status = 2; // partial updated
+            }
+            $out[] = $obj;           
+        }
+        $this->response($out);
+    }
+
+    /**
+     * given a date which hubs not updated vehicle report is coming here
+     */
+    public function getDashBoardHubWiseDate()
+    {
+        $start_date = SmartData::post_data("start_date","DATE");  
+        $hub_data = $this->_helper->getHubViseVehicleWithDate($start_date ); 
+        $this->response( $hub_data );
+    }
 
 
     private function prepare_sub_object($count,$type_id){

@@ -218,6 +218,21 @@ class EflVehiclesHelper extends BaseHelper
         return $data;
     }
 
+    /**
+     * 
+     */
+    public function getHubViseVehicleWithDate($start_date){
+        $select = [
+            "t1.ID,t1.hub_id"
+        ];
+        $from = Table::HUBS . " t1 
+        LEFT JOIN ".Table::EFL_VEHICLES ." t2 ON t1.ID=t2.sd_hub_id AND t2.sd_date=:start_date";
+        $sql = "t1.status=5 AND t2.ID IS NULL";
+        $data_in = ["start_date"=>$start_date];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
+        return $data;
+    }
+
     public function hubTotal($sub_data){
         $total = array_reduce($sub_data, function($carry, $item) {
             return $carry + $item->count;
@@ -227,10 +242,14 @@ class EflVehiclesHelper extends BaseHelper
 
     public function getVehicleInvoiceByDateVendor($ven_id, $strt_date, $end_date)
     {
-        $select = [" t1.*,SUM(t1.vehicle_count) AS count "];
-        $from = Table::EFL_VEHICLES . " t1 ";
-        $sql = " t1.sd_vendors_id=:id AND t1.sd_date BETWEEN :strt_date AND :end_date  GROUP BY t1.sd_vendors_id";
-        $data_in = ["id" => $ven_id, "strt_date" => $strt_date, "end_date" => $end_date];
+        $select = [
+            "t2.sd_date AS date, DAY(t2.sd_date) AS day_number ",
+             "SUM(t1.count) as count"
+        ];
+        $from = Table::EFL_VEHICLES_SUB . " t1 
+        INNER JOIN ".Table::EFL_VEHICLES ." t2 ON t2.ID=t1.sd_efl_vehicles_id";
+        $sql = "t2.sd_vendors_id=:ID AND t2.sd_date BETWEEN :start_date AND :end_date GROUP BY t1.sd_vendors_id";       
+        $data_in = ["id" => $ven_id, "start_date" => $strt_date, "end_date" => $end_date];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, [], false);
         $count =  isset($data->count) ? $data->count : 0;
         return intval($count / 30);
