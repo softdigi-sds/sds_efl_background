@@ -1,14 +1,12 @@
 name: Build and Deploy
-
 on:
   push:
     branches:
       - main
-
 jobs:
-  build:
+  production-deploy:
+    if: contains(github.event.head_commit.message, 'production')
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -33,3 +31,30 @@ jobs:
           scp -r $GITHUB_WORKSPACE/api/Site/* github@195.35.23.133:/opt/efl/app/api/Site         
           scp -r $GITHUB_WORKSPACE/api/Core/* github@195.35.23.133:/opt/efl/app/api/Core
           scp -r $GITHUB_WORKSPACE/api/index.php github@195.35.23.133:/opt/app/app/api/
+  dev-deploy:
+    if: contains(github.event.head_commit.message, 'dev')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Disable Host Key Verification
+        run: |
+          mkdir -p ~/.ssh
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+          chmod 600 ~/.ssh/config
+      - name: Configure SSH environment
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+      - name: Deploy to remote machine
+        run: |
+          pwd
+          ls -l
+          # Replace remote-user and remote-host with your SSH credentials
+          scp -r $GITHUB_WORKSPACE/api/vendor/* github@195.35.23.133:/opt/efl/dev/api/vendor              
+          scp -r $GITHUB_WORKSPACE/api/Site/* github@195.35.23.133:/opt/efl/dev/api/Site         
+          scp -r $GITHUB_WORKSPACE/api/Core/* github@195.35.23.133:/opt/efl/dev/api/Core
+          scp -r $GITHUB_WORKSPACE/api/index.php github@195.35.23.133:/opt/dev/app/api/
