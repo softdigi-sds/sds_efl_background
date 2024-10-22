@@ -165,6 +165,7 @@ class CommonRouter
         $this->_routes["/efl_consumption/get_one_consumption_data"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOneConsumptionData"];
         $this->_routes["/efl_consumption/get_all_consumption_data"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllConsumptionData"];
         $this->_routes["/efl_consumption/import_excel"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "importExcel"];
+        $this->_routes["/efl_consumption/import_cms_excel"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "importCmsExcel"];
     }
     private function invoice_routes()
     {

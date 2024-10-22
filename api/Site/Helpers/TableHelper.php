@@ -42,4 +42,5 @@ class TableHelper
    const VEHICLE_TYPES = "sd_vehicle_types";
    const METER_TYPES = "sd_meter_types";
    const EFL_VEHICLES_SUB = "sd_efl_vehicles_sub";
+   const CMS_DATA = "sd_cms_data";
 }
