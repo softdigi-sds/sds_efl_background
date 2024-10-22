@@ -77,28 +77,28 @@ class InvoiceController extends BaseController
         $this->db->_db->commit();
         $this->response($bill_id);
     }
+
+
+    public function update()
+    {
+        $bill_id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+        if ($bill_id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid Bill ID");
+        }       
+        $bill_data = $this->_bill_helper->getOneData($bill_id);
+        // generate and insert invoice
+        $dt = $this->_helper->insertInvoice($bill_id, $bill_data);
+        // update the bill table with the update details
+        $this->_bill_helper->updateBillData($bill_id, $dt);
+        // \CustomErrorHandler::triggerInvalid("tesing gg");
+        $this->db->_db->commit();
+        $this->response($bill_id);
+    }
+
     /**
      * 
      */
-    public function update()
-    {
-        $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
-        if ($id < 1) {
-            \CustomErrorHandler::triggerInvalid("Invalid ID");
-        }
-        $columns = ["sd_bill_id", "sd_hub_id", "sd_vendor_id", "total_units", "total_vehicles", "unit_amount", "vehicle_amount", "gst_percentage", "gst_amount", "total_amount"];
-        // do validations
-        $this->_helper->validate(InvoiceHelper::validations, $columns, $this->post);
-        // extra columns
-        $columns[] = "status";
-        $this->post["status"] = 5;
-        // begin transition
-        $this->db->_db->Begin();
-        // insert and get id
-        $id = $this->_helper->update($columns, $this->post, $id);
-        $this->db->_db->commit();
-        $this->response($id);
-    }
+   
     /**
      * 
      */

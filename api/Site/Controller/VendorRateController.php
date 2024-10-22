@@ -4,6 +4,7 @@ namespace Site\Controller;
 
 use Core\Helpers\SmartData as Data;
 use Core\BaseController;
+use Core\Helpers\SmartData;
 use Site\Helpers\VendorRateHelper as VendorRateHelper;
 use Site\Helpers\VendorRateSubHelper as VendorRateSubHelper;
 
@@ -37,7 +38,7 @@ class VendorRateController extends BaseController
         // data
         $this->post["sd_hubs_id"] = Data::post_select_value("sd_hubs_id");
         $this->post["sd_vendors_id"] = Data::post_select_value("sd_vendors_id");
-        $data = $this->_helper->checkEffectiveDateClash($this->post["effective_date"]);
+        $data = $this->_helper->checkEffectiveDateClash($this->post["sd_vendors_id"],$this->post["effective_date"]);
         // var_dump($data);exit();
         if (!empty($data)) {
             \CustomErrorHandler::triggerInvalid("There is already an Effective date available upto " . $data->effective_date);
@@ -104,6 +105,21 @@ class VendorRateController extends BaseController
         if (isset($data->ID)) {
             $data->rate_data = $this->_sub_helper->getAllByVendorRateId($data->ID);
         }
+        $this->response($data);
+    }
+    /**
+     * getting rates with one single vendor
+     */
+
+    public function getOneVendor()
+    {
+        $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+        if ($id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid ID");
+        }
+        $_date =SmartData::post_data("_date","DATE");
+        // insert and get id
+        $data = $this->_helper->getOneWithEffectiveDate($id,$_date);
         $this->response($data);
     }
     /**

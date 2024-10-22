@@ -246,19 +246,23 @@ class InvoiceHelper extends BaseHelper
         ];
 
         foreach ($vendors as $ven_data) {
-            $_data = $this->prepareSingleVendorData($bill_id, $ven_data, $start_date, $end_date);
-             var_dump($_data);
-             exit();
-            if ($_data["total_taxable"] > 0) {
-                $this->insertUpdateSingle($_data);
-                $dt["unit_amount"] += $_data["unit_amount"];
-                $dt["vehicle_amount"]  += $_data["vehicle_amount"];
-                $dt["others"]  += $_data["total_others"];
-                $dt["gst_amount"]  += $_data["gst_amount"];
-                $dt["total_amount"]  += $_data["total_amount"];
-                $dt["total_invoices"]++;
-            }
+           // if ($ven_data->ID == 578) {
+                $_data = $this->prepareSingleVendorData($bill_id, $ven_data, $start_date, $end_date);
+               // var_dump($_data);
+                if ($_data["total_taxable"] > 0) {                  
+                    $this->insertUpdateSingle($_data);
+                    $dt["unit_amount"] += $_data["unit_amount"];
+                    $dt["vehicle_amount"]  += $_data["vehicle_amount"];
+                    $dt["others"]  += $_data["total_others"];
+                    $dt["gst_amount"]  += $_data["gst_amount"];
+                    $dt["total_amount"]  += $_data["total_amount"];
+                    $dt["total_invoices"]++;
+                }else{
+                    $this->updateInvoiceDataNew($_data);
+                }
+            //}
         }
+        //exit();
         return $dt;
     }
     public function getVehicleParkingCharge($rates, $vehicle_count)
@@ -302,9 +306,9 @@ class InvoiceHelper extends BaseHelper
     {
         $charge = 0;
         foreach ($rates as $obj) {
-            if ($obj->sd_hsn_id["value"] == 1) {
+            if ($obj->sd_hsn_id["value"] == 1 && $vehicle_count > 0) {
                 // this is only for praking so check vehicle count range and apply
-                $minimum_units = ($obj->min_units_vehicle * 30) * $vehicle_count;
+                $minimum_units = ($obj->min_units_vehicle) * $vehicle_count;
                 $total_units = 0;
                 if ($units > $minimum_units) {
                     $total_units = $units - $minimum_units;
@@ -320,29 +324,46 @@ class InvoiceHelper extends BaseHelper
                 }
             }
         }
+       // echo " <br/><br/> unit charge " . $charge;
         return $charge;
     }
+
+
+    public function getVehicleRentCharge($rates)
+    {
+        $charge = 0;
+        foreach ($rates as $obj) {          
+            if ($obj->sd_hsn_id["value"] == 4) {
+               $charge = $obj->price;
+            } 
+        }
+        return $charge;
+    }
+
 
 
     public function getVendorRateValues($hub_id, $vendor_id,  $vehicle_count, $unit_count, $end_date)
     {
         $rateHelper = new VendorRateHelper($this->db);
         $rateSubHelper = new VendorRateSubHelper($this->db);
-        $date = SmartGeneral::getCurrentDbDate();
+      //  $date = SmartGeneral::getCurrentDbDate();
         $rateHelper = $rateHelper->getVendorHubDetails($hub_id, $vendor_id, $end_date);
         // var_dump($rateHelper);
         $parking_charges = 0;
         $units_charge = 0;
+        $rent_charges = 0;
         if (isset($rateHelper->ID)) {
             $vendor_rates = $rateSubHelper->getAllByVendorRateId($rateHelper->ID);
-            // var_dump($vendor_rates);
+           //  var_dump($vendor_rates);
             $parking_charges = $this->getVehicleParkingCharge(
                 $vendor_rates,
                 $vehicle_count
             );
             $units_charge = $this->getVehicleChargingCharge($vendor_rates, $vehicle_count, $unit_count);
+            //
+            $rent_charges = $this->getVehicleRentCharge($vendor_rates);
         }
-        return [$parking_charges, $units_charge];
+        return [$parking_charges, $units_charge,$rent_charges];
     }
 
 
@@ -357,7 +378,7 @@ class InvoiceHelper extends BaseHelper
         // get vehicle count with dates
         $_data["total_vehicles"] = $this->getVehicleCountWithVendor($ven_data->ID, $start_date, $end_date);
         // calculate amount now 
-        list($parking_amount, $unit_amount) = $this->getVendorRateValues(
+        list($parking_amount, $unit_amount,$rent_amount) = $this->getVendorRateValues(
             $ven_data->hub_id,
             $ven_data->ID,
             $_data["total_vehicles"],
@@ -368,7 +389,7 @@ class InvoiceHelper extends BaseHelper
         // calculate vehicle amount now 
         $_data["vehicle_amount"] = $parking_amount;
         // rent amount
-        $_data["rent_amount"] = 0;
+        $_data["rent_amount"] = $rent_amount;
         //
         $_data["other_one_amount"] = 0;
         //
@@ -413,6 +434,26 @@ class InvoiceHelper extends BaseHelper
         $columns = array_keys($_data);
         $this->update($columns, $_data, $id);
     }
+
+    public function updateInvoiceDataNew($data){
+        $exist_data = $this->checkInvoiceExists($data["sd_bill_id"], $data["sd_vendor_id"]);
+        if (isset($exist_data->ID)) {
+            $update_columns = [
+                "total_units",
+                "total_vehicles",
+                "rent_amount",
+                "unit_amount",
+                "vehicle_amount",
+                "status",
+                "gst_percentage",
+                "gst_amount",
+                "total_amount"
+            ];
+            $this->update($update_columns, $data, $exist_data->ID);
+            return $exist_data->ID;
+        }
+    }
+
     /**
      * 
      */
@@ -423,6 +464,7 @@ class InvoiceHelper extends BaseHelper
             $update_columns = [
                 "total_units",
                 "total_vehicles",
+                "rent_amount",
                 "unit_amount",
                 "vehicle_amount",
                 "status",
@@ -441,6 +483,7 @@ class InvoiceHelper extends BaseHelper
                 "total_vehicles",
                 "unit_amount",
                 "vehicle_amount",
+                "rent_amount",
                 "total_taxable",
                 "status",
                 "gst_percentage",

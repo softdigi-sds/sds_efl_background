@@ -109,7 +109,9 @@ class VendorRateHelper extends BaseHelper
      */
     public function getOneData($id)
     {
-        $from = Table::VENDOR_RATE . " t1 LEFT JOIN " . Table::HUBS . " t2 ON t1.sd_hubs_id=t2.ID LEFT JOIN " . Table::VENDORS . " t3 ON t1.sd_vendors_id=t3.ID ";
+        $from = Table::VENDOR_RATE . " t1 
+        LEFT JOIN " . Table::HUBS . " t2 ON t1.sd_hubs_id=t2.ID 
+        LEFT JOIN " . Table::VENDORS . " t3 ON t1.sd_vendors_id=t3.ID ";
         $select = ["t1.*, t2.hub_id, t3.vendor_company"];
         $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
@@ -128,6 +130,9 @@ class VendorRateHelper extends BaseHelper
         }
         return $data;
     }
+
+   
+
     /**
      * 
      */
@@ -196,6 +201,26 @@ class VendorRateHelper extends BaseHelper
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
         return $data;
     }
+    /**
+     *  get the applicable rates with venodr id and effective date which is less the end date
+     * 
+     */
+    public function getOneWithEffectiveDate($vendor_id,$effective_date)
+    {
+        $from = Table::VENDOR_RATE . " t1";
+        $select = ["t1.*, t2.hub_id, t3.vendor_company"];
+        $sql = "t1.sd_vendors_id=:ID AND effective_date>=:effective_date";
+        $data_in = ["ID" => $vendor_id,"effective_date"=>$effective_date];
+        $group_by = "";
+        $order_by = "";
+        $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
+        if(isset($data->ID)){
+            $rateSubHelper = new VendorRateSubHelper($this->db);
+            $vendor_rates = $rateSubHelper->getAllByVendorRateId($data->ID);
+            $data->vendor_rates = $vendor_rates;
+        }       
+        return $data;
+    }
 
     public function getVendorHubDetails($hub_id, $vend_id, $effective_date)
     {
@@ -222,12 +247,12 @@ class VendorRateHelper extends BaseHelper
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }
-    public function checkEffectiveDateClash($effective_date)
+    public function checkEffectiveDateClash($vendor_id,$effective_date)
     {
         $from = Table::VENDOR_RATE;
         $select = ["ID,effective_date"];
-        $sql = " effective_date >=:effective_date";
-        $data_in = ["effective_date" => $effective_date];
+        $sql = " effective_date >=:effective_date AND sd_vendors_id=:id";
+        $data_in = ["effective_date" => $effective_date,"id"=>$vendor_id];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }

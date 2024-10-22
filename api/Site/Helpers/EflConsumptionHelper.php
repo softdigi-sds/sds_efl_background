@@ -278,7 +278,7 @@ class EflConsumptionHelper extends BaseHelper
         $data_in = ["id"=>$vendor_id,  "start_date" => $start_date, "end_date" => $end_date];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, [], false);
        // var_dump($data_in);
-        //var_dump($data);
+       // var_dump($data);
         return isset($data->count) ? $data->count : 0;
     }
 
