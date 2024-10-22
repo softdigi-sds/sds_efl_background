@@ -259,4 +259,151 @@ class ImportHelper extends BaseHelper
         return $columns;
     }
 
+    
+    public function importCmsColumns()
+    {
+        $columns = [
+            [
+                "letter" => "A",
+                "index" => "txn_id"
+            ],
+            [
+                "letter" => "B",
+                "index" => "date_time"
+            ],
+            [
+                "letter" => "C",
+                "index" => "phone"
+            ],
+            [
+                "letter" => "D",
+                "index" => "name"
+            ],
+            [
+                "letter" => "E",
+                "index" => "vendor_name"
+            ],
+            [
+                "letter" => "F",
+                "index" => "email"
+            ],
+            [
+                "letter" => "G",
+                "index" => "charging_station"
+            ],
+            [
+                "letter" => "H",
+                "index" => "lat_lng"
+            ],
+            [
+                "letter" => "I",
+                "index" => "charge_point"
+            ],
+            [
+                "letter" => "J",
+                "index" => "charge_point_code"
+            ],
+            [
+                "letter" => "K",
+                "index" => "connector_id"
+            ],
+            [
+                "letter" => "L",
+                "index" => "connector_type"
+            ],
+            [
+                "letter" => "M",
+                "index" => "charge_point_type"
+            ],
+            [
+                "letter" => "N",
+                "index" => "charging_station_category"
+            ],
+            [
+                "letter" => "O",
+                "index" => "start_time"
+            ],
+            [
+                "letter" => "P",
+                "index" => "stop_time"
+            ],
+            [
+                "letter" => "Q",
+                "index" => "duration_seconds"
+            ],
+            [
+                "letter" => "R",
+                "index" => "duration_hh_mm"
+            ],
+            [
+                "letter" => "S",
+                "index" => "meter_start_wh"
+            ],
+            [
+                "letter" => "T",
+                "index" => "meter_stop_wh"
+            ],
+            [
+                "letter" => "U",
+                "index" => "start_soc"
+            ],
+            [
+                "letter" => "V",
+                "index" => "stop_soc"
+            ],
+            [
+                "letter" => "W",
+                "index" => "energy_delivered_kWh"
+            ],
+            [
+                "letter" => "X",
+                "index" => "unit_rate_applicable"
+            ],
+            [
+                "letter" => "Y",
+                "index" => "charging_session_cost"
+            ],
+            [
+                "letter" => "Z",
+                "index" => "service_fee"
+            ], [
+                "letter" => "AA",
+                "index" => "service_fee_for_minutes"
+            ],
+            [
+                "letter" => "AB",
+                "index" => "gst"
+            ],
+            [
+                "letter" => "AC",
+                "index" => "previous_unpaid_amount"
+            ],
+            [
+                "letter" => "AD",
+                "index" => "payment_processing_fee"
+            ],
+            [
+                "letter" => "AE",
+                "index" => "total"
+            ],
+            [
+                "letter" => "AF",
+                "index" => "refund_amount"
+            ],
+            [
+                "letter" => "AG",
+                "index" => "payment_method"
+            ],
+            [
+                "letter" => "AH",
+                "index" => "fleet"
+            ],
+            [
+                "letter" => "AI",
+                "index" => "vehicle_number_plate"
+            ]
+        ];
+        return $columns;
+    }
+
 }

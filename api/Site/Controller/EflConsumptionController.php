@@ -256,4 +256,17 @@ class EflConsumptionController extends BaseController
         }
         $this->response($out);
     }
+
+    public function importCmsExcel()
+    {
+        // path
+        $dest_path = "C:/Users/KMS/Downloads/dummy.xlsx";
+        // read the excel and process
+        $excel = new SmartExcellHelper($dest_path, 0);
+        $_data = $excel->getData($this->_import_helper->importCmsColumns(), 2);
+        foreach ($_data as $obj) {
+                    $this->_helper->insertCmsData($obj);
+        }
+        $this->response("done");
+    }
 }

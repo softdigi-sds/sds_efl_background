@@ -39,6 +39,43 @@ class EflConsumptionHelper extends BaseHelper
         "sd_meter_types_id" => SmartConst::SCHEMA_INTEGER,
         "count" => SmartConst::SCHEMA_INTEGER
     ];
+    const schema_cms = [
+        "txn_id" => SmartConst::SCHEMA_INTEGER,
+        "date_time" => SmartConst::SCHEMA_DATE,
+        "phone" => SmartConst::SCHEMA_VARCHAR,
+        "name" => SmartConst::SCHEMA_VARCHAR,
+        "vendor_name" => SmartConst::SCHEMA_VARCHAR,
+        "email" => SmartConst::SCHEMA_VARCHAR,
+        "charging_station" => SmartConst::SCHEMA_VARCHAR,
+        "lat_lng" => SmartConst::SCHEMA_VARCHAR,
+        "charge_point"  => SmartConst::SCHEMA_VARCHAR,
+        "charge_point_code" => SmartConst::SCHEMA_VARCHAR,
+        "connector_id" => SmartConst::SCHEMA_INTEGER,
+        "connector_type" => SmartConst::SCHEMA_VARCHAR,
+        "charge_point_type" => SmartConst::SCHEMA_VARCHAR,
+        "charging_station_category"  => SmartConst::SCHEMA_VARCHAR,
+        "start_time" => SmartConst::SCHEMA_DATE,
+        "stop_time" => SmartConst::SCHEMA_DATE,
+        "duration_seconds"  => SmartConst::SCHEMA_DATE,
+        "duration_hh_mm"  => SmartConst::SCHEMA_DATE,
+        "meter_start_wh"  => SmartConst::SCHEMA_FLOAT,
+        "meter_stop_wh" => SmartConst::SCHEMA_FLOAT,
+        "start_soc" => SmartConst::SCHEMA_FLOAT,
+        "stop_soc" => SmartConst::SCHEMA_FLOAT,
+        "energy_delivered_kWh"  => SmartConst::SCHEMA_FLOAT,
+        "unit_rate_applicable" => SmartConst::SCHEMA_INTEGER,
+        "charging_session_cost"  => SmartConst::SCHEMA_FLOAT,
+        "service_fee" => SmartConst::SCHEMA_FLOAT,
+        "service_fee_for_minutes"  => SmartConst::SCHEMA_FLOAT,
+        "gst" => SmartConst::SCHEMA_FLOAT,
+        "previous_unpaid_amount" => SmartConst::SCHEMA_FLOAT,
+        "payment_processing_fee" => SmartConst::SCHEMA_FLOAT,
+        "total" => SmartConst::SCHEMA_FLOAT,
+        "refund_amount"  => SmartConst::SCHEMA_FLOAT,
+        "payment_method" => SmartConst::SCHEMA_VARCHAR,
+        "fleet" => SmartConst::SCHEMA_VARCHAR,
+        "vehicle_number_plate" => SmartConst::SCHEMA_VARCHAR,
+    ];
 
     /**
      * 
@@ -84,6 +121,10 @@ class EflConsumptionHelper extends BaseHelper
     public function insert(array $columns, array $data)
     {
         return $this->insertDb(self::schema, Table::EFL_CONSUMPTION, $columns, $data);
+    }
+    public function insertCms(array $columns, array $data)
+    {
+        return $this->insertDb(self::schema_cms, Table::CMS_DATA, $columns, $data);
     }
     /**
      * 
@@ -349,5 +390,9 @@ class EflConsumptionHelper extends BaseHelper
         return $data;
     }
 
+    public function insertCmsData($data){
+        $columns = array_keys($data);
+        $this->insertCms($columns, $data);
+    }
 
 }
