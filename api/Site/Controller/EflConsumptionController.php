@@ -6,12 +6,15 @@ use Core\BaseController;
 
 use Core\Helpers\SmartAuthHelper;
 use Core\Helpers\SmartData as Data;
+use Core\Helpers\SmartData;
+use Core\Helpers\SmartDateHelper;
 use Core\Helpers\SmartExcellHelper;
 use Core\Helpers\SmartFileHelper;
 use Site\Helpers\EflConsumptionHelper;
 use Site\Helpers\ImportHelper;
 use Site\Helpers\VendorsHelper;
 use Site\Helpers\MeterTypesHelper;
+use Site\Helpers\HubsHelper;
 
 class EflConsumptionController extends BaseController
 {
@@ -20,6 +23,7 @@ class EflConsumptionController extends BaseController
     private ImportHelper $_import_helper;
     private VendorsHelper $_vendor_helper;
     private MeterTypesHelper $_meterTypesHelper;
+    private HubsHelper $_hubs_helper;
     function __construct($params)
     {
         parent::__construct($params);
@@ -30,6 +34,8 @@ class EflConsumptionController extends BaseController
         $this->_vendor_helper = new VendorsHelper($this->db);
         //
         $this->_meterTypesHelper = new MeterTypesHelper($this->db);
+
+        $this->_hubs_helper = new HubsHelper($this->db);
 
     }
 
@@ -159,6 +165,28 @@ class EflConsumptionController extends BaseController
         // echo $hub_id;exit();    
         $data = $this->_helper->getCountByHubAndDate($hub_id, $month, $year);
         $this->response($data);
+    }
+
+
+    public function getAllConsumptionHubWise()
+    {
+        $start_date = SmartData::post_data("start_date","DATE");
+        $end_date = SmartData::post_data("end_date","DATE");
+        // get hub details first
+        $hubs = $this->_hubs_helper->getAllData("t1.status=5");
+        $dates = SmartDateHelper::getDatesBetween($start_date,$end_date);
+        // loop over and get sub data   
+        foreach ($hubs as $obj) {
+            $obj->sub_data = $this->_helper->getCountByHubAndStartEndDate($obj->ID,  $start_date ,  $end_date);
+            $obj->total = $this->_helper->hubTotal($obj->sub_data);
+            $obj->average = count($dates) > 0 ? round( $obj->total / count($dates),2) : 0;
+           // $hubs[$key] = $obj;
+        }
+        $out = new \stdClass();
+        $out->dates =  $dates ;
+        $out->data = $hubs;
+        //return $hubs;
+        $this->response($out);
     }
 
     private function prepare_sub_object($count,$type_id){

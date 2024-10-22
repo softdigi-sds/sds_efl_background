@@ -198,7 +198,7 @@ class EflVehiclesController extends BaseController
         $start_date = SmartData::post_data("start_date","DATE");
         $end_date = SmartData::post_data("end_date","DATE");
         // get hub details first
-        $hubs = $this->_hubs_helper->getAllData();
+        $hubs = $this->_hubs_helper->getAllData("t1.status=5");
         $dates = SmartDateHelper::getDatesBetween($start_date,$end_date);
         // loop over and get sub data   
         foreach ($hubs as $obj) {
