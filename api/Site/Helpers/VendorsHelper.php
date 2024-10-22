@@ -184,12 +184,16 @@ class VendorsHelper extends BaseHelper
     }
 
 
-    public function getVendorsByHubId($id)
+    public function getVendorsByHubId($id,$status=0)
     {
         $from = Table::VENDORS;
         $select = ["ID,sd_hub_id,vendor_code,vendor_company,vendor_name"];
         $sql = "sd_hub_id=:id";
         $data_in = ["id" => $id,];
+        if($status!==0){
+            $sql .= " AND status=:status";
+            $data_in["status"]=$status;
+        }
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
         return $data;
     }

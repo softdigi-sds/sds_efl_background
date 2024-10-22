@@ -171,7 +171,7 @@ class EflVehiclesHelper extends BaseHelper
     public function getVendorsByHubId($hub_id, $date)
     {
         $_venoder_helper = new VendorsHelper($this->db);
-        $data = $_venoder_helper->getVendorsByHubId($hub_id);
+        $data = $_venoder_helper->getVendorsByHubId($hub_id,5);
         foreach ($data as $ven_data) {
             // if (isset($ven_data->ID)) {
             $select = ["vehicle_count AS count,ID"];
