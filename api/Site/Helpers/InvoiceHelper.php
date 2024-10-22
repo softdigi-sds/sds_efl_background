@@ -227,7 +227,7 @@ class InvoiceHelper extends BaseHelper
         // get the vendors data 
         $vendorHelper = new VendorsHelper($this->db);
         $vendors = $vendorHelper->getAllData(
-            "status=5",
+            "t1.status=5",
             [],
             ["t1.ID,t2.ID as hub_id,t3.short_name"]
         );
@@ -247,8 +247,8 @@ class InvoiceHelper extends BaseHelper
 
         foreach ($vendors as $ven_data) {
             $_data = $this->prepareSingleVendorData($bill_id, $ven_data, $start_date, $end_date);
-            // var_dump($_data);
-            // exit();
+             var_dump($_data);
+             exit();
             if ($_data["total_taxable"] > 0) {
                 $this->insertUpdateSingle($_data);
                 $dt["unit_amount"] += $_data["unit_amount"];

@@ -233,7 +233,7 @@ class EflConsumptionHelper extends BaseHelper
         ];
         $from = Table::EFL_CONSUMPTION_SUB . " t1 
         INNER JOIN ".Table::EFL_CONSUMPTION ." t2 ON t2.ID=t1.sd_efl_consumption_id";
-        $sql = "t1.sd_vendors_id=:id AND t1.sd_date BETWEEN :start_date AND :end_date";      
+        $sql = "t2.sd_vendors_id=:id AND t2.sd_date BETWEEN :start_date AND :end_date";      
         $data_in = ["id"=>$vendor_id,  "start_date" => $start_date, "end_date" => $end_date];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, [], false);
        // var_dump($data_in);
