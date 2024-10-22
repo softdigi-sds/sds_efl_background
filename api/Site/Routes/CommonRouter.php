@@ -140,6 +140,7 @@ class CommonRouter
         $this->_routes["/vendor_rate/get_all"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAll"];
         $this->_routes["/vendor_rate/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/vendor_rate/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
+        $this->_routes["/vendor_rate/migrate"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "migrate"];
     }
     private function bill_routes()
     {
@@ -165,7 +166,7 @@ class CommonRouter
         $this->_routes["/efl_consumption/get_one_consumption_data"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOneConsumptionData"];
         $this->_routes["/efl_consumption/get_all_consumption_data"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllConsumptionData"];
         $this->_routes["/efl_consumption/get_all_consumption_data_hub"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllConsumptionHubWise"];
-  
+
         $this->_routes["/efl_consumption/import_excel"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "importExcel"];
         $this->_routes["/efl_consumption/import_cms_excel"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "importCmsExcel"];
     }
@@ -179,7 +180,7 @@ class CommonRouter
         $this->_routes["/invoice/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
         $this->_routes["/invoice/generate_invoice"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "generate"];
         $this->_routes["/invoice/update_invoice"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
-    
+
         $this->_routes["/invoice/get_one_invoice"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getInvoiceByBillID"];
         $this->_routes["/invoice/download_invoice"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "downloadInvoice"];
         $this->_routes["/invoice/get_pdf"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getPdf"];
@@ -199,7 +200,6 @@ class CommonRouter
         $this->_routes["/efl_vehicles/Vehicle_Report"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "VehicleReport"];
         $this->_routes["/efl_vehicles/get_report_dashboard"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getDashBoardHubWise"];
         $this->_routes["/efl_vehicles/get_report_date"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getDashBoardHubWiseDate"];
-   
     }
 
     private function site_routes()
