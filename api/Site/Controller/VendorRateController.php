@@ -175,7 +175,7 @@ class VendorRateController extends BaseController
     {
         return [
             "sd_hsn_id" => ["value" => $hsn],
-            "rate_type" => ["value" => $hsn],
+            "rate_type" => ["value" =>$rate_type],
             "min_start" => $min_start,
             "min_end" => $min_end,
             "price" => $price,
@@ -241,6 +241,7 @@ class VendorRateController extends BaseController
                     $exits_data = $this->_helper->getOneByVendor($v_data->sd_hub_id,$v_data->ID);
                     if(!isset($exits_data->ID)){
                        // echo $i . " ----- ------ ----- Aailble " . $obj->hub . "  =  " . $obj->vendor . " <br/>";
+                      // $this->process_rate($v_data, $obj);
                     }
                     // hub availle go inside
                    // $this->process_rate($v_data, $obj);
@@ -258,3 +259,6 @@ class VendorRateController extends BaseController
         //var_dump($_data);
     }
 }
+
+
+

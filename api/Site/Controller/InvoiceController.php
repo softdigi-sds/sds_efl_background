@@ -131,6 +131,17 @@ class InvoiceController extends BaseController
         $data = $this->_helper->getOneData($id);
         $this->response($data);
     }
+
+    public function getOneDetails()
+    {
+        $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+        if ($id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid ID");
+        }
+        // insert and get id
+        $data = $this->_helper->getOneDetails($id);
+        $this->response($data);
+    }
     /**
      * 
      */

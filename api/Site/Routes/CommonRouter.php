@@ -177,6 +177,9 @@ class CommonRouter
         $this->_routes["/invoice/update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
         $this->_routes["/invoice/get_all"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAll"];
         $this->_routes["/invoice/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
+        $this->_routes["/invoice/get_one_details"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOneDetails"];
+
+       
         $this->_routes["/invoice/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
         $this->_routes["/invoice/generate_invoice"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "generate"];
         $this->_routes["/invoice/update_invoice"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
