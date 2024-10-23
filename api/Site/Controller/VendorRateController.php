@@ -247,7 +247,7 @@ class VendorRateController extends BaseController
                     // if ($i > 2) {
                     //    break;
                     //  }
-                    $i++;
+                   // $i++;
                 } else {
                     echo $i . " Hub/ Vendor  Not Availble " . $obj->hub . "  =  " . $obj->vendor . " <br/>";
                     $i++;
