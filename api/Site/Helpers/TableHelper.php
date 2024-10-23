@@ -43,4 +43,7 @@ class TableHelper
    const METER_TYPES = "sd_meter_types";
    const EFL_VEHICLES_SUB = "sd_efl_vehicles_sub";
    const CMS_DATA = "sd_cms_data";
+   //
+   const SD_CUSTOMER = "sd_customer";
+   const SD_CUSTOMER_ADDRESS = "sd_customer_address";
 }
