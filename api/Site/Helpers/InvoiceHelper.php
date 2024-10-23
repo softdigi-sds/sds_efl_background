@@ -400,7 +400,8 @@ class InvoiceHelper extends BaseHelper
         $_data["total_units"] =  $this->getConsumptionWithVendor($ven_data->ID, $start_date, $end_date);
         // get vehicle count with dates
         $total_vehicles = $this->getVehicleCountWithVendor($ven_data->ID, $start_date, $end_date);
-        $_data["total_vehicles"] =  round(  $total_vehicles  / $date_count,3);
+        $_data["total_vehicles"] = round(  $total_vehicles  / $date_count,3);
+        // round(  $total_vehicles  / $date_count,3);
         // calculate amount now 
         list($parking_amount, $unit_amount,$rent_amount,$min_units, $extra_units,  $allowed_units , $extra_price,$charge_per_month) = $this->getVendorRateValues(
             $ven_data->hub_id,
