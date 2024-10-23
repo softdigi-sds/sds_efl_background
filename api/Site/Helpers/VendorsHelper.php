@@ -159,6 +159,7 @@ class VendorsHelper extends BaseHelper
         $from = Table::VENDORS;
         $this->deleteId($from,$id);
     }
+    
 
      /**
      * 
