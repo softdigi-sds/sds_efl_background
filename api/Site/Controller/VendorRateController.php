@@ -238,14 +238,18 @@ class VendorRateController extends BaseController
                 $v_data = $this->_vendor_helper->checkVendorByCodeCompanyWithHub("#", $obj->vendor, $obj->hub);
                 // $hub_id = $this->_hubs_helper->getHubID($obj->hub);
                 if (isset($v_data->ID)) {
+                    $exits_data = $this->_helper->getOneByVendor($v_data->sd_hub_id,$v_data->ID);
+                    if(!isset($exits_data->ID)){
+                       // echo $i . " ----- ------ ----- Aailble " . $obj->hub . "  =  " . $obj->vendor . " <br/>";
+                    }
                     // hub availle go inside
-                    $this->process_rate($v_data, $obj);
+                   // $this->process_rate($v_data, $obj);
                     // if ($i > 2) {
                     //    break;
                     //  }
                     $i++;
                 } else {
-                    // echo $i . " Hub/ Vendor  Not Availble " . $obj->hub . "  =  " . $obj->vendor . " <br/>";
+                    echo $i . " Hub/ Vendor  Not Availble " . $obj->hub . "  =  " . $obj->vendor . " <br/>";
                     $i++;
                 }
                 //var_dump($obj);

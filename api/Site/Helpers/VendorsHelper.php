@@ -173,6 +173,16 @@ class VendorsHelper extends BaseHelper
         return $data;
     }
 
+    public function checkVendorExists($hub, $company,$id)
+    {
+        $from = Table::VENDORS;
+        $select = ["ID,sd_hub_id"];
+        $sql = "sd_hub_id=:hub_id AND vendor_company=:company AND ID!=:id";
+        $data_in = ["hub_id" => $hub, "company" => $company,"id"=>$id];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        return $data;
+    }
+
     public function checkVendorByCodeCompanyWithHub($code, $company,$hub_name)
     {
         $from = Table::VENDORS . " t1 INNER JOIN ".Table::HUBS." t2 ON t2.ID = t1.sd_hub_id";

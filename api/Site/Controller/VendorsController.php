@@ -45,9 +45,9 @@ class VendorsController extends BaseController
         $this->post["status"] = 5;
         $this->post["sd_hub_id"] = Data::post_select_value("sd_hub_id");
         $this->post["state_name"] = Data::post_select_value("state_name");
-        $data = $this->_helper->checkVendorByCodeCompany($this->post["vendor_code"], $this->post["vendor_company"]);
-        if (!empty($data)) {
-            \CustomErrorHandler::triggerInvalid("Vendor code and company already available ");
+        $data = $this->_helper->checkVendorExists($this->post["sd_hub_id"], $this->post["vendor_company"],0);
+        if (isset($data->ID)) {
+            \CustomErrorHandler::triggerInvalid("Vendor Already Exists For Hub");
         }
         $this->db->_db->Begin();
         // insert and get id

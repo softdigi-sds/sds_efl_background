@@ -142,52 +142,15 @@ class VendorRateHelper extends BaseHelper
         $this->deleteId($from, $id);
     }
 
-    public function insert_update_single($_data)
-    {
-        $exist_data = $this->getOneByVendorHsn($_data["sd_hubs_id"], $_data["sd_vendors_id"], $_data["sd_hsn_id"]);
-
-        if (isset($exist_data->ID)) {
-            // exisitng so need to update
-            $columns_update = ["rate_type", "min_start", "min_end", "price", "extra_price", "effective_date"];
-            $this->update($columns_update, $_data, $exist_data->ID);
-            return  $exist_data->ID;
-        } else {
-            $columns_insert = [
-                "sd_hubs_id",
-                "sd_vendors_id",
-                "sd_hsn_id",
-                "rate_type",
-                "min_start",
-                "min_end",
-                "price",
-                "extra_price",
-                "effective_date"
-            ];
-            $id_inserted = $this->insert($columns_insert, $_data);
-            return  $id_inserted;
-        }
-    }
-
-    public function insert_update_data($data)
-    {
-        $exist_data = $this->getAllVendorHubDate($data["sd_hubs_id"], $data["sd_vendors_id"], $data["effective_date"]);
-        $ids = [];
-        foreach ($data["rate_data"] as $rate_data) {
-            $rate_data["sd_hubs_id"] = $data["sd_hubs_id"];
-            $rate_data["sd_vendors_id"] = $data["sd_vendors_id"];
-            $rate_data["effective_date"] = $data["effective_date"];
-            $ids[] = $this->insert_update_single($rate_data);
-        }
-        // now comapare the ids and remove the data
-    }
+ 
 
 
-    public function getOneByVendorHsn($hub_id, $vendor_id, $hsn_id)
+    public function getOneByVendor($hub_id, $vendor_id)
     {
         $from = Table::VENDOR_RATE;
         $select = ["*"];
-        $sql = "sd_hubs_id=:hub_id AND sd_vendors_id=:vend_id AND sd_hsn_id=:sd_hsn_id";
-        $data_in = ["hub_id" => $hub_id, "vend_id" => $vendor_id, $hsn_id => $hsn_id];
+        $sql = "sd_hubs_id=:hub_id AND sd_vendors_id=:vend_id";
+        $data_in = ["hub_id" => $hub_id, "vend_id" => $vendor_id];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }
