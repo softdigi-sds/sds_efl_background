@@ -54,6 +54,12 @@ class CustomerHelper extends BaseHelper
                 "msg" => "Please Enter Vendor Company"
             ]
         ],
+        "vendor_name" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Enter Vendor Name"
+            ]
+        ],
         "gst_no" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
