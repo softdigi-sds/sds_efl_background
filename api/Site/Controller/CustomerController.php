@@ -158,6 +158,7 @@ class CustomerController extends BaseController
             "created_by",
             "created_time"
         ];
+        $this->post["state_name"] = SmartData::post_select_value("state_name");
         $this->_helper->updateSub($columns, $this->post, $id);
         //
         $this->response($id);
