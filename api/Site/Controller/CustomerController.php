@@ -34,7 +34,7 @@ class CustomerController extends BaseController
      */
     public function insert()
     {
-        $validate_columns = ["vendor_company", "pin_code"];
+        $validate_columns = ["vendor_company",  "vendor_name","pan_no"];
         // do validations
         $this->_helper->validate(CustomerHelper::validations, $validate_columns, $this->post);
         $columns = ["vendor_company", "vendor_name",  "pan_no", "status", "created_by", "created_time"];
