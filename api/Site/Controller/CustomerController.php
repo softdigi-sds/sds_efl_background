@@ -129,6 +129,7 @@ class CustomerController extends BaseController
             "created_by",
             "created_time"
         ];
+        $this->post["state_name"] = SmartData::post_select_value("state_name");
         $this->post["status"] = 5;
         $this->db->_db->Begin();
         // insert and get id
