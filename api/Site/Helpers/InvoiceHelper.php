@@ -438,13 +438,61 @@ class InvoiceHelper extends BaseHelper
         return [$parking_charges, $units_charge, $rent_charges, $min_units, $extra_units,  $allowed_units, $extra_price, $charge_per_month];
     }
 
+    /**
+     *  get the vehicle prices
+     * 
+     * 
+     */
+    public function getVehicleValues($rates, $vehicle_count, $type)
+    {
+        $parking_price = 0;
+        $allowed_units = 0;
+        $minimum_units = 0;
+        foreach ($rates as $obj) {
+            if ($obj->sd_vehicle_types_id["value"] == $type) {
+                // only parking and charging this condition is
+                if ($obj->sd_hsn_id["value"] == 1) {
+                    // this is only for praking so check vehicle count range and apply
+                    if ($obj->rate_type["value"] == 1) {
+                        $parking_price = $obj->price;
+                    } else if ($obj->rate_type["value"] == 2) {
+                        // minimum type
+                        if ($vehicle_count >= $obj->min_start && $vehicle_count < $obj->min_end) {
+                            $minimum_units = $obj->min_units_vehicle;
+                            $allowed_units = $obj->min_units_vehicle * $vehicle_count;
+                            $parking_price = $obj->price;
+                        }
+                    }
+                } else if ($obj->sd_hsn_id["value"] == 2) {
+                    // this is only for parking so check vehicle count range and apply
+                    // echo " value " . $obj->rate_type["value"] . " <br/>";
+                    if ($obj->rate_type["value"] == 1) {
+                        $parking_price = $obj->price;
+                    } else if ($obj->rate_type["value"] == 2) {
+                        // minimum type
+                        if ($vehicle_count >= $obj->min_start && $vehicle_count < $obj->min_end) {
+                            $parking_price = $obj->price;
+                        }
+                    }
+                }
+            }
+        }
+        // echo "charge = " . $charge . "<br/>";
+        return [$parking_price, $allowed_units, $minimum_units];
+    }
 
 
 
-    public function preapreCustomerSubData($_obj,$units,$vehicles){
+    public function preapreCustomerSubData($_obj, $units, $vehicles)
+    {
         $rates = $this->getCustomerRates($_obj->ID);
-        // generate invoice information for vehicles first with vehicle parking data
-        
+        // generate invoice information for vehicles first with vehicle parking data        
+        foreach($vehicles as $_v_obj){
+            list($parking_price,$allowed_units,$minimum_units) = $this->getVehicleValues($rates,$_v_obj->count,
+            $_v_obj->sd_vehicle_types_id);
+            echo ""  . $_v_obj->sd_vehicle_types_id . " p " . $parking_price . " " . $allowed_units . " " . $minimum_units . "<br/>";
+        }
+
     }
 
 
@@ -457,12 +505,13 @@ class InvoiceHelper extends BaseHelper
         $_data["sd_hub_id"] = $_obj->sd_hubs_id;
         $_data["sd_customer_id"] = $_obj->sd_customer_id;
         //
-      
+
         // get consumption with dates     
         $total_unit_types =  $this->getConsumptionWithVendor($_obj->sd_hubs_id, $_obj->sd_customer_id, $start_date, $end_date);
         // get vehicle count with dates
         $total_vehicles_types = $this->getVehicleCountWithVendor($_obj->sd_hubs_id, $_obj->sd_customer_id, $start_date, $end_date);
 
+        $this->preapreCustomerSubData($_obj, $total_unit_types ,   $total_vehicles_types);
         //   $_data["total_units"]
         if ($_obj->sd_hubs_id == 116) {
             var_dump($total_unit_types);
