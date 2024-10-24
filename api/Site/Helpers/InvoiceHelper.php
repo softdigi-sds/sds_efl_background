@@ -210,16 +210,63 @@ class InvoiceHelper extends BaseHelper
     }
 
 
-    private function getConsumptionWithVendor($ven_id, $start_date, $end_date)
+    private function getConsumptionWithVendor($hub_id,$ven_id, $start_date, $end_date)
     {
         $consumption = new EflConsumptionHelper($this->db);
-        return $consumption->getConsumptionInvoiceByDateVendor($ven_id, $start_date, $end_date);
+        return $consumption->getConsumptionInvoiceByDateVendor($hub_id,$ven_id, $start_date, $end_date);
     }
 
-    private function getVehicleCountWithVendor($ven_id, $start_date, $end_date)
+    private function getVehicleCountWithVendor($hub_id,$ven_id, $start_date, $end_date)
     {
         $consumption = new EflVehiclesHelper($this->db);
-        return $consumption->getVehicleInvoiceByDateVendor($ven_id, $start_date, $end_date);
+        return $consumption->getVehicleInvoiceByDateVendor($hub_id,$ven_id, $start_date, $end_date);
+    }
+
+
+    private function getAllMappedCustomers(){
+        $rateHelper = new VendorRateHelper($this->db);
+        $rate_data = $rateHelper->getAllData();
+        return $rate_data;
+    }
+
+    private function getCustomerRates($rate_id){
+        $rateSubHelper = new VendorRateSubHelper($this->db);
+        return  $rateSubHelper->getAllByVendorRateId($rate_id);
+    }
+
+
+    public function insertInvoiceNew($bill_id, $bill_data)
+    {
+        $start_date = $bill_data->bill_start_date;
+        $end_date = $bill_data->bill_end_date;
+        $dates = SmartDateHelper::getDatesBetween($start_date,$end_date);
+        $date_count = count($dates) > 0 ? count($dates) : 0;
+        $dt = [
+            "total_invoices" => 0,
+            "unit_amount" => 0,
+            "vehicle_amount" => 0,
+            "others" => 0,
+            "gst_amount" => 0,
+            "total_amount" => 0,
+        ];
+
+        $_data = $this->getAllMappedCustomers();
+        foreach ($_data as $_obj) {
+            $_data = $this->prepareSingleVendorData($bill_id, $_obj, $start_date, $end_date,  $date_count);
+            // var_dump($_data);
+             if ($_data["total_taxable"] > 0) {                  
+                 $this->insertUpdateSingle($_data);
+                 $dt["unit_amount"] += $_data["unit_amount"];
+                 $dt["vehicle_amount"]  += $_data["vehicle_amount"];
+                 $dt["others"]  += $_data["total_others"];
+                 $dt["gst_amount"]  += $_data["gst_amount"];
+                 $dt["total_amount"]  += $_data["total_amount"];
+                 $dt["total_invoices"]++;
+             }else{
+                 $this->updateInvoiceDataNew($_data);
+             }
+        }
+        return $dt;
     }
 
 
@@ -390,16 +437,82 @@ class InvoiceHelper extends BaseHelper
     }
 
 
-    public function prepareSingleVendorData($bill_id, $ven_data, $start_date, $end_date,  $date_count)
+    public function prepareSingleVendorData($bill_id, $_obj, $start_date, $end_date,  $date_count)
+    {
+        $_data = [];
+        //var_dump($_obj);
+       // exit();
+        $_data["sd_bill_id"] = $bill_id;
+        $_data["sd_hub_id"] = $_obj->sd_hubs_id;
+        $_data["sd_customer_id"] = $_obj->sd_customer_id;
+        //
+        $rates = $this->getCustomerRates($_obj->ID);
+        // get consumption with dates     
+        $_data["total_units"] =  $this->getConsumptionWithVendor( $_obj->sd_hubs_id, $_obj->sd_customer_id, $start_date, $end_date);
+        // get vehicle count with dates
+        $total_vehicles_types = $this->getVehicleCountWithVendor( $_obj->sd_hubs_id, $_obj->sd_customer_id, $start_date, $end_date);
+     
+        
+     
+        if($_obj->sd_hubs_id==116){
+
+
+       
+        exit();
+       }
+       
+        $_data["total_taxable"] = 0;
+       // exit();
+        // $_data["total_vehicles"] = round( $total_vehicles  / $date_count,3);
+        // // round(  $total_vehicles  / $date_count,3);
+        // // calculate amount now 
+        // list($parking_amount, $unit_amount,$rent_amount,$min_units, $extra_units,  $allowed_units , $extra_price,$charge_per_month) = $this->getVendorRateValues(
+        //     $_obj->sd_hubs_id,
+        //     $ven_data->ID,
+        //     $_data["total_vehicles"],
+        //     $_data["total_units"],
+        //     $end_date
+        // );
+        // $_data["min_units_vehicle"] = $min_units;
+        // $_data["units_allowed"] =  $allowed_units;
+        // $_data["unit_amount"] = $unit_amount;
+        // $_data["extra_units"] = $extra_units;
+        // $_data["extra_price"] = $extra_price;
+        // $_data["charge_per_month"] = $charge_per_month;
+        // // calculate vehicle amount now 
+        // $_data["vehicle_amount"] = $parking_amount;
+        // // rent amount
+        // $_data["rent_amount"] = $rent_amount;
+        // //
+        // $_data["other_one_amount"] = 0;
+        // //
+        // $_data["other_two_amount"] = 0;
+        // //
+        // $_data["total_others"] =   $_data["rent_amount"]  +   $_data["other_one_amount"] +  $_data["other_two_amount"];
+        // //
+        // $_data["total_taxable"] = $_data["unit_amount"] +  $_data["vehicle_amount"] +  $_data["total_others"];
+        // //
+        // $_data["sgst"] = 9;
+        // $_data["cgst"] = 9;
+        // $_data["igst"] = 18;
+        // $_data["gst_percentage"] = 18;
+        // $_data["gst_amount"] = $_data["total_taxable"] * ($_data["gst_percentage"] / 100);
+        // $_data["total_amount"] =  $_data["total_taxable"]  +   $_data["gst_amount"];
+        // $_data["short_name"] = $ven_data->short_name;
+        return $_data;
+    }
+
+
+    public function prepareSingleVendorDataOld($bill_id, $ven_data, $start_date, $end_date,  $date_count)
     {
         $_data = [];
         $_data["sd_bill_id"] = $bill_id;
         $_data["sd_hub_id"] = $ven_data->hub_id;
         $_data["sd_vendor_id"] = $ven_data->ID;
         // get consumption with dates     
-        $_data["total_units"] =  $this->getConsumptionWithVendor($ven_data->ID, $start_date, $end_date);
+        $_data["total_units"] =  $this->getConsumptionWithVendor(1,$ven_data->ID, $start_date, $end_date);
         // get vehicle count with dates
-        $total_vehicles = $this->getVehicleCountWithVendor($ven_data->ID, $start_date, $end_date);
+        $total_vehicles = $this->getVehicleCountWithVendor(2,$ven_data->ID, $start_date, $end_date);
         $_data["total_vehicles"] = round(  $total_vehicles  / $date_count,3);
         // round(  $total_vehicles  / $date_count,3);
         // calculate amount now 
@@ -466,7 +579,7 @@ class InvoiceHelper extends BaseHelper
     }
 
     public function updateInvoiceDataNew($data){
-        $exist_data = $this->checkInvoiceExists($data["sd_bill_id"], $data["sd_vendor_id"]);
+        $exist_data = $this->checkInvoiceExists($data["sd_bill_id"], $data["sd_customer_id"]);
         if (isset($exist_data->ID)) {
             $update_columns = [
                 "total_units",

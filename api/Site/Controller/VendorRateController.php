@@ -94,8 +94,15 @@ class VendorRateController extends BaseController
 
     public function getAll()
     {
+        $hub_id = SmartData::post_data("hub_id","INTEGER");
+        $sql = "";
+        $data_in = [];    
+        if (intval($hub_id) > 0) {         
+            $sql = "t1.sd_hubs_id=:id";
+            $data_in["id"] = $hub_id;
+        } 
         // insert and get id
-        $data = $this->_helper->getAllData();
+        $data = $this->_helper->getAllData($sql,$data_in);
         $out = [];
         foreach ($data as $obj) {
             $obj->rates =  $this->_sub_helper->getAllByVendorRateId($obj->ID);
@@ -257,10 +264,10 @@ class VendorRateController extends BaseController
         $i = 1;
         foreach ($_data as $obj) {
             if ($obj->hub !== "HUB_ID") {
-                $v_data = $this->_vendor_helper->checkVendorByCodeCompanyWithHub("#", $obj->vendor, $obj->hub);
+                $v_data = $this->_helper->getOneWithHubNamAndCustomerName($obj->hub,$obj->vendor);
                 // $hub_id = $this->_hubs_helper->getHubID($obj->hub);
                 if (isset($v_data->ID)) {
-                    $exits_data = $this->_helper->getOneByVendor($v_data->sd_hub_id, $v_data->ID);
+                    $exits_data = $this->_helper->getOneByVendor($v_data->sd_hubs_id, $v_data->ID);
                     if (!isset($exits_data->ID)) {
                         // echo $i . " ----- ------ ----- Aailble " . $obj->hub . "  =  " . $obj->vendor . " <br/>";
                         // $this->process_rate($v_data, $obj);

@@ -242,26 +242,29 @@ class EflVehiclesHelper extends BaseHelper
         return $total;
     }
 
-    public function getVehicleInvoiceByDateVendor($id, $start_date, $end_date,$count=true)
+    public function getVehicleInvoiceByDateVendor($hub_id,$id, $start_date, $end_date,$count=true)
     {
         $select = [
-            "t2.sd_date AS date, DAY(t2.sd_date) AS day_number ",
+            "t2.sd_date AS date, DAY(t2.sd_date) AS day_number,t1.sd_vehicle_types_id ",
              "SUM(t1.count) as count"
         ];
         $from = Table::EFL_VEHICLES_SUB . " t1 
         INNER JOIN ".Table::EFL_VEHICLES ." t2 ON t2.ID=t1.sd_efl_vehicles_id";
-        $sql = "t2.sd_vendors_id=:ID AND t2.sd_date BETWEEN :start_date AND :end_date";
+        $sql = "t2.sd_hub_id=:hub_id AND t2.sd_customer_id=:ID AND t2.sd_date BETWEEN :start_date AND :end_date";
         if($count===false){
             $sql .=" GROUP BY date";
-        }
-        $data_in = ["ID" => $id,"start_date"=>$start_date,"end_date"=>$end_date];      
-        $data = $this->getAll($select, $from, $sql, "", "", $data_in, $count, [], false);
-        if($count==true){
-            $count =  isset($data->count) ? $data->count : 0;
-            return $count;
         }else{
-            return $data;
-        }       
+            $sql .= " GROUP BY sd_vehicle_types_id";
+        }      
+        $data_in = [ "hub_id"=>$hub_id,"ID" => $id,"start_date"=>$start_date,"end_date"=>$end_date];      
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
+        return $data;
+        // if($count==true){
+        //     $count =  isset($data->count) ? $data->count : 0;
+        //     return $count;
+        // }else{
+        //     return $data;
+        // }       
     }
     public function generateVehiclesPdf($id)
     {

@@ -15,6 +15,7 @@ use Site\Helpers\ImportHelper;
 use Site\Helpers\VendorsHelper;
 use Site\Helpers\MeterTypesHelper;
 use Site\Helpers\HubsHelper;
+use Site\Helpers\VendorRateHelper;
 
 class EflConsumptionController extends BaseController
 {
@@ -24,6 +25,7 @@ class EflConsumptionController extends BaseController
     private VendorsHelper $_vendor_helper;
     private MeterTypesHelper $_meterTypesHelper;
     private HubsHelper $_hubs_helper;
+    private VendorRateHelper $_vendor_rate_helper;
     function __construct($params)
     {
         parent::__construct($params);
@@ -36,7 +38,8 @@ class EflConsumptionController extends BaseController
         $this->_meterTypesHelper = new MeterTypesHelper($this->db);
 
         $this->_hubs_helper = new HubsHelper($this->db);
-
+        //
+        $this->_vendor_rate_helper = new VendorRateHelper($this->db);
     }
 
     /**
@@ -132,8 +135,8 @@ class EflConsumptionController extends BaseController
         // $hub_id = Data::post_select_value($hub_id);
         $data = $this->_helper->getVendorsByHubId($hub_id, $date);
         foreach ($data as $obj) {
-            $_db_out = $this->_helper->ConsumptionTypeCount($obj->ID);          
-            $obj->sub_data =  is_array($_db_out) ? $_db_out : [] ;
+            $_db_out = $this->_helper->ConsumptionTypeCount($obj->ID);
+            $obj->sub_data =  is_array($_db_out) ? $_db_out : [];
             //$out[] = $obj;
         }
         $out = new \stdClass();
@@ -165,33 +168,34 @@ class EflConsumptionController extends BaseController
 
     public function getAllConsumptionHubWise()
     {
-        $start_date = SmartData::post_data("start_date","DATE");
-        $end_date = SmartData::post_data("end_date","DATE");
+        $start_date = SmartData::post_data("start_date", "DATE");
+        $end_date = SmartData::post_data("end_date", "DATE");
         // get hub details first
         $hubs = $this->_hubs_helper->getAllData("t1.status=5");
-        $dates = SmartDateHelper::getDatesBetween($start_date,$end_date);
+        $dates = SmartDateHelper::getDatesBetween($start_date, $end_date);
         // loop over and get sub data   
         foreach ($hubs as $obj) {
-            $obj->sub_data = $this->_helper->getCountByHubAndStartEndDate($obj->ID,  $start_date ,  $end_date);
+            $obj->sub_data = $this->_helper->getCountByHubAndStartEndDate($obj->ID,  $start_date,  $end_date);
             $obj->total = $this->_helper->hubTotal($obj->sub_data);
-            $obj->average = count($dates) > 0 ? round( $obj->total / count($dates),2) : 0;
-           // $hubs[$key] = $obj;
+            $obj->average = count($dates) > 0 ? round($obj->total / count($dates), 2) : 0;
+            // $hubs[$key] = $obj;
         }
         $out = new \stdClass();
-        $out->dates =  $dates ;
+        $out->dates =  $dates;
         $out->data = $hubs;
         //return $hubs;
         $this->response($out);
     }
 
-    private function prepare_sub_object($count,$type_id){
-        $arr = [           
-            "sd_meter_types_id"=>$type_id,
-            "count"=>$count
+    private function prepare_sub_object($count, $type_id)
+    {
+        $arr = [
+            "sd_meter_types_id" => $type_id,
+            "count" => $count
         ];
         return $arr;
     }
-    
+
     public function importExcel()
     {
         $excel_import = Data::post_array_data("excel");
@@ -217,34 +221,37 @@ class EflConsumptionController extends BaseController
         $out = [];
         $dates = [];
         foreach ($_data as $obj) {
-            $vendor_data = $this->_vendor_helper->checkVendorByCodeCompany("", $obj["vendor"]);
+             
+          //  $vendor_data = $this->_vendor_helper->checkVendorByCodeCompany("", $obj["vendor"]);
             if ($obj["vendor"] == "" || $obj["date"] == "") {
                 $obj["status"] = 10;
                 $obj["msg"] = "Improper Data";
             } else {
-                if (isset($vendor_data->ID)) {
+                $rate_data = $this->_vendor_rate_helper->getOneWithHubNamAndCustomerName($obj["hub_name"], $obj["vendor"]);
+          
+                if (isset($rate_data->ID)) {
                     // vendor existed insert or update the data
-                    $index = $vendor_data->ID . "_" . $obj["date"];
+                    $index =$rate_data->ID . "_" . $obj["date"];
                     $prev_count = isset($dates[$index]) ? $dates[$index] : 0;
-                    $new_count =  $prev_count  + $obj["count"];  
-                    $type = isset($obj["point_type"]) && $obj["point_type"]=="DC" ? 2 : 1;
+                    $new_count =  $prev_count  + $obj["count"];
+                    $type = isset($obj["point_type"]) && $obj["point_type"] == "DC" ? 2 : 1;
                     $sub_data = [
-                        $this->prepare_sub_object($new_count,1, $type),                        
-                    ]; 
+                        $this->prepare_sub_object($new_count, 1, $type),
+                    ];
                     $_vehicle_data = [
-                        "sd_hub_id" => $vendor_data->sd_hub_id,
-                        "sd_vendors_id" => $vendor_data->ID,
+                        "sd_hub_id" => $rate_data->sd_hubs_id,
+                        "sd_customer_id" => $rate_data->sd_customer_id,
                         "sd_date" => $obj["date"],
                         "unit_count" =>  $new_count,
-                        "sub_data"=>$sub_data
+                        "sub_data" => $sub_data
                     ];
-                 
+
                     $dates[$index] =  $new_count;
                     $this->_helper->insertUpdateNew($_vehicle_data);
                     $obj["status"] = 5;
                 } else {
                     $obj["status"] = 10;
-                    $obj["msg"] = "Vendor Code Not Existed";
+                    $obj["msg"] = "Customer With Hub Is Not Existed or Not Linked";
                 }
             }
             $out[] = $obj;
@@ -260,7 +267,7 @@ class EflConsumptionController extends BaseController
         $excel = new SmartExcellHelper($dest_path, 0);
         $_data = $excel->getData($this->_import_helper->importCmsColumns(), 2);
         foreach ($_data as $obj) {
-                    $this->_helper->insertCmsData($obj);
+            $this->_helper->insertCmsData($obj);
         }
         $this->response("done");
     }

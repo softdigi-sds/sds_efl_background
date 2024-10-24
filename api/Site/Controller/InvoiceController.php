@@ -5,13 +5,11 @@ namespace Site\Controller;
 
 use Core\BaseController;
 
-use Core\Helpers\SmartAuthHelper;
 use Site\Helpers\InvoiceHelper;
 use Site\Helpers\BillHelper;
 use Site\View\InvoicePdf;
-use Core\Helpers\PdfHelper;
 use Core\Helpers\SmartFileHelper;
-use Core\Helpers\SmartPdfHelper;
+
 
 class InvoiceController extends BaseController
 {
@@ -70,7 +68,7 @@ class InvoiceController extends BaseController
         $bill_data = $this->_bill_helper->getOneData($bill_id);
         //var_dump($bill_data);
         // generate and insert invoice
-        $dt = $this->_helper->insertInvoice($bill_id, $bill_data);
+        $dt = $this->_helper->insertInvoiceNew($bill_id, $bill_data);
         // update the bill table with the update details
         $this->_bill_helper->updateBillData($bill_id, $dt);
         // \CustomErrorHandler::triggerInvalid("tesing gg");
@@ -87,7 +85,7 @@ class InvoiceController extends BaseController
         }       
         $bill_data = $this->_bill_helper->getOneData($bill_id);
         // generate and insert invoice
-        $dt = $this->_helper->insertInvoice($bill_id, $bill_data);
+        $dt = $this->_helper->insertInvoiceNew($bill_id, $bill_data);
         // update the bill table with the update details
         $this->_bill_helper->updateBillData($bill_id, $dt);
         // \CustomErrorHandler::triggerInvalid("tesing gg");

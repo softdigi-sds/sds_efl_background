@@ -159,7 +159,7 @@ class CommonRouter
         $controller = "VendorRateController";
         $this->_routes["/vendor_rate/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
         $this->_routes["/vendor_rate/update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
-        $this->_routes["/vendor_rate/get_all"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAll"];
+        $this->_routes["/vendor_rate/get_all"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAll"];
         $this->_routes["/vendor_rate/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/vendor_rate/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
         $this->_routes["/vendor_rate/migrate"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "migrate"];

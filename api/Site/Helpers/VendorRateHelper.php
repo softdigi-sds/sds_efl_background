@@ -174,7 +174,7 @@ class VendorRateHelper extends BaseHelper
     {
         $from = Table::VENDOR_RATE;
         $select = ["*"];
-        $sql = "sd_hubs_id=:hub_id AND sd_vendors_id=:vend_id";
+        $sql = "sd_hubs_id=:hub_id AND sd_customer_id=:vend_id";
         $data_in = ["hub_id" => $hub_id, "vend_id" => $vendor_id];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
