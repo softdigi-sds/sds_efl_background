@@ -134,7 +134,9 @@ class VendorRateSubHelper extends BaseHelper
             2 => "Parking",
             3 => "Charging (AC)",
             5 => "Charging (DC)",
-            4 => "Rent"
+            4 => "Rent",
+            6 => "Infra Sharing",
+            7 => "Charging(Office)"
         ];
         if ($index > 0) {
             return isset($_types[$index]) ? $_types[$index] : "";
@@ -144,8 +146,8 @@ class VendorRateSubHelper extends BaseHelper
 
     public function getAllByVendorRateId($sd_vendor_rate_id)
     {
-        $from = Table::VENDOR_RATE_SUB ." t1 
-        LEFT JOIN ".Table::VEHICLE_TYPES." t2 ON t1.sd_vehicle_types_id=t2.ID";
+        $from = Table::VENDOR_RATE_SUB . " t1 
+        LEFT JOIN " . Table::VEHICLE_TYPES . " t2 ON t1.sd_vehicle_types_id=t2.ID";
         $select = ["t1.*,t2.vehicle_type"];
         $sql = "t1.sd_vendor_rate_id=:id";
         $data_in = ["id" => $sd_vendor_rate_id];
@@ -212,7 +214,7 @@ class VendorRateSubHelper extends BaseHelper
 
             $rate_data["sd_vendor_rate_id"] = $rate_id;
             $rate_data["sd_vehicle_types_id"] = isset($rate_data["sd_vehicle_types_id"]) && isset($rate_data["sd_vehicle_types_id"]["value"]) ? $rate_data["sd_vehicle_types_id"]["value"] : 0;
-           
+
             $rate_data["sd_hsn_id"] = isset($rate_data["sd_hsn_id"]) && isset($rate_data["sd_hsn_id"]["value"]) ? $rate_data["sd_hsn_id"]["value"] : 0;
             $rate_data["rate_type"] = isset($rate_data["rate_type"]) && isset($rate_data["rate_type"]["value"]) ? $rate_data["rate_type"]["value"] : 0;
             //echo "<br/><br/><br/> sINGLE";
