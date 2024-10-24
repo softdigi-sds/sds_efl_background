@@ -104,7 +104,10 @@ class CustomerHelper extends BaseHelper
         // Define the tables and joins
         $from = Table::SD_CUSTOMER . " t1";
         // Define the default selection if not provided
-        $select = !empty($select) ? $select : ["t1.*"];
+        $select = !empty($select) ? $select : [
+            "t1.*",
+            "(SELECT COUNT(t2.ID) FROM  ".Table::SD_CUSTOMER_ADDRESS." t2 WHERE t2.sd_customers_id=t1.ID) as address_count",
+        ];
         // Execute the query and return the result
         return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
     }
@@ -167,11 +170,14 @@ class CustomerHelper extends BaseHelper
 
     public function getOneAddressData($id)
     {
-        $from = Table::SD_CUSTOMER_ADDRESS . " t1";
-        $select = ["t1.*"];
+        $from = Table::SD_CUSTOMER_ADDRESS . " t1  LEFT JOIN " . Table::STATEDB . " t2 ON t2.ID=t1.state_name";
+        $select = ["t1.*,t2.state_name as sname"];
         $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
         $data = $this->getAll($select,  $from, $sql, "", "", $data_in, true, []);
+        if(isset($data->ID)){
+            $data->state_name = ["value"=>$data->state_name,"label"=>$data->sname];
+        }
         return $data;
     }
 
