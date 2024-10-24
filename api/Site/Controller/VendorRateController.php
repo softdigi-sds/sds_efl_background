@@ -43,6 +43,8 @@ class VendorRateController extends BaseController
         // columns     
         $columns[] = "created_time";
         $columns[] = "created_by";
+        $columns[] = "cms_name";
+        $columns[] = "vendor_code";
         // data
         $this->post["sd_hubs_id"] = Data::post_select_value("sd_hubs_id");
         $this->post["sd_customer_id"] = Data::post_select_value("sd_customer_id");
@@ -78,6 +80,8 @@ class VendorRateController extends BaseController
         $columns = [];
         $columns[] = "last_modified_time";
         $columns[] = "last_modified_by";
+        $columns[] = "cms_name";
+        $columns[] = "vendor_code";
         $this->_helper->update($columns, $this->post, $id);
         //
         $rate_data = Data::post_array_data("rate_data");

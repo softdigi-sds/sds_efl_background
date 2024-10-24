@@ -144,15 +144,17 @@ class VendorRateSubHelper extends BaseHelper
 
     public function getAllByVendorRateId($sd_vendor_rate_id)
     {
-        $from = Table::VENDOR_RATE_SUB;
-        $select = ["*"];
-        $sql = "sd_vendor_rate_id=:id";
+        $from = Table::VENDOR_RATE_SUB ." t1 
+        LEFT JOIN ".Table::VEHICLE_TYPES." t2 ON t1.sd_vehicle_types_id=t2.ID";
+        $select = ["t1.*,t2.vehicle_type"];
+        $sql = "t1.sd_vendor_rate_id=:id";
         $data_in = ["id" => $sd_vendor_rate_id];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
         // $out = [];
         foreach ($data as $key => $obj) {
             $hsn = $obj->sd_hsn_id;
             $obj->sd_hsn_id = ["value" => $hsn, "label" => $this->getTypes($hsn)];
+            $obj->sd_vehicle_types_id = ["value" => $obj->sd_vehicle_types_id, "label" => $obj->vehicle_type];
             $rate_type = $obj->rate_type;
             $obj->rate_type = ["value" => $rate_type, "label" => $this->getRateTypes($rate_type)];
             // $out[$key] = $obj;
@@ -187,6 +189,7 @@ class VendorRateSubHelper extends BaseHelper
         $columns_insert = [
             "sd_vendor_rate_id",
             "sd_hsn_id",
+            "sd_vehicle_types_id",
             "rate_type",
             "min_start",
             "min_end",
@@ -208,6 +211,8 @@ class VendorRateSubHelper extends BaseHelper
         foreach ($data as $rate_data) {
 
             $rate_data["sd_vendor_rate_id"] = $rate_id;
+            $rate_data["sd_vehicle_types_id"] = isset($rate_data["sd_vehicle_types_id"]) && isset($rate_data["sd_vehicle_types_id"]["value"]) ? $rate_data["sd_vehicle_types_id"]["value"] : 0;
+           
             $rate_data["sd_hsn_id"] = isset($rate_data["sd_hsn_id"]) && isset($rate_data["sd_hsn_id"]["value"]) ? $rate_data["sd_hsn_id"]["value"] : 0;
             $rate_data["rate_type"] = isset($rate_data["rate_type"]) && isset($rate_data["rate_type"]["value"]) ? $rate_data["rate_type"]["value"] : 0;
             //echo "<br/><br/><br/> sINGLE";

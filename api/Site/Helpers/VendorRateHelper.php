@@ -46,6 +46,13 @@ class VendorRateHelper extends BaseHelper
                 "msg" => "Please Enter Hub ID"
             ]
         ],
+        "sd_customer_id" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Enter Vendor ID"
+            ]
+
+        ],
         "sd_customer_address_id" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
@@ -84,7 +91,7 @@ class VendorRateHelper extends BaseHelper
         $from = Table::VENDOR_RATE . " t1 
         INNER JOIN " . Table::HUBS . " t2 ON t1.sd_hubs_id=t2.ID 
         INNER JOIN " . Table::SD_CUSTOMER_ADDRESS . " t3 ON t1.sd_customer_address_id=t3.ID 
-        INNER JOIN " . Table::SD_CUSTOMER . " t4 ON t3.sd_customer_id=t4.ID ";
+        INNER JOIN " . Table::SD_CUSTOMER . " t4 ON t3.sd_customers_id=t4.ID ";
         $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t4.vendor_company"];
         $data =  $this->getAll($select, $from, $sql, $group_by, "t1.effective_date DESC", $data_in, $single, [], $count);
         return $data;
@@ -97,8 +104,8 @@ class VendorRateHelper extends BaseHelper
         $from = Table::VENDOR_RATE . " t1 
         INNER JOIN " . Table::HUBS . " t2 ON t1.sd_hubs_id=t2.ID 
         INNER JOIN " . Table::SD_CUSTOMER_ADDRESS . " t3 ON t1.sd_customer_address_id=t3.ID 
-        INNER JOIN " . Table::SD_CUSTOMER . " t4 ON t3.sd_customer_id=t4.ID ";
-        $select = ["t1.*, t2.hub_id, t4.vendor_company,t3.address_one"];
+        INNER JOIN " . Table::SD_CUSTOMER . " t4 ON t3.sd_customers_id=t4.ID ";
+        $select = ["t1.*, t2.hub_id, t4.vendor_company,t3.address_one,t3.gst_no,t3.billing_to"];
         $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
         $group_by = "";
@@ -126,7 +133,7 @@ class VendorRateHelper extends BaseHelper
         $from = Table::VENDOR_RATE;
         $select = ["ID,effective_date"];
         $sql = " effective_date >=:effective_date AND sd_hubs_id=:sd_hubs_id AND sd_customer_id=:id";
-        $data_in = ["sd_hubs_id", $hub_id, "effective_date" => $effective_date, "id" => $vendor_id];
+        $data_in = ["sd_hubs_id"=> $hub_id, "effective_date" => $effective_date, "id" => $vendor_id];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }
