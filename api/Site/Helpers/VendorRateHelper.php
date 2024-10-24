@@ -92,7 +92,7 @@ class VendorRateHelper extends BaseHelper
         INNER JOIN " . Table::HUBS . " t2 ON t1.sd_hubs_id=t2.ID 
         INNER JOIN " . Table::SD_CUSTOMER_ADDRESS . " t3 ON t1.sd_customer_address_id=t3.ID 
         INNER JOIN " . Table::SD_CUSTOMER . " t4 ON t3.sd_customers_id=t4.ID ";
-        $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t4.vendor_company"];
+        $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t4.vendor_company,t4.ID as cust_id"];
         $data =  $this->getAll($select, $from, $sql, $group_by, "t1.effective_date DESC", $data_in, $single, [], $count);
         return $data;
     }
@@ -137,9 +137,6 @@ class VendorRateHelper extends BaseHelper
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }
-
-
-
     /**
      * 
      */
@@ -147,6 +144,27 @@ class VendorRateHelper extends BaseHelper
     {
         $from = Table::VENDOR_RATE;
         $this->deleteId($from, $id);
+    }
+
+    /**
+     *  get vendor mapped to hub with hub id
+     * 
+     */
+    public function getAllWithHubId($hub_id){
+        $sql = "t1.sd_hubs_id=:hub_id";
+        $_data = ["hub_id"=>$hub_id];
+        $select = ["t1.sd_hubs_id","t1.sd_customer_id","t4.vendor_company"];
+        return $this->getAllData($sql,$_data,$select);
+    }
+    /**
+     *  getting the linked data with hub name and comany name
+     * 
+     */
+    public function getOneWithHubNamAndCustomerName($hub_name,$customer_name){
+        $sql = "t2.hub_id=:hub_id AND (t4.vendor_company=:vname OR t1.cms_name=:vname)";
+        $_data = ["hub_id"=>$hub_name,"vname"=>$customer_name];
+        $select = ["t1.ID","t1.sd_hubs_id","t1.sd_customer_id","t4.vendor_company"];
+        return $this->getAllData($sql,$_data,$select,"",false,true);
     }
 
 

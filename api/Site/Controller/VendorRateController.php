@@ -151,6 +151,23 @@ class VendorRateController extends BaseController
         $this->response($out);
     }
 
+
+    public function getAllSelectCustomer()
+    {
+        // insert and get id
+        $data = $this->_helper->getAllData();
+        $out = [];
+        foreach ($data as $obj) {
+            $obj->rates =  $this->_sub_helper->getAllByVendorRateId($obj->ID);
+            $out[] = $obj;
+        }
+        $this->response($data);
+    }
+
+
+
+
+
     /*
      { value: "1", label: "Parking & Charging" },
     { value: "2", label: "Parking" },
@@ -262,5 +279,17 @@ class VendorRateController extends BaseController
             }
         }
         //var_dump($_data);
+    }
+
+    public function migrate_customer_id()
+    {
+        $_data = $this->_helper->getAllData();  
+        foreach($_data as $obj){
+            $_udata = [
+                "sd_customer_id"=>$obj->cust_id
+            ];
+            $this->_helper->update(["sd_customer_id"],$_udata,$obj->ID);
+        }    
+        var_dump($_data);
     }
 }

@@ -28,7 +28,7 @@ class EflVehiclesHelper extends BaseHelper
 {
     const schema = [
         "sd_hub_id" => SmartConst::SCHEMA_INTEGER,
-        "sd_vendors_id" => SmartConst::SCHEMA_INTEGER,
+        "sd_customer_id" => SmartConst::SCHEMA_INTEGER,
         "sd_date" => SmartConst::SCHEMA_DATE,
         "vehicle_count" => SmartConst::SCHEMA_INTEGER,
         "created_by" => SmartConst::SCHEMA_CUSER_ID,
@@ -52,7 +52,7 @@ class EflVehiclesHelper extends BaseHelper
                 "msg" => "Please Enter sd hub id"
             ]
         ],
-        "sd_vendors_id" => [
+        "sd_customer_id" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter sd vendors id"
@@ -126,11 +126,11 @@ class EflVehiclesHelper extends BaseHelper
     }
 
 
-
+    /*
     public function insertUpdate($data, $insert_cols, $update_cols)
     {
-        $sql = " sd_hub_id=:sd_hub_id AND sd_vendors_id=:sd_vendors_id AND sd_date=:sd_date ";
-        $data_in = ["sd_hub_id" => $data["sd_hub_id"], "sd_vendors_id" => $data["sd_vendors_id"], "sd_date" => $data["sd_date"]];
+        $sql = " sd_hub_id=:sd_hub_id AND sd_customer_id=:sd_customer_id AND sd_date=:sd_date ";
+        $data_in = ["sd_hub_id" => $data["sd_hub_id"], "sd_customer_id" => $data["sd_customer_id"], "sd_date" => $data["sd_date"]];
         $exist_data = $this->getAllData($sql, $data_in, ["ID"], "", false, true);
         $sub_data = $data["sub_data"];
         if (isset($exist_data->ID)) {
@@ -142,12 +142,12 @@ class EflVehiclesHelper extends BaseHelper
             $this->insert_update_data($id, $sub_data);
         }
     }
-
+    */
     public function insertUpdateNew($_data)
     {
-        $insert_columns = ["sd_hub_id", "sd_vendors_id", "sd_date", "vehicle_count", "created_by", "created_time"];
+        $insert_columns = ["sd_hub_id", "sd_customer_id", "sd_date", "vehicle_count", "created_by", "created_time"];
         $update_columns = ["vehicle_count", "last_modified_by", "last_modified_time"];
-        $exist_data = $this->checkExists($_data["sd_vendors_id"], $_data["sd_date"]);
+        $exist_data = $this->checkExists($_data["sd_hub_id"],$_data["sd_customer_id"], $_data["sd_date"]);
         $sub_data = $_data["sub_data"];
         if (isset($exist_data->ID)) {
             $this->update($update_columns, $_data, $exist_data->ID);
@@ -159,10 +159,10 @@ class EflVehiclesHelper extends BaseHelper
     }
 
 
-    public function checkExists($vendor_id, $date)
+    public function checkExists($hub_id,$vendor_id, $date)
     {
-        $sql = "sd_vendors_id=:sd_vendors_id AND sd_date=:sd_date ";
-        $data_in = ["sd_vendors_id" => $vendor_id, "sd_date" => $date];
+        $sql = "sd_hub_id=:sd_hub_id AND sd_customer_id=:sd_customer_id AND sd_date=:sd_date ";
+        $data_in = ["sd_hub_id"=>$hub_id, "sd_customer_id" => $vendor_id, "sd_date" => $date];
         $exist_data = $this->getAllData($sql, $data_in, ["ID"], "", false, true);
         return $exist_data;
     }
@@ -170,16 +170,18 @@ class EflVehiclesHelper extends BaseHelper
 
     public function getVendorsByHubId($hub_id, $date)
     {
-        $_venoder_helper = new VendorsHelper($this->db);
-        $data = $_venoder_helper->getVendorsByHubId($hub_id,5);
-        foreach ($data as $ven_data) {
+        $helper = new VendorRateHelper($this->db);
+        $data = $helper->getAllWithHubId($hub_id);
+       // $_venoder_helper = new VendorsHelper($this->db);
+        //$data = $_venoder_helper->getVendorsByHubId($hub_id,5);
+        foreach ( $data as $ven_data) {
             // if (isset($ven_data->ID)) {
             $select = ["vehicle_count AS count,ID"];
             $from = Table::EFL_VEHICLES;
-            $sql = " sd_hub_id=:ID AND sd_vendors_id=:ven_id AND sd_date=:date";
-            $data_in = ["ID" => $hub_id, "ven_id" => $ven_data->ID, "date" => $date];
+            $sql = " sd_hub_id=:ID AND sd_customer_id=:ven_id AND sd_date=:date";
+            $data_in = ["ID" => $hub_id, "ven_id" => $ven_data->sd_customer_id, "date" => $date];
             $count = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
-            $ven_data->sd_vendors_id = $ven_data->ID;
+            $ven_data->sd_customer_id = $ven_data->sd_customer_id;
             $ven_data->vehicle_count = isset($count->count) ? $count->count : 0;
             $ven_data->ID = isset($count->ID) ? $count->ID : 0;
             $ven_data->date = $date;

@@ -95,7 +95,7 @@ class HubsHelper extends BaseHelper
         $from = Table::HUBS . " t1 
         INNER JOIN " . Table::EFLOFFICE . " t2 ON t1.sd_efl_office_id=t2.ID ";
         $select = !empty($select) ? $select : ["t1.*, t2.office_city "];
-        $select[] = " (SELECT COUNT(t5.ID) FROM " . Table::VENDORS . " t5 WHERE t5.sd_hub_id=t1.ID) as vendor_count";
+        $select[] = " (SELECT COUNT(t5.ID) FROM " . Table::VENDOR_RATE . " t5 WHERE t5.sd_hubs_id=t1.ID) as vendor_count";
         // $order_by="last_modified_time DESC";
         $data =  $this->getAll($select, $from, $sql, $group_by, "office_city ASC,hub_id ASC", $data_in, $single, [], $count);
        // $city = [];

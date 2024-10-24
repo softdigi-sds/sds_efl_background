@@ -47,17 +47,12 @@ class EflConsumptionController extends BaseController
 
         $consump_data = Data::post_array_data("data");
         $hub_id = Data::post_select_value("hub_id");
-        // echo "id = " .   $hub_id;
-        //exit();
         $date = Data::post_data("date", "STRING");
-
-        $insert_columns = ["sd_hub_id", "sd_vendors_id", "sd_date", "unit_count", "created_by", "created_time"];
-        $update_columns = ["unit_count", "last_modified_by", "last_modified_time"];
         foreach ($consump_data as $data) {
             $data["sd_hub_id"] = $hub_id;
             $data["sd_date"] =  $date;
             // if (isset($data["sd_hub_id"])) {
-            $this->_helper->insertUpdate($data, $insert_columns, $update_columns);
+            $this->_helper->insertUpdateNew($data);
             // }
         }
         $this->responseMsg(msg: "Consumption Report has been appended successfully");

@@ -13,6 +13,7 @@ use Core\Helpers\SmartDateHelper;
 use Site\Helpers\EflVehiclesHelper;
 use Site\Helpers\ImportHelper;
 use Site\Helpers\VendorsHelper;
+use Site\Helpers\VendorRateHelper;
 //use Site\view\VehiclesPdf;
 use Core\Helpers\SmartPdfHelper;
 use Site\Helpers\HubsHelper;
@@ -25,6 +26,7 @@ class EflVehiclesController extends BaseController
     private EflVehiclesHelper $_helper;
     private ImportHelper $_import_helper;
     private VendorsHelper $_vendor_helper;
+    private VendorRateHelper $_vendor_rate_helper;
     //private VehiclesPdf $_vehicles_pdf_helper;
     private VehiclesTypesHelper $_vehiclesTypesHelper;
     private HubsHelper $_hubs_helper;
@@ -38,8 +40,10 @@ class EflVehiclesController extends BaseController
         $this->_import_helper = new ImportHelper($this->db);
         //
         $this->_vendor_helper = new VendorsHelper($this->db);
+        //
+        $this->_vendor_rate_helper = new VendorRateHelper($this->db);
 
-       // $this->_vehicles_pdf_helper = new VehiclesPdf($this->db);
+        // $this->_vehicles_pdf_helper = new VehiclesPdf($this->db);
         //
         $this->_vehiclesTypesHelper = new VehiclesTypesHelper($this->db);
         //
@@ -52,7 +56,7 @@ class EflVehiclesController extends BaseController
     public function insert()
     {
 
-        $consump_data = Data::post_array_data("input_data");
+        $_data = Data::post_array_data("input_data");
         $hub_id = Data::post_select_value("hub_id");
         // echo "id = " .   $hub_id;
         //exit();
@@ -60,16 +64,13 @@ class EflVehiclesController extends BaseController
         if ($hub_id < 1) {
             \CustomErrorHandler::triggerInvalid("Please Select Hub ID");
         }
-        if (empty($consump_data)) {
+        if (empty($_data)) {
             \CustomErrorHandler::triggerInvalid("Provided data dosen't contain any information !!");
         }
-        $insert_columns = ["sd_hub_id", "sd_vendors_id", "sd_date", "vehicle_count", "created_by", "created_time"];
-        $update_columns = ["vehicle_count", "last_modified_by", "last_modified_time"];
-        foreach ($consump_data as $data) {
+        foreach ($_data as $data) {
             $data["sd_hub_id"] = $hub_id;
             $data["sd_date"] =  $date;
-            $this->_helper->insertUpdateNew($data);
-            //$this->_helper->insertUpdate($data, $insert_columns, $update_columns);
+            $this->_helper->insertUpdateNew($data);           
         }
         $this->responseMsg(msg: "Parking Report has been appended successfully");
     }
@@ -156,12 +157,11 @@ class EflVehiclesController extends BaseController
             \CustomErrorHandler::triggerInvalid("Invalid date ");
         }
         $data = $this->_helper->getVendorsByHubId($hub_id, $date);
-
-       // $out = [];
+        // $out = [];
         $types = $this->_vehiclesTypesHelper->getAllData();
         foreach ($data as $obj) {
-            $_db_out = $this->_helper->vehicleTypeCount($obj->ID);          
-            $obj->sub_data =  is_array($_db_out) ? $_db_out : [] ;
+            $_db_out = $this->_helper->vehicleTypeCount($obj->ID);
+            $obj->sub_data =  is_array($_db_out) ? $_db_out : [];
             //$out[] = $obj;
         }
         $out = new \stdClass();
@@ -195,20 +195,20 @@ class EflVehiclesController extends BaseController
 
     public function getAllParkingHubWise()
     {
-        $start_date = SmartData::post_data("start_date","DATE");
-        $end_date = SmartData::post_data("end_date","DATE");
+        $start_date = SmartData::post_data("start_date", "DATE");
+        $end_date = SmartData::post_data("end_date", "DATE");
         // get hub details first
         $hubs = $this->_hubs_helper->getAllData("t1.status=5");
-        $dates = SmartDateHelper::getDatesBetween($start_date,$end_date);
+        $dates = SmartDateHelper::getDatesBetween($start_date, $end_date);
         // loop over and get sub data   
         foreach ($hubs as $obj) {
-            $obj->sub_data = $this->_helper->getCountByHubAndStartEndDate($obj->ID,  $start_date ,  $end_date);
+            $obj->sub_data = $this->_helper->getCountByHubAndStartEndDate($obj->ID,  $start_date,  $end_date);
             $obj->total = $this->_helper->hubTotal($obj->sub_data);
-            $obj->average = count($dates) > 0 ? round( $obj->total / count($dates),2) : 0;
-           // $hubs[$key] = $obj;
+            $obj->average = count($dates) > 0 ? round($obj->total / count($dates), 2) : 0;
+            // $hubs[$key] = $obj;
         }
         $out = new \stdClass();
-        $out->dates =  $dates ;
+        $out->dates =  $dates;
         $out->data = $hubs;
         //return $hubs;
         $this->response($out);
@@ -220,24 +220,24 @@ class EflVehiclesController extends BaseController
      */
     public function getDashBoardHubWise()
     {
-        $start_date = SmartData::post_data("start_date","DATE");
-        $end_date = SmartData::post_data("end_date","DATE");    
-        $dates = SmartDateHelper::getDatesBetween($start_date,$end_date);
+        $start_date = SmartData::post_data("start_date", "DATE");
+        $end_date = SmartData::post_data("end_date", "DATE");
+        $dates = SmartDateHelper::getDatesBetween($start_date, $end_date);
         $hubs = $this->_hubs_helper->getAllData("t1.status=5");
         $out = [];
-        foreach($dates as $date_single){
+        foreach ($dates as $date_single) {
             $hub_data = $this->_helper->getHubViseVehicleWithDate($date_single);
             $obj = new \stdClass();
             $obj->date = $date_single;
-            $hub_count = is_array( $hub_data) ? count($hub_data) : 0;
-            if($hub_count===$hubs){
+            $hub_count = is_array($hub_data) ? count($hub_data) : 0;
+            if ($hub_count === $hubs) {
                 $obj->status = 3; //  nothing is updated
-            }else if($hub_count==0){
+            } else if ($hub_count == 0) {
                 $obj->status = 1; //  all is updated
-            }else{
+            } else {
                 $obj->status = 2; // partial updated
             }
-            $out[] = $obj;           
+            $out[] = $obj;
         }
         $this->response($out);
     }
@@ -247,16 +247,17 @@ class EflVehiclesController extends BaseController
      */
     public function getDashBoardHubWiseDate()
     {
-        $start_date = SmartData::post_data("start_date","DATE");  
-        $hub_data = $this->_helper->getHubViseVehicleWithDate($start_date ); 
-        $this->response( $hub_data );
+        $start_date = SmartData::post_data("start_date", "DATE");
+        $hub_data = $this->_helper->getHubViseVehicleWithDate($start_date);
+        $this->response($hub_data);
     }
 
 
-    private function prepare_sub_object($count,$type_id){
-        $arr = [           
-            "sd_vehicle_types_id"=>$type_id,
-            "count"=>$count
+    private function prepare_sub_object($count, $type_id)
+    {
+        $arr = [
+            "sd_vehicle_types_id" => $type_id,
+            "count" => $count
         ];
         return $arr;
     }
@@ -289,28 +290,30 @@ class EflVehiclesController extends BaseController
             if ($obj["vendor"] == "" || $obj["date"] == "" || $obj["hub_name"] == "") {
                 $obj["status"] = 10;
                 $obj["msg"] = "Improper Data";
-            } else {
-                $vendor_data = $this->_vendor_helper->checkVendorByCodeCompanyWithHub("##",$obj["vendor"], $obj["hub_name"]);
-                if (isset($vendor_data->ID)) {                  
+            } else {               
+                $rate_data = $this->_vendor_rate_helper->getOneWithHubNamAndCustomerName($obj["hub_name"], $obj["vendor"]);
+                   // exit();
+                //  $vendor_data = $this->_vendor_helper->checkVendorByCodeCompanyWithHub("##", $obj["vendor"], $obj["hub_name"]);
+                if (isset($rate_data->ID)) {
                     // vendor existed insert or update the data
                     $sub_data = [
-                        $this->prepare_sub_object($obj["two_count"],1),
-                        $this->prepare_sub_object($obj["three_count"],2),
-                        $this->prepare_sub_object($obj["four_count"],3),
-                        $this->prepare_sub_object($obj["ace_count"],4),
+                        $this->prepare_sub_object($obj["two_count"], 1),
+                        $this->prepare_sub_object($obj["three_count"], 2),
+                        $this->prepare_sub_object($obj["four_count"], 3),
+                        $this->prepare_sub_object($obj["ace_count"], 4),
                     ];
                     $_vehicle_data = [
-                        "sd_hub_id" => $vendor_data->sd_hub_id,
-                        "sd_vendors_id" => $vendor_data->ID,
+                        "sd_hub_id" =>  $rate_data->sd_hubs_id,
+                        "sd_customer_id" => $rate_data->sd_customer_id,
                         "sd_date" => $obj["date"],
-                        "vehicle_count" =>0,
-                        "sub_data"=>$sub_data
+                        "vehicle_count" => 0,
+                        "sub_data" => $sub_data
                     ];
                     $this->_helper->insertUpdateNew($_vehicle_data);
                     $obj["status"] = 5;
                 } else {
                     $obj["status"] = 10;
-                    $obj["msg"] = "Vendor Code Not Existed";
+                    $obj["msg"] = "Customer With Hub Is Not Existed or Not Linked";
                 }
             }
             $out[] = $obj;
