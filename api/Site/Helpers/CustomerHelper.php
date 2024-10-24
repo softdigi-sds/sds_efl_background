@@ -178,9 +178,9 @@ class CustomerHelper extends BaseHelper
     public function getAllAddressData($sql = "", $data_in = [], $select = [], $group_by = "", $count = false, $single = false)
     {
         // Define the tables and joins
-        $from = Table::SD_CUSTOMER_ADDRESS . " t1";
+        $from = Table::SD_CUSTOMER_ADDRESS . " t1 LEFT JOIN " . Table::STATEDB . " t2 ON t2.ID=t1.state_name";
         // Define the default selection if not provided
-        $select = !empty($select) ? $select : ["t1.*"];
+        $select = !empty($select) ? $select : ["t1.*,t2.state_name as stateName"];
         // Execute the query and return the result
         return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
     }

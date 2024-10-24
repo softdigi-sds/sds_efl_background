@@ -190,14 +190,14 @@ class CustomerController extends BaseController
 
     public function getAllAddressSelect()
     {
-        $id = isset($this->post["sd_customers_id"]) ? intval($this->post["sd_customers_id"]) : 0;
+        $id = isset($this->post["customer_id"]) ? intval($this->post["customer_id"]) : 0;
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid Vendor ID");
         }
         // insert and get id
         $sql = "t1.sd_customers_id=:id";
         $data_in = ["id" => $id];
-        $select = ["t1.ID AS value, t1.gst_no AS  label"];
+        $select = ["t1.ID AS value, CONCAT(t2.state_name,' - ',t1.address_one) AS  label"];
         $data = $this->_helper->getAllAddressData($sql, $data_in, $select);
         $this->response($data);
     }

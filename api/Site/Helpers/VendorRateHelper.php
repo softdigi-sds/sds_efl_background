@@ -26,13 +26,10 @@ class VendorRateHelper extends BaseHelper
 
     const schema = [
         "sd_hubs_id" => SmartConst::SCHEMA_INTEGER,
-        "sd_vendors_id" => SmartConst::SCHEMA_INTEGER,
-        "sd_hsn_id" => SmartConst::SCHEMA_INTEGER,
-        "rate_type" => SmartConst::SCHEMA_INTEGER,
-        "min_start" => SmartConst::SCHEMA_INTEGER,
-        "min_end" => SmartConst::SCHEMA_INTEGER,
-        "price" => SmartConst::SCHEMA_FLOAT,
-        "extra_price" => SmartConst::SCHEMA_FLOAT,
+        "sd_customer_id" => SmartConst::SCHEMA_INTEGER,
+        "sd_customer_address_id" => SmartConst::SCHEMA_INTEGER,
+        "vendor_code" => SmartConst::SCHEMA_VARCHAR,
+        "cms_name" => SmartConst::SCHEMA_VARCHAR,
         "effective_date" => SmartConst::SCHEMA_DATE,
         "created_time" => SmartConst::SCHEMA_CDATETIME,
         "created_by" => SmartConst::SCHEMA_CUSER_ID,
@@ -49,24 +46,10 @@ class VendorRateHelper extends BaseHelper
                 "msg" => "Please Enter Hub ID"
             ]
         ],
-        "sd_vendors_id" => [
+        "sd_customer_address_id" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter Vendor ID"
-            ]
-
-        ],
-        "sd_hsn_id" => [
-            [
-                "type" => SmartConst::VALID_REQUIRED,
-                "msg" => "HSN Required"
-            ]
-
-        ],
-        "rate_type" => [
-            [
-                "type" => SmartConst::VALID_REQUIRED,
-                "msg" => "Please Enter unit rate type"
             ]
 
         ],
@@ -99,8 +82,10 @@ class VendorRateHelper extends BaseHelper
     public function getAllData($sql = "", $data_in = [], $select = [], $group_by = "", $count = false, $single = false)
     {
         $from = Table::VENDOR_RATE . " t1 
-        LEFT JOIN " . Table::HUBS . " t2 ON t1.sd_hubs_id=t2.ID LEFT JOIN " . Table::VENDORS . " t3 ON t1.sd_vendors_id=t3.ID ";
-        $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t3.vendor_company"];
+        INNER JOIN " . Table::HUBS . " t2 ON t1.sd_hubs_id=t2.ID 
+        INNER JOIN " . Table::SD_CUSTOMER_ADDRESS . " t3 ON t1.sd_customer_address_id=t3.ID 
+        INNER JOIN " . Table::SD_CUSTOMER . " t4 ON t3.sd_customer_id=t4.ID ";
+        $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t4.vendor_company"];
         $data =  $this->getAll($select, $from, $sql, $group_by, "t1.effective_date DESC", $data_in, $single, [], $count);
         return $data;
     }
@@ -110,9 +95,10 @@ class VendorRateHelper extends BaseHelper
     public function getOneData($id)
     {
         $from = Table::VENDOR_RATE . " t1 
-        LEFT JOIN " . Table::HUBS . " t2 ON t1.sd_hubs_id=t2.ID 
-        LEFT JOIN " . Table::VENDORS . " t3 ON t1.sd_vendors_id=t3.ID ";
-        $select = ["t1.*, t2.hub_id, t3.vendor_company"];
+        INNER JOIN " . Table::HUBS . " t2 ON t1.sd_hubs_id=t2.ID 
+        INNER JOIN " . Table::SD_CUSTOMER_ADDRESS . " t3 ON t1.sd_customer_address_id=t3.ID 
+        INNER JOIN " . Table::SD_CUSTOMER . " t4 ON t3.sd_customer_id=t4.ID ";
+        $select = ["t1.*, t2.hub_id, t4.vendor_company,t3.address_one"];
         $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
         $group_by = "";
@@ -123,11 +109,25 @@ class VendorRateHelper extends BaseHelper
             $data->sd_hubs_id = [];
             $data->sd_hubs_id["value"] = $hub_id;
             $data->sd_hubs_id["label"] = $data->hub_id;
-            $vendor_id = $data->sd_vendors_id;
-            $data->sd_vendors_id = [];
-            $data->sd_vendors_id["value"] = $vendor_id;
-            $data->sd_vendors_id["label"] = $data->vendor_company;
+            $vendor_id = $data->sd_customer_id;
+            $data->sd_customer_id = [];
+            $data->sd_customer_id["value"] = $vendor_id;
+            $data->sd_customer_id["label"] = $data->vendor_company;
+            $vendor_add_id = $data->sd_customer_address_id;
+            $data->sd_customer_address_id = [];
+            $data->sd_customer_address_id["value"] = $vendor_add_id;
+            $data->sd_customer_address_id["label"] = $data->address_one;
         }
+        return $data;
+    }
+
+    public function checkEffectiveDateClash($hub_id, $vendor_id, $effective_date)
+    {
+        $from = Table::VENDOR_RATE;
+        $select = ["ID,effective_date"];
+        $sql = " effective_date >=:effective_date AND sd_hubs_id=:sd_hubs_id AND sd_customer_id=:id";
+        $data_in = ["sd_hubs_id", $hub_id, "effective_date" => $effective_date, "id" => $vendor_id];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }
 
@@ -142,7 +142,7 @@ class VendorRateHelper extends BaseHelper
         $this->deleteId($from, $id);
     }
 
- 
+
 
 
     public function getOneByVendor($hub_id, $vendor_id)
@@ -155,23 +155,14 @@ class VendorRateHelper extends BaseHelper
         return $data;
     }
 
-    public function getAllVendorHubDate($hub_id, $vend_id, $effective_date)
-    {
-        $from = Table::VENDOR_RATE;
-        $select = ["*"];
-        $sql = "sd_hubs_id=:hub_id AND sd_vendors_id=:vend_id AND effective_date=:effective_date";
-        $data_in = ["hub_id" => $hub_id, "vend_id" => $vend_id, "effective_date" => $effective_date];
-        $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
-        return $data;
-    }
     /**
-     *  get the applicable rates with venodr id and effective date which is less the end date
+     *  get the applicable rates with vendor id and effective date which is less the end date
      * 
      */
     public function getOneWithEffectiveDate($vendor_id, $effective_date)
     {
         $from = Table::VENDOR_RATE . " t1";
-        $select = ["t1.*, t2.hub_id, t3.vendor_company"];
+        $select = ["t1.*, t2.hub_id, t4.vendor_company"];
         $sql = "t1.sd_vendors_id=:ID AND effective_date>=:effective_date";
         $data_in = ["ID" => $vendor_id, "effective_date" => $effective_date];
         $group_by = "";
@@ -190,8 +181,8 @@ class VendorRateHelper extends BaseHelper
         // echo  $hub_id . "b " . $vend_id .  "effective_date " . $effective_date;
         $from = Table::VENDOR_RATE;
         $select = ["*"];
-        $sql = "sd_hubs_id=:hub_id AND sd_vendors_id=:vend_id";
-        $data_in = ["hub_id" => $hub_id, "vend_id" => $vend_id];
+        $sql = "sd_hubs_id=:hub_id AND sd_vendors_id=:vend_id AND effective_date>=:effective_date";
+        $data_in = ["hub_id" => $hub_id, "vend_id" => $vend_id, "effective_date" => $effective_date];
         $data = $this->getAll($select, $from, $sql, "", "effective_date DESC", $data_in, TRUE, []);
         return $data;
     }
@@ -210,25 +201,8 @@ class VendorRateHelper extends BaseHelper
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }
-    public function checkEffectiveDateClash($vendor_id, $effective_date)
-    {
-        $from = Table::VENDOR_RATE;
-        $select = ["ID,effective_date"];
-        $sql = " effective_date >=:effective_date AND sd_vendors_id=:id";
-        $data_in = ["effective_date" => $effective_date, "id" => $vendor_id];
-        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
-        return $data;
-    }
 
-    public function getVendorRateByHubVenID($hub_id, $vend_id)
-    {
-        $from = Table::VENDOR_RATE;
-        $select = ["*"];
-        $sql = "sd_hubs_id=:hub_id AND sd_vendors_id=:vend_id ";
-        $data_in = ["hub_id" => $hub_id, "vend_id" => $vend_id,];
-        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
-        return $data;
-    }
+
 
 
     public function getData()

@@ -27,6 +27,7 @@ class VendorRateSubHelper extends BaseHelper
     const schema = [
         "sd_vendor_rate_id" => SmartConst::SCHEMA_INTEGER,
         "sd_hsn_id" => SmartConst::SCHEMA_INTEGER,
+        "sd_vehicle_types_id" => SmartConst::SCHEMA_INTEGER,
         "rate_type" => SmartConst::SCHEMA_INTEGER,
         "min_start" => SmartConst::SCHEMA_INTEGER,
         "min_end" => SmartConst::SCHEMA_INTEGER,
@@ -126,7 +127,7 @@ class VendorRateSubHelper extends BaseHelper
         $this->deleteId($from, $id);
     }
 
-    public function getTypes($index=0)
+    public function getTypes($index = 0)
     {
         $_types = [
             1 => "Parking & Charging",
@@ -135,7 +136,7 @@ class VendorRateSubHelper extends BaseHelper
             5 => "Charging (DC)",
             4 => "Rent"
         ];
-        if($index > 0) {
+        if ($index > 0) {
             return isset($_types[$index]) ? $_types[$index] : "";
         }
         return $_types;
@@ -151,7 +152,7 @@ class VendorRateSubHelper extends BaseHelper
         // $out = [];
         foreach ($data as $key => $obj) {
             $hsn = $obj->sd_hsn_id;
-            $obj->sd_hsn_id = ["value" => $hsn, "label" =>$this->getTypes($hsn)];
+            $obj->sd_hsn_id = ["value" => $hsn, "label" => $this->getTypes($hsn)];
             $rate_type = $obj->rate_type;
             $obj->rate_type = ["value" => $rate_type, "label" => $this->getRateTypes($rate_type)];
             // $out[$key] = $obj;

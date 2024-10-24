@@ -37,7 +37,7 @@ class VendorRateController extends BaseController
      */
     public function insert()
     {
-        $columns = ["sd_hubs_id", "sd_vendors_id", "effective_date"];
+        $columns = ["sd_hubs_id", "sd_customer_id", "sd_customer_address_id", "effective_date"];
         // do validations
         $this->_helper->validate(VendorRateHelper::validations, $columns, $this->post);
         // columns     
@@ -45,8 +45,9 @@ class VendorRateController extends BaseController
         $columns[] = "created_by";
         // data
         $this->post["sd_hubs_id"] = Data::post_select_value("sd_hubs_id");
-        $this->post["sd_vendors_id"] = Data::post_select_value("sd_vendors_id");
-        $data = $this->_helper->checkEffectiveDateClash($this->post["sd_vendors_id"], $this->post["effective_date"]);
+        $this->post["sd_customer_id"] = Data::post_select_value("sd_customer_id");
+        $this->post["sd_customer_address_id"] = Data::post_select_value("sd_customer_address_id");
+        $data = $this->_helper->checkEffectiveDateClash($this->post["sd_hubs_id"], $this->post["sd_customer_id"], $this->post["effective_date"]);
         // var_dump($data);exit();
         if (!empty($data)) {
             \CustomErrorHandler::triggerInvalid("There is already an Effective date available upto " . $data->effective_date);
@@ -175,7 +176,7 @@ class VendorRateController extends BaseController
     {
         return [
             "sd_hsn_id" => ["value" => $hsn],
-            "rate_type" => ["value" =>$rate_type],
+            "rate_type" => ["value" => $rate_type],
             "min_start" => $min_start,
             "min_end" => $min_end,
             "price" => $price,
@@ -238,17 +239,17 @@ class VendorRateController extends BaseController
                 $v_data = $this->_vendor_helper->checkVendorByCodeCompanyWithHub("#", $obj->vendor, $obj->hub);
                 // $hub_id = $this->_hubs_helper->getHubID($obj->hub);
                 if (isset($v_data->ID)) {
-                    $exits_data = $this->_helper->getOneByVendor($v_data->sd_hub_id,$v_data->ID);
-                    if(!isset($exits_data->ID)){
-                       // echo $i . " ----- ------ ----- Aailble " . $obj->hub . "  =  " . $obj->vendor . " <br/>";
-                      // $this->process_rate($v_data, $obj);
+                    $exits_data = $this->_helper->getOneByVendor($v_data->sd_hub_id, $v_data->ID);
+                    if (!isset($exits_data->ID)) {
+                        // echo $i . " ----- ------ ----- Aailble " . $obj->hub . "  =  " . $obj->vendor . " <br/>";
+                        // $this->process_rate($v_data, $obj);
                     }
                     // hub availle go inside
-                   // $this->process_rate($v_data, $obj);
+                    // $this->process_rate($v_data, $obj);
                     // if ($i > 2) {
                     //    break;
                     //  }
-                   // $i++;
+                    // $i++;
                 } else {
                     echo $i . " Hub/ Vendor  Not Availble " . $obj->hub . "  =  " . $obj->vendor . " <br/>";
                     $i++;
@@ -259,6 +260,3 @@ class VendorRateController extends BaseController
         //var_dump($_data);
     }
 }
-
-
-

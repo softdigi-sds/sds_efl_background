@@ -128,7 +128,7 @@ class CommonRouter
         $this->_routes["/customer/get_all"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAll"];
         $this->_routes["/customer/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/customer/update_status"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "updateStatus"];
-        $this->_routes["/customer/get_all_select"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllSelect"];
+        $this->_routes["/customer/get_all_select"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAllSelect"];
 
         $this->_routes["/customer/insert_address"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert_address"];
         $this->_routes["/customer/update_address"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update_address"];
