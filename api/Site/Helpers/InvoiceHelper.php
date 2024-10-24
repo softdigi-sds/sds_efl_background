@@ -453,6 +453,7 @@ class InvoiceHelper extends BaseHelper
         $total_vehicles_types = $this->getVehicleCountWithVendor( $_obj->sd_hubs_id, $_obj->sd_customer_id, $start_date, $end_date);
      
         
+        
      
         if($_obj->sd_hubs_id==116){
 
