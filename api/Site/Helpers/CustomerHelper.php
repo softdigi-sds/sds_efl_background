@@ -42,7 +42,11 @@ class CustomerHelper extends BaseHelper
         "address_one" => SmartConst::SCHEMA_VARCHAR,
         "address_two" => SmartConst::SCHEMA_VARCHAR,
         "state_name" => SmartConst::SCHEMA_VARCHAR,
-        "pin_code" => SmartConst::SCHEMA_VARCHAR
+        "pin_code" => SmartConst::SCHEMA_VARCHAR,
+        "created_by" => SmartConst::SCHEMA_CUSER_ID,
+        "created_time" => SmartConst::SCHEMA_CDATETIME,
+        "last_modified_by" => SmartConst::SCHEMA_CUSER_ID,
+        "last_modified_time" => SmartConst::SCHEMA_CDATETIME
     ];
     /**
      * 
@@ -118,7 +122,7 @@ class CustomerHelper extends BaseHelper
         // Define the default selection if not provided
         $select = !empty($select) ? $select : [
             "t1.*",
-            "(SELECT COUNT(t2.ID) FROM  ".Table::SD_CUSTOMER_ADDRESS." t2 WHERE t2.sd_customers_id=t1.ID) as address_count",
+            "(SELECT COUNT(t2.ID) FROM  " . Table::SD_CUSTOMER_ADDRESS . " t2 WHERE t2.sd_customers_id=t1.ID) as address_count",
         ];
         // Execute the query and return the result
         return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
@@ -187,8 +191,8 @@ class CustomerHelper extends BaseHelper
         $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
         $data = $this->getAll($select,  $from, $sql, "", "", $data_in, true, []);
-        if(isset($data->ID)){
-            $data->state_name = ["value"=>$data->state_name,"label"=>$data->sname];
+        if (isset($data->ID)) {
+            $data->state_name = ["value" => $data->state_name, "label" => $data->sname];
         }
         return $data;
     }
