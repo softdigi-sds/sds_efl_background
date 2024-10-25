@@ -23,16 +23,15 @@ use Site\Helpers\TableHelper as Table;
  */
 class TaxillaExcelHelper extends BaseHelper
 {
-   
-    public function getData($_dt){
+
+    public function getData($_dt)
+    {
         $out = [
-            "Transaction Reference Number"=>$_dt->invoice_number,
+            "Transaction Reference Number" => $_dt->invoice_number,
+            "Invoice Number" => $_dt->invoice_number,
+            "Supply Type" => "Outward"
 
         ];
         return $out;
     }
-
-   
-
-
 }

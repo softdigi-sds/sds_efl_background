@@ -171,11 +171,12 @@ class InvoiceHelper extends BaseHelper
     public function getInvoiceByBillIdForExport($bill_id)
     {
         $from =  Table::INVOICE  . " t1 
-        INNER JOIN ". Table::SD_INVOICE_SUB . " t10 ON t1.ID = t10.sd_invoice_id
+        INNER JOIN " . Table::SD_INVOICE_SUB . " t10 ON t1.ID = t10.sd_invoice_id
         INNER JOIN " . Table::SD_CUSTOMER . " t2 ON t1.sd_customer_id=t2.ID
         INNER JOIN " . Table::SD_CUSTOMER_ADDRESS . " t4 ON t1.sd_customer_address_id=t4.ID 
         INNER JOIN " . Table::HUBS . " t3 ON t1.sd_hub_id=t3.ID ";
-        $select = ["t10.*,t1.invoice_number,t2.vendor_company,t3.hub_id,t4.billing_to,t4.gst_no,t2.pan_no,t4.pin_code"];
+        $select = ["t10.*,t1.invoice_number,t2.vendor_company,t3.hub_id,t4.billing_to,
+        t4.gst_no,t2.pan_no,t4.pin_code"];
         $sql = "t1.sd_bill_id=:bill_id";
         $data_in = ["bill_id" => $bill_id];
         $group_by = "";
