@@ -176,7 +176,7 @@ class InvoiceHelper extends BaseHelper
         INNER JOIN " . Table::SD_CUSTOMER_ADDRESS . " t4 ON t1.sd_customer_address_id=t4.ID 
         INNER JOIN " . Table::HUBS . " t3 ON t1.sd_hub_id=t3.ID ";
         $select = ["t10.*,t1.invoice_number,t2.vendor_company,t3.hub_id,t4.billing_to,
-        t4.gst_no,t2.pan_no,t4.pin_code"];
+        t4.gst_no,t2.pan_no,t4.pin_code, t1.ack_date"];
         $sql = "t1.sd_bill_id=:bill_id";
         $data_in = ["bill_id" => $bill_id];
         $group_by = "";
