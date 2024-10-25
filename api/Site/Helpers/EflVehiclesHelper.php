@@ -147,7 +147,7 @@ class EflVehiclesHelper extends BaseHelper
     {
         $insert_columns = ["sd_hub_id", "sd_customer_id", "sd_date", "vehicle_count", "created_by", "created_time"];
         $update_columns = ["vehicle_count", "last_modified_by", "last_modified_time"];
-        $exist_data = $this->checkExists($_data["sd_hub_id"],$_data["sd_customer_id"], $_data["sd_date"]);
+        $exist_data = $this->checkExists($_data["sd_hub_id"], $_data["sd_customer_id"], $_data["sd_date"]);
         $sub_data = $_data["sub_data"];
         if (isset($exist_data->ID)) {
             $this->update($update_columns, $_data, $exist_data->ID);
@@ -159,10 +159,10 @@ class EflVehiclesHelper extends BaseHelper
     }
 
 
-    public function checkExists($hub_id,$vendor_id, $date)
+    public function checkExists($hub_id, $vendor_id, $date)
     {
         $sql = "sd_hub_id=:sd_hub_id AND sd_customer_id=:sd_customer_id AND sd_date=:sd_date ";
-        $data_in = ["sd_hub_id"=>$hub_id, "sd_customer_id" => $vendor_id, "sd_date" => $date];
+        $data_in = ["sd_hub_id" => $hub_id, "sd_customer_id" => $vendor_id, "sd_date" => $date];
         $exist_data = $this->getAllData($sql, $data_in, ["ID"], "", false, true);
         return $exist_data;
     }
@@ -172,9 +172,9 @@ class EflVehiclesHelper extends BaseHelper
     {
         $helper = new VendorRateHelper($this->db);
         $data = $helper->getAllWithHubId($hub_id);
-       // $_venoder_helper = new VendorsHelper($this->db);
+        // $_venoder_helper = new VendorsHelper($this->db);
         //$data = $_venoder_helper->getVendorsByHubId($hub_id,5);
-        foreach ( $data as $ven_data) {
+        foreach ($data as $ven_data) {
             // if (isset($ven_data->ID)) {
             $select = ["vehicle_count AS count,ID"];
             $from = Table::EFL_VEHICLES;
@@ -193,13 +193,13 @@ class EflVehiclesHelper extends BaseHelper
 
 
     public function getCountByHubAndDate($id, $month, $year)
-    {       
+    {
         $select = [
             "t2.sd_date AS date, DAY(t2.sd_date) AS day_number ",
-             "SUM(t1.count) as count"
+            "SUM(t1.count) as count"
         ];
         $from = Table::EFL_VEHICLES_SUB . " t1 
-        INNER JOIN ".Table::EFL_VEHICLES ." t2 ON t2.ID=t1.sd_efl_vehicles_id";
+        INNER JOIN " . Table::EFL_VEHICLES . " t2 ON t2.ID=t1.sd_efl_vehicles_id";
         $sql = "t2.sd_hub_id=:ID AND  YEAR(t2.sd_date) =:year AND MONTH(t2.sd_date) =:month GROUP BY date ";
         $data_in = ["ID" => $id, "month" => $month, "year" => $year];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
@@ -207,15 +207,15 @@ class EflVehiclesHelper extends BaseHelper
     }
 
     public function getCountByHubAndStartEndDate($id, $start_date, $end_date)
-    {       
+    {
         $select = [
             "t2.sd_date AS date, DAY(t2.sd_date) AS day_number ",
-             "SUM(t1.count) as count"
+            "SUM(t1.count) as count"
         ];
         $from = Table::EFL_VEHICLES_SUB . " t1 
-        INNER JOIN ".Table::EFL_VEHICLES ." t2 ON t2.ID=t1.sd_efl_vehicles_id";
+        INNER JOIN " . Table::EFL_VEHICLES . " t2 ON t2.ID=t1.sd_efl_vehicles_id";
         $sql = "t2.sd_hub_id=:ID AND t2.sd_date BETWEEN :start_date AND :end_date GROUP BY date ";
-        $data_in = ["ID" => $id,"start_date"=>$start_date,"end_date"=>$end_date];
+        $data_in = ["ID" => $id, "start_date" => $start_date, "end_date" => $end_date];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
         return $data;
     }
@@ -223,41 +223,48 @@ class EflVehiclesHelper extends BaseHelper
     /**
      * 
      */
-    public function getHubViseVehicleWithDate($start_date){
+    public function getHubViseVehicleWithDate($start_date)
+    {
         $select = [
             "t1.ID,t1.hub_id"
         ];
         $from = Table::HUBS . " t1 
-        LEFT JOIN ".Table::EFL_VEHICLES ." t2 ON t1.ID=t2.sd_hub_id AND t2.sd_date=:start_date";
+        LEFT JOIN " . Table::EFL_VEHICLES . " t2 ON t1.ID=t2.sd_hub_id AND t2.sd_date=:start_date";
         $sql = "t1.status=5 AND t2.ID IS NULL";
-        $data_in = ["start_date"=>$start_date];
+        $data_in = ["start_date" => $start_date];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
         return $data;
     }
 
-    public function hubTotal($sub_data){
-        $total = array_reduce($sub_data, function($carry, $item) {
+    public function hubTotal($sub_data)
+    {
+        $total = array_reduce($sub_data, function ($carry, $item) {
             return $carry + $item->count;
         }, 0);
         return $total;
     }
 
-    public function getVehicleInvoiceByDateVendor($hub_id,$id, $start_date, $end_date,$count=true)
+    public function getVehicleInvoiceByDateVendor($hub_id, $id, $start_date, $end_date, $count = true)
     {
         $select = [
             "t2.sd_date AS date, DAY(t2.sd_date) AS day_number,t1.sd_vehicle_types_id ",
-             "SUM(t1.count) as count"
+            "SUM(t1.count) as count"
         ];
         $from = Table::EFL_VEHICLES_SUB . " t1 
-        INNER JOIN ".Table::EFL_VEHICLES ." t2 ON t2.ID=t1.sd_efl_vehicles_id";
+        INNER JOIN " . Table::EFL_VEHICLES . " t2 ON t2.ID=t1.sd_efl_vehicles_id";
         $sql = "t2.sd_hub_id=:hub_id AND t2.sd_customer_id=:ID AND t2.sd_date BETWEEN :start_date AND :end_date";
-        if($count===false){
-            $sql .=" GROUP BY date";
-        }else{
+        if ($count === false) {
+            $sql .= " GROUP BY date";
+        } else {
             $sql .= " GROUP BY sd_vehicle_types_id";
-        }      
-        $data_in = [ "hub_id"=>$hub_id,"ID" => $id,"start_date"=>$start_date,"end_date"=>$end_date];      
+
+            $data_in = ["hub_id" => $hub_id, "ID" => $id, "start_date" => $start_date, "end_date" => $end_date];
+        }
+        if ($hub_id == 110) {
+            var_dump($data_in);
+        }
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
+
         return $data;
         // if($count==true){
         //     $count =  isset($data->count) ? $data->count : 0;
@@ -363,11 +370,12 @@ class EflVehiclesHelper extends BaseHelper
         // now comapare the ids and remove the data
     }
 
-    public function vehicleTypeCount($efl_vehicles_id){
-        $from = Table::VEHICLE_TYPES ." t1 
-        LEFT JOIN ".Table::EFL_VEHICLES_SUB." t2 ON 
-        t2.sd_vehicle_types_id =t1.ID AND t2.sd_efl_vehicles_id=".$efl_vehicles_id."";
-       // echo  $from;
+    public function vehicleTypeCount($efl_vehicles_id)
+    {
+        $from = Table::VEHICLE_TYPES . " t1 
+        LEFT JOIN " . Table::EFL_VEHICLES_SUB . " t2 ON 
+        t2.sd_vehicle_types_id =t1.ID AND t2.sd_efl_vehicles_id=" . $efl_vehicles_id . "";
+        // echo  $from;
         $select = ["t1.*,t1.ID as sd_vehicle_types_id,t2.count"];
         $sql = "";
         $data_in = [];

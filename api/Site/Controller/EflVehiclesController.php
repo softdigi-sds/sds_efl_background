@@ -70,7 +70,7 @@ class EflVehiclesController extends BaseController
         foreach ($_data as $data) {
             $data["sd_hub_id"] = $hub_id;
             $data["sd_date"] =  $date;
-            $this->_helper->insertUpdateNew($data);           
+            $this->_helper->insertUpdateNew($data);
         }
         $this->responseMsg(msg: "Parking Report has been appended successfully");
     }
@@ -290,9 +290,9 @@ class EflVehiclesController extends BaseController
             if ($obj["vendor"] == "" || $obj["date"] == "" || $obj["hub_name"] == "") {
                 $obj["status"] = 10;
                 $obj["msg"] = "Improper Data";
-            } else {               
+            } else {
                 $rate_data = $this->_vendor_rate_helper->getOneWithHubNamAndCustomerName($obj["hub_name"], $obj["vendor"]);
-                   // exit();
+                // exit();
                 //  $vendor_data = $this->_vendor_helper->checkVendorByCodeCompanyWithHub("##", $obj["vendor"], $obj["hub_name"]);
                 if (isset($rate_data->ID)) {
                     // vendor existed insert or update the data

@@ -252,8 +252,10 @@ class InvoiceHelper extends BaseHelper
             "total_amount" => 0,
         ];
 
-        $_data = $this->getAllMappedCustomers();
-        foreach ($_data as $_obj) {
+        $_r_data = $this->getAllMappedCustomers();
+        //  echo "count " .  count($_r_data);
+        foreach ($_r_data  as $_obj) {
+            //echo " hub id " . $_obj->sd_hubs_id . " cid " .  $_obj->sd_customer_id . " <br/>";
             $_data = $this->prepareSingleVendorData($bill_id, $_obj, $start_date, $end_date,  $date_count);
             // var_dump($_data);
             if ($_data["total_taxable"] > 0) {
@@ -448,6 +450,7 @@ class InvoiceHelper extends BaseHelper
         $parking_price = 0;
         $allowed_units = 0;
         $minimum_units = 0;
+        $extra_price = 0;
         foreach ($rates as $obj) {
             if ($obj->sd_vehicle_types_id["value"] == $type) {
                 // only parking and charging this condition is
@@ -457,10 +460,11 @@ class InvoiceHelper extends BaseHelper
                         $parking_price = $obj->price;
                     } else if ($obj->rate_type["value"] == 2) {
                         // minimum type
-                        if ($vehicle_count >= $obj->min_start && $vehicle_count < $obj->min_end) {
+                        if ($vehicle_count > ($obj->min_start - 1) && $vehicle_count < $obj->min_end) {
                             $minimum_units = $obj->min_units_vehicle;
                             $allowed_units = $obj->min_units_vehicle * $vehicle_count;
                             $parking_price = $obj->price;
+                            $extra_price = $obj->extra_price;
                         }
                     }
                 } else if ($obj->sd_hsn_id["value"] == 2) {
@@ -470,7 +474,7 @@ class InvoiceHelper extends BaseHelper
                         $parking_price = $obj->price;
                     } else if ($obj->rate_type["value"] == 2) {
                         // minimum type
-                        if ($vehicle_count >= $obj->min_start && $vehicle_count < $obj->min_end) {
+                        if ($vehicle_count > ($obj->min_start - 1) && $vehicle_count < $obj->min_end) {
                             $parking_price = $obj->price;
                         }
                     }
@@ -478,20 +482,69 @@ class InvoiceHelper extends BaseHelper
             }
         }
         // echo "charge = " . $charge . "<br/>";
-        return [$parking_price, $allowed_units, $minimum_units];
+        return [$parking_price, $allowed_units, $minimum_units, $extra_price];
     }
 
 
-
-    public function preapreCustomerSubData($_obj, $units, $vehicles)
+    private function calculateTotal($arr)
     {
-        $rates = $this->getCustomerRates($_obj->ID);
-        // generate invoice information for vehicles first with vehicle parking data        
-        foreach($vehicles as $_v_obj){
-            list($parking_price,$allowed_units,$minimum_units) = $this->getVehicleValues($rates,$_v_obj->count,
-            $_v_obj->sd_vehicle_types_id);
-            echo ""  . $_v_obj->sd_vehicle_types_id . " p " . $parking_price . " " . $allowed_units . " " . $minimum_units . "<br/>";
+        $total = 0;
+        foreach ($arr as $obj) {
+            if (isset($obj->count)) {
+                $total = $total + $obj->count;
+            }
         }
+        return $total;
+    }
+
+
+    public function prepareCustomerSubData($_obj, $units, $vehicles, $day_count)
+    {
+        $out = [];
+        $rates = $this->getCustomerRates($_obj->ID);
+        //
+        $units_count = $this->calculateTotal($units);
+        // generate invoice information for vehicles first with vehicle parking data  
+        $allowed_units = 0;
+        $extra_price = 0;
+        foreach ($vehicles as $_v_obj) {
+            list($parking_price, $allowed_units, $minimum_units, $extra_price) = $this->getVehicleValues(
+                $rates,
+                $_v_obj->count / $day_count,
+                $_v_obj->sd_vehicle_types_id
+            );
+            if ($parking_price > 0) {
+                $_dt = [
+                    "type" => $_v_obj->sd_vehicle_types_id,
+                    "price" => $parking_price,
+                    "count" => $_v_obj->count,
+                    "month_avg" => $_v_obj->count / $day_count,
+                    "min_units" => $minimum_units,
+                    "allowed_units" => $allowed_units,
+                    "total" => ($_v_obj->count / $day_count) * $parking_price
+                ];
+                $out[] = $_dt;
+            }
+            //echo ""  . $_v_obj->sd_vehicle_types_id . " c=" . $_v_obj->count . " p " . $parking_price . " " . $allowed_units . " " . $minimum_units . "<br/>";
+        }
+        // if anything like allowed units is mentioned then it means extra units should be inserted as one more invoice
+        if ($allowed_units > 0 && $units_count > 0) {
+            $remaining_units = $units_count - $allowed_units;
+            $remaining_unit_price = $remaining_units * $extra_price;
+            // add a charging row
+            $_dt = [
+                "type" => 100,
+                "price" => $extra_price,
+                "count" => $remaining_units,
+                "month_avg" => 0,
+                "min_units" => $units_count,
+                "allowed_units" => $allowed_units,
+                "total" => $remaining_unit_price
+            ];
+            $out[] = $_dt;
+        }
+
+        // go for ac dc things
 
     }
 
@@ -511,11 +564,13 @@ class InvoiceHelper extends BaseHelper
         // get vehicle count with dates
         $total_vehicles_types = $this->getVehicleCountWithVendor($_obj->sd_hubs_id, $_obj->sd_customer_id, $start_date, $end_date);
 
-        $this->preapreCustomerSubData($_obj, $total_unit_types ,   $total_vehicles_types);
         //   $_data["total_units"]
-        if ($_obj->sd_hubs_id == 116) {
-            var_dump($total_unit_types);
+        if ($_obj->sd_hubs_id == 110) {
+            //  var_dump($total_unit_types);
             var_dump($total_vehicles_types);
+            //
+            $this->prepareCustomerSubData($_obj, $total_unit_types,   $total_vehicles_types, $date_count);
+
             exit();
         }
 
