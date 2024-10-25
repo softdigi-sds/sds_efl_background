@@ -121,6 +121,7 @@ class InvoiceController extends BaseController
         $this->response($data);
     }
 
+    
     public function getOne()
     {
         $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
