@@ -11,6 +11,7 @@ use Site\Helpers\BillHelper;
 use Site\Helpers\InvoiceHelper;
 use Site\Helpers\ImportHelper;
 use Core\Helpers\SmartData as Data;
+use Site\Helpers\TaxillaExcelHelper;
 
 
 class BillController extends BaseController
@@ -19,6 +20,7 @@ class BillController extends BaseController
     private BillHelper $_helper;
     private InvoiceHelper $_invoice_helper;
     private ImportHelper $_import_helper;
+    private TaxillaExcelHelper $_taxilla_helper;
     function __construct($params)
     {
         parent::__construct($params);
@@ -28,6 +30,8 @@ class BillController extends BaseController
         $this->_invoice_helper = new InvoiceHelper($this->db);
         //
         $this->_import_helper = new ImportHelper($this->db);
+        //
+        $this->_taxilla_helper = new TaxillaExcelHelper($this->db);
     }
 
     /**
@@ -99,12 +103,20 @@ class BillController extends BaseController
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $invoice_data =  $this->_invoice_helper->getInvoiceByBillId($id);
+        $invoice_data =  $this->_invoice_helper->getInvoiceByBillIdForExport($id);
+       // var_dump($invoice_data);
+        if(!isset($invoice_data[0])){
+            \CustomErrorHandler::triggerInvalid("Invalid data");
+        }
+        $out = [];
+        foreach($invoice_data as $obj){
+            $out[] = $this->_taxilla_helper->getData($obj);
+        }     
         //
         $path = SmartFileHelper::getDataPath() . "bills" . DS . $id . DS . "bill.xlsx";
         SmartFileHelper::createDirectoryRecursive($path);
         $excel = new SmartExcellHelper($path, 0);
-        $excel->createExcelFromData($invoice_data);
+        $excel->createExcelFromData($out);
         $this->responseFileBase64($path);
         // $this->responseMsg("created success");
     }

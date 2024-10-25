@@ -166,6 +166,24 @@ class InvoiceHelper extends BaseHelper
         $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, false, []);
         return $data;
     }
+
+
+    public function getInvoiceByBillIdForExport($bill_id)
+    {
+        $from =  Table::INVOICE  . " t1 
+        INNER JOIN ". Table::SD_INVOICE_SUB . " t10 ON t1.ID = t10.sd_invoice_id
+        INNER JOIN " . Table::SD_CUSTOMER . " t2 ON t1.sd_customer_id=t2.ID
+        INNER JOIN " . Table::SD_CUSTOMER_ADDRESS . " t4 ON t1.sd_customer_address_id=t4.ID 
+        INNER JOIN " . Table::HUBS . " t3 ON t1.sd_hub_id=t3.ID ";
+        $select = ["t10.*,t1.invoice_number,t2.vendor_company,t3.hub_id,t4.billing_to,t4.gst_no,t2.pan_no,t4.pin_code"];
+        $sql = "t1.sd_bill_id=:bill_id";
+        $data_in = ["bill_id" => $bill_id];
+        $group_by = "";
+        $order_by = "sd_invoice_id ASC";
+        $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, false, []);
+        return $data;
+    }
+
     /**
      * 
      */
@@ -258,8 +276,8 @@ class InvoiceHelper extends BaseHelper
             //echo " hub id " . $_obj->sd_hubs_id . " cid " .  $_obj->sd_customer_id . " <br/>";
             $_data = $this->prepareSingleVendorData($bill_id, $_obj, $start_date, $end_date,  $date_count);
             // var_dump($_data);
-            if ($_data["total_taxable"] > 0) {               
-                $this->insertUpdateSingle($_data);            
+            if ($_data["total_taxable"] > 0) {
+                $this->insertUpdateSingle($_data);
                 $dt["gst_amount"]  += $_data["gst_amount"];
                 $dt["total_amount"]  += $_data["total_amount"];
                 $dt["total_invoices"]++;
@@ -483,7 +501,7 @@ class InvoiceHelper extends BaseHelper
             }
         }
         // echo "charge = " . $charge . "<br/>";
-        return [$parking_price, $allowed_units, $minimum_units, $extra_price,$hsn_id];
+        return [$parking_price, $allowed_units, $minimum_units, $extra_price, $hsn_id];
     }
     /**
      * 
@@ -497,13 +515,13 @@ class InvoiceHelper extends BaseHelper
             if ($obj->sd_hsn_id["value"] == 3 && $meter_id == 1) {
                 $hsn_id = 3;
                 $unit_price = $obj->price;
-            }else if ($obj->sd_hsn_id["value"] == 5 && $meter_id == 2) {
+            } else if ($obj->sd_hsn_id["value"] == 5 && $meter_id == 2) {
                 $unit_price = $obj->price;
                 $hsn_id = 3;
             }
         }
         // echo " <br/><br/> unit charge " . $charge;
-        return [$unit_price, $hsn_id ];
+        return [$unit_price, $hsn_id];
     }
 
 
@@ -531,20 +549,20 @@ class InvoiceHelper extends BaseHelper
         $out = [];
         $rates = $this->getCustomerRates($_obj->ID);
         //
-      //  var_dump($rates);
+        //  var_dump($rates);
         $units_count = $this->calculateTotal($units);
         // generate invoice information for vehicles first with vehicle parking data  
         $allowed_units = 0;
         $extra_price = 0;
         foreach ($vehicles as $_v_obj) {
-            list($parking_price, $allowed_units, $minimum_units, $extra_price,$hsn_id) = $this->getVehicleValues(
+            list($parking_price, $allowed_units, $minimum_units, $extra_price, $hsn_id) = $this->getVehicleValues(
                 $rates,
                 $_v_obj->count / $day_count,
                 $_v_obj->sd_vehicle_types_id
             );
             if ($parking_price > 0) {
                 $_dt = [
-                    "type" => $hsn_id,                    
+                    "type" => $hsn_id,
                     "vehicle_id" => $_v_obj->sd_vehicle_types_id,
                     "price" => $parking_price,
                     "count" => $_v_obj->count,
@@ -575,13 +593,13 @@ class InvoiceHelper extends BaseHelper
             $out[] = $_dt;
         }
         // go for ac dc things
-      //  var_dump($units);
+        //  var_dump($units);
         foreach ($units as $_u_obj) {
             $meter_id = $_u_obj->sd_meter_types_id;
-            list($unit_price_test,$hsn_id) = $this->getUnitValues($rates, $meter_id);
-          //  echo "<br/><br/>Unit price " . $unit_price_test . "   meter id " . $meter_id . " <br/><br/><br/>";
+            list($unit_price_test, $hsn_id) = $this->getUnitValues($rates, $meter_id);
+            //  echo "<br/><br/>Unit price " . $unit_price_test . "   meter id " . $meter_id . " <br/><br/><br/>";
             if ($unit_price_test  > 0 &&  $_u_obj->count > 0) {
-              //  echo "<br/><br/> E = Unit price " . $unit_price_test . "   meter id " . $meter_id . " <br/><br/>";
+                //  echo "<br/><br/> E = Unit price " . $unit_price_test . "   meter id " . $meter_id . " <br/><br/>";
                 $_dt = [
                     "type" => $hsn_id,
                     "vehicle_id" => $meter_id,
@@ -594,7 +612,6 @@ class InvoiceHelper extends BaseHelper
                 ];
                 $out[] = $_dt;
             }
-          
         }
 
         $rent_charges = $this->getVehicleRentCharge($rates);
@@ -648,7 +665,7 @@ class InvoiceHelper extends BaseHelper
         $_data["gst_amount"] = $_data["total_taxable"] * ($_data["gst_percentage"] / 100);
         $_data["total_amount"] =  $_data["total_taxable"]  +   $_data["gst_amount"];
         $_data["short_name"] = "TEST";
-      
+
         // exit();
         // $_data["total_vehicles"] = round( $total_vehicles  / $date_count,3);
         // // round(  $total_vehicles  / $date_count,3);
@@ -743,10 +760,10 @@ class InvoiceHelper extends BaseHelper
     /**
      * 
      */
-    public function checkInvoiceExists($bill_id, $hub_id,$vendor_id)
+    public function checkInvoiceExists($bill_id, $hub_id, $vendor_id)
     {
         $sql = " sd_bill_id=:bill_id AND sd_hub_id=:sd_hub_id AND sd_customer_id=:vend_id";
-        $data_in = ["bill_id" => $bill_id,"sd_hub_id"=>$hub_id, "vend_id" => $vendor_id];
+        $data_in = ["bill_id" => $bill_id, "sd_hub_id" => $hub_id, "vend_id" => $vendor_id];
         $data = $this->getAll(["*"], TABLE::INVOICE, $sql, "", "", $data_in, true, []);
         return $data;
     }
@@ -767,51 +784,52 @@ class InvoiceHelper extends BaseHelper
 
     public function updateInvoiceDataNew($data)
     {
-        $exist_data = $this->checkInvoiceExists($data["sd_bill_id"],$data["sd_hub_id"], $data["sd_customer_id"]);
+        $exist_data = $this->checkInvoiceExists($data["sd_bill_id"], $data["sd_hub_id"], $data["sd_customer_id"]);
         if (isset($exist_data->ID)) {
-            $update_columns = [              
+            $update_columns = [
                 "total_taxable",
                 "status",
                 "gst_percentage",
                 "gst_amount",
                 "total_amount",
-                "sd_customer_address_id",               
+                "sd_customer_address_id",
             ];
-           // $this->update($update_columns, $data, $exist_data->ID);
+            // $this->update($update_columns, $data, $exist_data->ID);
             return $exist_data->ID;
         }
     }
 
-    private function insert_invoice_sub($_id,$sub_data){
+    private function insert_invoice_sub($_id, $sub_data)
+    {
         $db = new InvoiceSubHelper($this->db);
-        $db->insert_update_data($_id,$sub_data);
+        $db->insert_update_data($_id, $sub_data);
     }
 
     /**
      * 
      */
     public function insertUpdateSingle($data)
-    {     
-        $exist_data = $this->checkInvoiceExists($data["sd_bill_id"],$data["sd_hub_id"], $data["sd_customer_id"]);
+    {
+        $exist_data = $this->checkInvoiceExists($data["sd_bill_id"], $data["sd_hub_id"], $data["sd_customer_id"]);
         $sub_data = $data["sub_data"];
         if (isset($exist_data->ID)) {
             $this->updateInvoiceDataNew($data);
-            $this->insert_invoice_sub($exist_data->ID,$sub_data);
+            $this->insert_invoice_sub($exist_data->ID, $sub_data);
             return $exist_data->ID;
         } else {
             $insert_columns = [
                 "sd_bill_id",
                 "sd_hub_id",
-                "sd_customer_id", 
-                "sd_customer_address_id", 
-                "sd_vendor_rate_id",            
+                "sd_customer_id",
+                "sd_customer_address_id",
+                "sd_vendor_rate_id",
                 "total_taxable",
                 "status",
                 "gst_percentage",
                 "gst_amount",
-                "total_amount"             
+                "total_amount"
             ];
-        
+
             $id = $this->insert($insert_columns, $data);
             $up_columns = [
                 "invoice_fin_year",
@@ -827,8 +845,7 @@ class InvoiceHelper extends BaseHelper
             ];
             $this->update($up_columns, $up_data, $id);
             // update the invoice sub data 
-            $this->insert_invoice_sub($id,$sub_data);
-            
+            $this->insert_invoice_sub($id, $sub_data);
         }
     }
 
