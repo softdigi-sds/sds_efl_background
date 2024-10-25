@@ -94,6 +94,7 @@ class VendorRateHelper extends BaseHelper
         INNER JOIN " . Table::SD_CUSTOMER . " t4 ON t3.sd_customers_id=t4.ID ";
         $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t4.vendor_company,t4.ID as cust_id"];
         $data =  $this->getAll($select, $from, $sql, $group_by, "t1.effective_date DESC", $data_in, $single, [], $count);
+       //exit();
         return $data;
     }
     /**

@@ -9,6 +9,7 @@ use Site\Helpers\InvoiceHelper;
 use Site\Helpers\BillHelper;
 use Site\View\InvoicePdf;
 use Core\Helpers\SmartFileHelper;
+use Site\Helpers\InvoiceSubHelper;
 
 
 class InvoiceController extends BaseController
@@ -16,8 +17,8 @@ class InvoiceController extends BaseController
 
     private InvoiceHelper $_helper;
     private BillHelper $_bill_helper;
-
     private InvoicePdf $_invoice_pdf_helper;
+    private InvoiceSubHelper $_invoice_sub_helper;
     function __construct($params)
     {
         parent::__construct($params);
@@ -25,6 +26,7 @@ class InvoiceController extends BaseController
         $this->_helper = new InvoiceHelper($this->db);
         $this->_bill_helper = new BillHelper($this->db);
         $this->_invoice_pdf_helper = new InvoicePdf($this->db);
+        $this->_invoice_sub_helper = new InvoiceSubHelper($this->db);
     }
 
     /**
@@ -127,6 +129,9 @@ class InvoiceController extends BaseController
         }
         // insert and get id
         $data = $this->_helper->getOneData($id);
+        if(isset($data->ID)){
+            $data->sub_data = $this->_invoice_sub_helper->getAllByInvoiceId($data->ID);
+        }
         $this->response($data);
     }
 

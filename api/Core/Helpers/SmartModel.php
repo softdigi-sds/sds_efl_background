@@ -146,6 +146,7 @@ class SmartModel
 
         $data =   $this->_db->getData($sql_str, $data_in, $this->_single);
         //
+       // echo  $sql_str;
         return $data;
     }
 
