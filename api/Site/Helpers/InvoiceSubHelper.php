@@ -81,7 +81,7 @@ class InvoiceSubHelper extends BaseHelper
      */
     public function getAllData($sql = "", $data_in = [], $select = [], $group_by = "", $count = false, $single = false)
     {
-        $from = Table::SD_INVOICE_SUB . "";
+        $from = Table::SD_INVOICE_SUB . " t1";
         $select = !empty($select) ? $select : ["t1.*"];
         $data =  $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
         return $data;
@@ -105,8 +105,8 @@ class InvoiceSubHelper extends BaseHelper
     public function getAllByInvoiceId($invoice_id)
     {
         $sql = "t1.sd_invoice_id=:id";
-        $data_in = ["id"=>$invoice_id];
-        $data = $this->getAllData($sql,$data_in);
+        $data_in = ["id" => $invoice_id];
+        $data = $this->getAllData($sql, $data_in);
         return $data;
     }
     /**
@@ -133,17 +133,17 @@ class InvoiceSubHelper extends BaseHelper
             "allowed_units",
             "total"
         ];
-        $_data["type_desc"]= $this->getInvoiceDesc($_data["type"]);
+        $_data["type_desc"] = $this->getInvoiceDesc($_data["type"]);
         $id_inserted = $this->insert($columns_insert, $_data);
         return  $id_inserted;
     }
 
     public function insert_update_data($_id, $data)
     {
-       $this->deleteBySql(Table::SD_INVOICE_SUB, "sd_invoice_id=:id", ["id" => $_id]);
+        $this->deleteBySql(Table::SD_INVOICE_SUB, "sd_invoice_id=:id", ["id" => $_id]);
         foreach ($data as $rate_data) {
             $rate_data["sd_invoice_id"] = $_id;
-           $this->insert_update_single($rate_data);
+            $this->insert_update_single($rate_data);
         }
     }
 }

@@ -262,7 +262,8 @@ class EflConsumptionController extends BaseController
                 }
             }
         }
-        $this->response($out);
+        var_dump($out);
+        //$this->response($out);
     }
 
     public function importCmsExcel()
