@@ -80,6 +80,8 @@ class SmartExcellHelper
             $inputFileType = IOFactory::identify($this->_excel_path);
             /**  Create a new Reader of the type that has been identified  * */
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+            //
+            $reader->setReadDataOnly(true);  // This can help reduce memory usage
             /**  Load $inputFileName to a Spreadsheet Object  * */
             $excelObj      = $reader->load($this->_excel_path);
             $this->_worksheet = $excelObj->getSheet($this->_sheet_number);
