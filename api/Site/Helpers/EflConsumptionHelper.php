@@ -214,6 +214,7 @@ class EflConsumptionHelper extends BaseHelper
         return $data;
     }
 
+
     public function getCountByHubAndDate($id, $month, $year)
     {
         $select = [
