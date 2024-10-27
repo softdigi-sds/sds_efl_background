@@ -28,6 +28,7 @@ class InvoiceSubHelper extends BaseHelper
         "sd_invoice_id" => SmartConst::SCHEMA_INTEGER,
         "type" => SmartConst::SCHEMA_INTEGER,
         "type_desc" => SmartConst::SCHEMA_VARCHAR,
+        "type_hsn" => SmartConst::SCHEMA_VARCHAR,
         "vehicle_id" => SmartConst::SCHEMA_INTEGER,
         "price" => SmartConst::SCHEMA_FLOAT,
         "count" => SmartConst::SCHEMA_FLOAT,
@@ -52,12 +53,25 @@ class InvoiceSubHelper extends BaseHelper
     public function getInvoiceDesc($id)
     {
         $_type = [
-            1 => "Parking & Charging",
-            2 => "Parking",
-            3 => "AC UNTS",
+            1 => "ELECTRIC VEHICLE PARKING FEE",
+            2 => "ELECTRIC VEHICLE PARKING FEE",
+            3 => "UNITS BILLED AS PER CMS",
             4 => "Rental",
             5 => "DC units",
             100 => "Extra Units"
+        ];
+        return isset($_type[$id]) ? $_type[$id] : "";
+    }
+
+    public function getInvoiceHSN($id)
+    {
+        $_type = [
+            1 => "996743",
+            2 => "996743",
+            3 => "998714",
+            4 => "Rental",
+            5 => "998714",
+            100 => "998714"
         ];
         return isset($_type[$id]) ? $_type[$id] : "";
     }
@@ -125,6 +139,7 @@ class InvoiceSubHelper extends BaseHelper
             "sd_invoice_id",
             "type",
             "type_desc",
+            "type_hsn",
             "vehicle_id",
             "price",
             "count",
@@ -134,6 +149,7 @@ class InvoiceSubHelper extends BaseHelper
             "total"
         ];
         $_data["type_desc"] = $this->getInvoiceDesc($_data["type"]);
+        $_data["type_hsn"] = $this->getInvoiceHSN($_data["type"]);
         $id_inserted = $this->insert($columns_insert, $_data);
         return  $id_inserted;
     }

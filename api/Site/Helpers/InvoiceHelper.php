@@ -174,9 +174,15 @@ class InvoiceHelper extends BaseHelper
         INNER JOIN " . Table::SD_INVOICE_SUB . " t10 ON t1.ID = t10.sd_invoice_id
         INNER JOIN " . Table::SD_CUSTOMER . " t2 ON t1.sd_customer_id=t2.ID
         INNER JOIN " . Table::SD_CUSTOMER_ADDRESS . " t4 ON t1.sd_customer_address_id=t4.ID 
-        INNER JOIN " . Table::HUBS . " t3 ON t1.sd_hub_id=t3.ID ";
-        $select = ["t10.*,t1.invoice_number,t2.vendor_company,t3.hub_id,t4.billing_to,
-        t4.gst_no,t2.pan_no,t4.pin_code, t1.ack_date"];
+        INNER JOIN " . Table::HUBS . " t3 ON t1.sd_hub_id=t3.ID 
+        INNER JOIN " . Table::EFLOFFICE . " t6 ON t3.sd_efl_office_id=t6.ID ";
+        $select = [
+            "t10.*,t1.invoice_number,t2.vendor_company,t3.hub_id,t4.billing_to,t4.address_one,t4.address_two,
+        t4.gst_no,t2.pan_no,t4.pin_code, t1.ack_date",
+            "t6.address_one as of_add,t6.gst_no as of_gst,t6.pan_no as of_pan,t6.office_city as of_city,t6.pin_code as of_pin",
+            "(SELECT t20.short_name FROM " . Table::STATEDB . " t20 WHERE t20.ID = t6.state LIMIT 0,1) as of_state",
+            "(SELECT t21.short_name FROM " . Table::STATEDB . " t21 WHERE t21.ID = t4.state_name LIMIT 0,1) as customer_state",
+        ];
         $sql = "t1.sd_bill_id=:bill_id";
         $data_in = ["bill_id" => $bill_id];
         $group_by = "";
