@@ -40,6 +40,7 @@ class Router
         return $obj->get_route_parameters();
     }
 
+
     private function get_route_parameters()
     {
         // Get the current URL

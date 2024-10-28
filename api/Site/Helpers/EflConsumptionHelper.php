@@ -168,26 +168,27 @@ class EflConsumptionHelper extends BaseHelper
         $this->deleteId($from, $id);
     }
 
-  
-    public function insertUpdateNew($_data){      
+
+    public function insertUpdateNew($_data)
+    {
         $insert_columns = ["sd_hub_id", "sd_customer_id", "sd_date", "unit_count", "created_by", "created_time"];
         $update_columns = ["unit_count", "last_modified_by", "last_modified_time"];
-        $exist_data = $this->checkExists($_data["sd_hub_id"],$_data["sd_customer_id"], $_data["sd_date"]);
+        $exist_data = $this->checkExists($_data["sd_hub_id"], $_data["sd_customer_id"], $_data["sd_date"]);
         $sub_data = $_data["sub_data"];
         if (isset($exist_data->ID)) {
             $this->update($update_columns, $_data, $exist_data->ID);
             $this->insert_update_data($exist_data->ID, $sub_data);
         } else {
-            $id = $this->insert($insert_columns , $_data);
+            $id = $this->insert($insert_columns, $_data);
             $this->insert_update_data($id, $sub_data);
         }
     }
 
 
-    public function checkExists($hub_id,$vendor_id, $date)
+    public function checkExists($hub_id, $vendor_id, $date)
     {
         $sql = "sd_hub_id=:sd_hub_id AND sd_customer_id=:sd_customer_id AND sd_date=:sd_date ";
-        $data_in = ["sd_hub_id"=>$hub_id, "sd_customer_id" =>$vendor_id, "sd_date" =>$date];
+        $data_in = ["sd_hub_id" => $hub_id, "sd_customer_id" => $vendor_id, "sd_date" => $date];
         $exist_data = $this->getAllData($sql, $data_in, ["ID"], "", false, true);
         return $exist_data;
     }
@@ -198,29 +199,30 @@ class EflConsumptionHelper extends BaseHelper
         $helper = new VendorRateHelper($this->db);
         $data = $helper->getAllWithHubId($hub_id);
         foreach ($data as $ven_data) {
-           // if (isset($ven_data->ID)) {
-                $select = ["unit_count AS count,ID"];
-                $from = Table::EFL_CONSUMPTION;
-                $sql = " sd_hub_id=:ID AND sd_customer_id=:ven_id AND sd_date=:date";
-                $data_in = ["ID" => $hub_id, "ven_id" => $ven_data->sd_customer_id, "date" => $date];
-                $count = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
-                $ven_data->sd_customer_id = $ven_data->sd_customer_id;
-                $ven_data->unit_count = isset($count->count) ? $count->count : 0;
-                $ven_data->ID = isset($count->ID) ? $count->ID : 0;
-                $ven_data->date = $date;
-          //  }
+            // if (isset($ven_data->ID)) {
+            $select = ["unit_count AS count,ID"];
+            $from = Table::EFL_CONSUMPTION;
+            $sql = "sd_hub_id=:ID AND sd_customer_id=:ven_id AND sd_date=:date";
+            $data_in = ["ID" => $hub_id, "ven_id" => $ven_data->sd_customer_id, "date" => $date];
+            $count = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+            $ven_data->sd_customer_id = $ven_data->sd_customer_id;
+            $ven_data->unit_count = isset($count->count) ? $count->count : 0;
+            $ven_data->ID = isset($count->ID) ? $count->ID : 0;
+            $ven_data->date = $date;
+            //  }
         }
         return $data;
     }
 
+
     public function getCountByHubAndDate($id, $month, $year)
     {
-          $select = [
+        $select = [
             "t2.sd_date AS date, DAY(t2.sd_date) AS day_number ",
-             "SUM(t1.count) as count"
+            "SUM(t1.count) as count"
         ];
         $from = Table::EFL_CONSUMPTION_SUB . " t1 
-        INNER JOIN ".Table::EFL_CONSUMPTION ." t2 ON t2.ID=t1.sd_efl_consumption_id";
+        INNER JOIN " . Table::EFL_CONSUMPTION . " t2 ON t2.ID=t1.sd_efl_consumption_id";
         $sql = "t2.sd_hub_id=:ID AND  YEAR(t2.sd_date) =:year AND MONTH(t2.sd_date) =:month GROUP BY date ";
         $data_in = ["ID" => $id, "month" => $month, "year" => $year];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
@@ -228,38 +230,39 @@ class EflConsumptionHelper extends BaseHelper
     }
 
     public function getCountByHubAndStartEndDate($id, $start_date, $end_date)
-    {       
+    {
         $select = [
             "t2.sd_date AS date, DAY(t2.sd_date) AS day_number ",
-             "SUM(t1.count) as count"
+            "SUM(t1.count) as count"
         ];
         $from = Table::EFL_CONSUMPTION_SUB . " t1 
-        INNER JOIN ".Table::EFL_CONSUMPTION ." t2 ON t2.ID=t1.sd_efl_consumption_id";
+        INNER JOIN " . Table::EFL_CONSUMPTION . " t2 ON t2.ID=t1.sd_efl_consumption_id";
         $sql = "t2.sd_hub_id=:ID AND t2.sd_date BETWEEN :start_date AND :end_date GROUP BY date ";
-        $data_in = ["ID" => $id,"start_date"=>$start_date,"end_date"=>$end_date];
+        $data_in = ["ID" => $id, "start_date" => $start_date, "end_date" => $end_date];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
         return $data;
     }
 
-    public function hubTotal($sub_data){
-        $total = array_reduce($sub_data, function($carry, $item) {
+    public function hubTotal($sub_data)
+    {
+        $total = array_reduce($sub_data, function ($carry, $item) {
             return $carry + $item->count;
         }, 0);
         return $total;
     }
 
 
-    public function getConsumptionInvoiceByDateVendor($hub_id,$vendor_id,$start_date, $end_date)
+    public function getConsumptionInvoiceByDateVendor($hub_id, $vendor_id, $start_date, $end_date)
     {
         $select = [
             "t2.sd_date AS date, DAY(t2.sd_date) AS day_number,sd_meter_types_id",
-             "SUM(t1.count) as count"
+            "SUM(t1.count) as count"
         ];
         $from = Table::EFL_CONSUMPTION_SUB . " t1 
-        INNER JOIN ".Table::EFL_CONSUMPTION ." t2 ON t2.ID=t1.sd_efl_consumption_id";
+        INNER JOIN " . Table::EFL_CONSUMPTION . " t2 ON t2.ID=t1.sd_efl_consumption_id";
         $sql = "t2.sd_hub_id=:hub_id AND t2.sd_customer_id=:id AND t2.sd_date BETWEEN :start_date AND :end_date
-         GROUP BY sd_meter_types_id";      
-        $data_in = ["hub_id"=>$hub_id, "id"=>$vendor_id,  "start_date" => $start_date, "end_date" => $end_date];
+         GROUP BY sd_meter_types_id";
+        $data_in = ["hub_id" => $hub_id, "id" => $vendor_id,  "start_date" => $start_date, "end_date" => $end_date];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
         return $data;
     }
@@ -351,11 +354,12 @@ class EflConsumptionHelper extends BaseHelper
         // now comapare the ids and remove the data
     }
 
-    public function ConsumptionTypeCount($id){
-        $from = Table::METER_TYPES ." t1 
-        LEFT JOIN ".Table::EFL_CONSUMPTION_SUB." t2 ON 
-        t2.sd_meter_types_id =t1.ID AND t2.sd_efl_consumption_id=".$id."";
-       // echo  $from;
+    public function ConsumptionTypeCount($id)
+    {
+        $from = Table::METER_TYPES . " t1 
+        LEFT JOIN " . Table::EFL_CONSUMPTION_SUB . " t2 ON 
+        t2.sd_meter_types_id =t1.ID AND t2.sd_efl_consumption_id=" . $id . "";
+        // echo  $from;
         $select = ["t1.*,t1.ID as sd_meter_types_id,t2.count"];
         $sql = "";
         $data_in = [];
@@ -372,9 +376,9 @@ class EflConsumptionHelper extends BaseHelper
         return $data;
     }
 
-    public function insertCmsData($data){
+    public function insertCmsData($data)
+    {
         $columns = array_keys($data);
         $this->insertCms($columns, $data);
     }
-
 }

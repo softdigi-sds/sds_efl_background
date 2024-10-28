@@ -217,23 +217,30 @@ class EflConsumptionController extends BaseController
         $this->_import_helper->updatePath($insert_id, $store_path);
         // read the excel and process
         $excel = new SmartExcellHelper($dest_path, 0);
-        $_data = $excel->getData($this->_import_helper->importConsumptionColumns(), 2);
+        $excel->init_excel();
         $out = [];
         $dates = [];
-        foreach ($_data as $obj) {
-             
-          //  $vendor_data = $this->_vendor_helper->checkVendorByCodeCompany("", $obj["vendor"]);
+        for ($i = 2; $i <= $excel->get_last_row(); $i++) {
+            $obj = [
+                "hub_name" => $excel->get_cell_value("F", $i),
+                "vendor" => $excel->get_cell_value("AG", $i),
+                "point_type" => $excel->get_cell_value("L", $i),
+                "date" => $excel->getDate($excel->get_cell_value("N", $i)),
+                "count" => $excel->get_cell_value("V", $i),
+            ];
+            // var_dump($obj);
             if ($obj["vendor"] == "" || $obj["date"] == "") {
                 $obj["status"] = 10;
                 $obj["msg"] = "Improper Data";
+                $out[$obj["vendor"]] = $obj;
             } else {
                 $rate_data = $this->_vendor_rate_helper->getOneWithHubNamAndCustomerName($obj["hub_name"], $obj["vendor"]);
-          
+                // var_dump($rate_data);
                 if (isset($rate_data->ID)) {
                     // vendor existed insert or update the data
-                    $index =$rate_data->ID . "_" . $obj["date"];
+                    $index = $rate_data->ID . "_" . $obj["date"];
                     $prev_count = isset($dates[$index]) ? $dates[$index] : 0;
-                    $new_count =  $prev_count  + $obj["count"];
+                    $new_count =  $prev_count  + floatval($obj["count"]);
                     $type = isset($obj["point_type"]) && $obj["point_type"] == "DC" ? 2 : 1;
                     $sub_data = [
                         $this->prepare_sub_object($new_count, 1, $type),
@@ -245,18 +252,18 @@ class EflConsumptionController extends BaseController
                         "unit_count" =>  $new_count,
                         "sub_data" => $sub_data
                     ];
-
                     $dates[$index] =  $new_count;
                     $this->_helper->insertUpdateNew($_vehicle_data);
                     $obj["status"] = 5;
                 } else {
                     $obj["status"] = 10;
                     $obj["msg"] = "Customer With Hub Is Not Existed or Not Linked";
+                    $out[$obj["vendor"]]  = $obj;
                 }
             }
-            $out[] = $obj;
         }
-        $this->response($out);
+        //var_dump($out);
+        $this->response(array_values($out));
     }
 
     public function importCmsExcel()

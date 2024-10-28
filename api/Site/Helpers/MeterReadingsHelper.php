@@ -47,7 +47,7 @@ class MeterReadingsHelper extends BaseHelper
 
 
 
-        "meter_year" => [
+        "meter_start_date" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter meter year"
@@ -55,7 +55,7 @@ class MeterReadingsHelper extends BaseHelper
         ],
 
 
-        "meter_month" => [
+        "meter_end_date" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Enter meter month"
@@ -86,6 +86,11 @@ class MeterReadingsHelper extends BaseHelper
     {
         return $this->insertDb(self::schema, Table::METER_READINGS, $columns, $data);
     }
+
+    public function update(array $columns, array $data, int $id)
+    {
+        return $this->updateDb(self::schema, Table::METER_READINGS, $columns, $data, $id);
+    }
     /**
      * 
      */
@@ -107,18 +112,29 @@ class MeterReadingsHelper extends BaseHelper
     }
 
 
-    public function GetAllMeterData($year,$month){
+    public function GetAllMeterData($year, $month)
+    {
         $from = Table::HUBS . " t1 ";
         $sql = "t1.status=5";
         $select = [
             "t1.ID,t1.ID as sd_hub_id,
              t1.hub_id",
-             "(SELECT t2.meter_start FROM ".TABLE::METER_READINGS." t2 WHERE t2.sd_hub_id=t1.ID 
-             AND t2.meter_year=".$year." AND t2.meter_month=".$month." LIMIT 0,1) as meter_start",
-             "(SELECT t3.meter_end FROM ".TABLE::METER_READINGS." t3 WHERE t3.sd_hub_id=t1.ID 
-             AND t3.meter_year=".$year." AND t3.meter_month=".$month." LIMIT 0,1) as meter_end",
+            "(SELECT t2.meter_start FROM " . TABLE::METER_READINGS . " t2 WHERE t2.sd_hub_id=t1.ID 
+             AND t2.meter_year=" . $year . " AND t2.meter_month=" . $month . " LIMIT 0,1) as meter_start",
+            "(SELECT t3.meter_end FROM " . TABLE::METER_READINGS . " t3 WHERE t3.sd_hub_id=t1.ID 
+             AND t3.meter_year=" . $year . " AND t3.meter_month=" . $month . " LIMIT 0,1) as meter_end",
         ];
-        $data =  $this->getAll($select, $from, $sql,"", "", [], false, [], false);
+        $data =  $this->getAll($select, $from, $sql, "", "", [], false, [], false);
+        return $data;
+    }
+
+    public function getHubData($hub_id, $year)
+    {
+        $from = Table::METER_READINGS . " t1 ";
+        $sql = "t1.sd_hub_id=:id AND YEAR(meter_start_date)=:year";
+        $select = ["t1.*,MONTHNAME(t1.meter_start_date) as month"];
+        $data_in = ["id" => $hub_id, "year" => $year];
+        $data =  $this->getAll($select, $from, $sql, "", "",  $data_in, false, [], false);
         return $data;
     }
 }
