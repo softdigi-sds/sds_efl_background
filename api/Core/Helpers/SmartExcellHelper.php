@@ -50,6 +50,11 @@ class SmartExcellHelper
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $headers = array_keys((array)$data[0]);
+        foreach($headers as $key=>$headerIndex)
+            if (strpos($headerIndex, "EMPTY_") !== false) {
+                $headerIndex="";
+            $headers[$key] = $headerIndex; 
+        }
         // var_dump($headers);exit();
         $sheet->fromArray($headers, NULL, 'A1');
         $rowNumber = 2;
