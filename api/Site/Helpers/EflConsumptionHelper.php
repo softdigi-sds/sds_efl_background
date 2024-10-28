@@ -256,13 +256,14 @@ class EflConsumptionHelper extends BaseHelper
     {
         $select = [
             "t2.sd_date AS date, DAY(t2.sd_date) AS day_number,sd_meter_types_id",
-            "SUM(t1.count) as count"
+            "SUM(t1.count) as count,t1.sd_meter_types_id as ID"
         ];
         $from = Table::EFL_CONSUMPTION_SUB . " t1 
         INNER JOIN " . Table::EFL_CONSUMPTION . " t2 ON t2.ID=t1.sd_efl_consumption_id";
         $sql = "t2.sd_hub_id=:hub_id AND t2.sd_customer_id=:id AND t2.sd_date BETWEEN :start_date AND :end_date
          GROUP BY sd_meter_types_id";
         $data_in = ["hub_id" => $hub_id, "id" => $vendor_id,  "start_date" => $start_date, "end_date" => $end_date];
+       // var_dump($data_in);
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
         return $data;
     }

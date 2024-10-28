@@ -190,7 +190,8 @@ class CommonRouter
         $this->_routes["/efl_consumption/get_one_consumption_data"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOneConsumptionData"];
         $this->_routes["/efl_consumption/get_all_consumption_data"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllConsumptionData"];
         $this->_routes["/efl_consumption/get_all_consumption_data_hub"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllConsumptionHubWise"];
-
+        $this->_routes["/efl_consumption/get_one_consumption_data_hub"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOneConsumptionDataHub"];
+       
         $this->_routes["/efl_consumption/import_excel"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "importExcel"];
         $this->_routes["/efl_consumption/import_cms_excel"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "importCmsExcel"];
     }
@@ -223,6 +224,8 @@ class CommonRouter
         $this->_routes["/efl_vehicles/get_one_parking_data"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOneParkingData"];
         $this->_routes["/efl_vehicles/get_all_parking_data"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllParkingData"];
         $this->_routes["/efl_vehicles/get_all_parking_data_hub"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllParkingHubWise"];
+        $this->_routes["/efl_vehicles/get_one_parking_data_hub"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOneParkingDataHub"];
+     
         $this->_routes["/efl_vehicles/import_excel"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "importExcel"];
         $this->_routes["/efl_vehicles/Vehicle_Report"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "VehicleReport"];
         $this->_routes["/efl_vehicles/get_report_dashboard"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getDashBoardHubWise"];

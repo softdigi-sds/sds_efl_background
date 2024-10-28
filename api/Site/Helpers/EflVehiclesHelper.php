@@ -190,6 +190,10 @@ class EflVehiclesHelper extends BaseHelper
         return $data;
     }
 
+  
+
+
+
 
 
     public function getCountByHubAndDate($id, $month, $year)
@@ -248,7 +252,7 @@ class EflVehiclesHelper extends BaseHelper
     {
         $select = [
             "t2.sd_date AS date, DAY(t2.sd_date) AS day_number,t1.sd_vehicle_types_id ",
-            "SUM(t1.count) as count"
+            "SUM(t1.count) as count,t2.sd_customer_id,t1.sd_vehicle_types_id as ID"
         ];
         $from = Table::EFL_VEHICLES_SUB . " t1 
         INNER JOIN " . Table::EFL_VEHICLES . " t2 ON t2.ID=t1.sd_efl_vehicles_id";
@@ -257,12 +261,9 @@ class EflVehiclesHelper extends BaseHelper
             $sql .= " GROUP BY date";
         } else {
             $sql .= " GROUP BY sd_vehicle_types_id";
-
             $data_in = ["hub_id" => $hub_id, "ID" => $id, "start_date" => $start_date, "end_date" => $end_date];
         }
-        if ($hub_id == 110) {
-            var_dump($data_in);
-        }
+       
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
 
         return $data;

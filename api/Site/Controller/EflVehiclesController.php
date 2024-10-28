@@ -170,6 +170,32 @@ class EflVehiclesController extends BaseController
         // var_dump($out);
         $this->response($out);
     }
+    /**
+     *  function to get parking count with vendor and start and end data with hub id
+     * 
+     */
+    public function getOneParkingDataHub()
+    {
+        // $id = isset($this->post["hub_id"]) ? $this->post["hub_id"] : 0;
+        $hub_id = Data::post_select_value("hub_id");     
+        $start_date = SmartData::post_data("date", "DATE");
+        $end_date = SmartData::post_data("end_date", "DATE");
+        if ($hub_id  < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid Hub ID");
+        }      
+        $vendor_data = $this->_vendor_rate_helper->getAllWithHubId($hub_id);
+        $types = $this->_vehiclesTypesHelper->getAllData();        
+        foreach ( $vendor_data as $obj) {
+            $_db_out = $this->_helper->getVehicleInvoiceByDateVendor($hub_id,$obj->sd_customer_id,$start_date,$end_date,true);
+            $obj->sub_data =  is_array($_db_out) ? $_db_out : [];
+            //$out[] = $obj;
+        }
+       $out = new \stdClass();
+       $out->data =$vendor_data;
+       $out->types = $types;
+       // var_dump($out);
+        $this->response($out);
+    }
 
 
     /**
@@ -282,18 +308,25 @@ class EflVehiclesController extends BaseController
         $dest_path = SmartFileHelper::storeFile($content, $store_path);
         // 
         $this->_import_helper->updatePath($insert_id, $store_path);
-        // read the excel and process
+        // read the excel and process      
         $excel = new SmartExcellHelper($dest_path, 0);
-        $_data = $excel->getData($this->_import_helper->importColumnsVehicleCount(), 2);
-        $out = [];
-        foreach ($_data as $obj) {
+        $excel->init_excel();
+        $out = [];     
+        for ($i = 2; $i <= $excel->get_last_row(); $i++) {
+            $obj = [
+                "hub_name" => $excel->get_cell_value("B", $i),
+                "vendor" => $excel->get_cell_value("C", $i),
+                "two_count" => $excel->get_cell_value("E", $i),
+                "three_count" => $excel->get_cell_value("F", $i),
+                "four_count" => $excel->get_cell_value("G", $i),
+                "ace_count" => $excel->get_cell_value("H", $i),
+                "date" => $excel->getDate($excel->get_cell_value("D", $i)),              
+            ];
             if ($obj["vendor"] == "" || $obj["date"] == "" || $obj["hub_name"] == "") {
                 $obj["status"] = 10;
                 $obj["msg"] = "Improper Data";
-            } else {
+            }else{
                 $rate_data = $this->_vendor_rate_helper->getOneWithHubNamAndCustomerName($obj["hub_name"], $obj["vendor"]);
-                // exit();
-                //  $vendor_data = $this->_vendor_helper->checkVendorByCodeCompanyWithHub("##", $obj["vendor"], $obj["hub_name"]);
                 if (isset($rate_data->ID)) {
                     // vendor existed insert or update the data
                     $sub_data = [
@@ -314,11 +347,11 @@ class EflVehiclesController extends BaseController
                 } else {
                     $obj["status"] = 10;
                     $obj["msg"] = "Customer With Hub Is Not Existed or Not Linked";
+                    $out[$obj["vendor"]] = $obj;
                 }
             }
-            $out[] = $obj;
         }
-        $this->response($out);
+        $this->response(array_values($out));
     }
     public function VehicleReport()
     {

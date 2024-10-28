@@ -144,6 +144,29 @@ class EflConsumptionController extends BaseController
         $out->types = $types;
         $this->response($out);
     }
+
+    public function getOneConsumptionDataHub()
+    {
+        $hub_id = Data::post_select_value("hub_id");
+        $start_date = SmartData::post_data("date", "DATE");
+        $end_date = SmartData::post_data("end_date", "DATE");      
+        if ($hub_id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid Hub ID");
+        }      
+        $types = $this->_meterTypesHelper->getAllData();
+        $vendor_data = $this->_vendor_rate_helper->getAllWithHubId($hub_id);          
+        foreach ( $vendor_data as $obj) {
+            $_db_out = $this->_helper->getConsumptionInvoiceByDateVendor($hub_id,$obj->sd_customer_id,$start_date,$end_date);
+            //var_dump($_db_out);
+            $obj->sub_data =  is_array($_db_out) ? $_db_out : [];
+            //$out[] = $obj;
+        }
+        //exit();
+        $out = new \stdClass();
+        $out->data =  $vendor_data ;
+        $out->types = $types;
+        $this->response($out);
+    }
     /**
      * 
      */
