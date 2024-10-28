@@ -171,6 +171,13 @@ class InvoiceController extends BaseController
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
+        // generate the invoide 
+        $data = $this->_helper->getOneData($id);
+        if (isset($data->ID)) {
+            $data->sub_data = $this->_invoice_sub_helper->getAllByInvoiceId($data->ID);
+        }
+        $this->_helper->generateInvoicePdf($id,$data);
+
         $path = "invoice" . DS . $id . DS . "invoice.pdf";
         //
         $path = SmartFileHelper::getDataPath() .  $path;
@@ -182,12 +189,13 @@ class InvoiceController extends BaseController
     {
 
 
+
         $id = 3;
         // $html = InvoicePdf::getHtml([]);
         // $path = "invoice" . DS . $id . DS . "invoice.pdf";
         // SmartPdfHelper::genPdf($html,$path);
-        $this->_helper->generateInvoicePdf($id);
-        exit();
+      //  $this->_helper->generateInvoicePdf($id);
+      //  exit();
         // if ($data < 1) {
         //     \CustomErrorHandler::triggerInvalid("Provide Data ");
         // }

@@ -616,9 +616,9 @@ class InvoiceHelper extends BaseHelper
     }
 
 
-    public function generateInvoicePdf($id)
+    public function generateInvoicePdf($id,$data)
     {
-        $data = [
+        $_data = [
             'address' => 'ADDRESS',
             "ack_no" => "GST NUMBER",
             "ack_date" => "2023-04-01",

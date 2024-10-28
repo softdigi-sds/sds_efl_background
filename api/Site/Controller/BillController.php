@@ -171,7 +171,7 @@ class BillController extends BaseController
                     "status" => 10
                 ];
                 $this->_invoice_helper->updateInvoiceData($invoiceId, $_in_data);
-                $this->_invoice_helper->generateInvoicePdf($invoiceId);
+               // $this->_invoice_helper->generateInvoicePdf($invoiceId);
             }
         }
     }
