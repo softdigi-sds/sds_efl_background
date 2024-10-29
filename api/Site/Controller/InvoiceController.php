@@ -191,6 +191,11 @@ class InvoiceController extends BaseController
 
 
         $id = 3;
+        $data = $this->_helper->getOneData($id);
+        if (isset($data->ID)) {
+            $data->sub_data = $this->_invoice_sub_helper->getAllByInvoiceId($data->ID);
+        }
+        $this->_helper->generateInvoicePdf($id,$data);
         // $html = InvoicePdf::getHtml([]);
         // $path = "invoice" . DS . $id . DS . "invoice.pdf";
         // SmartPdfHelper::genPdf($html,$path);

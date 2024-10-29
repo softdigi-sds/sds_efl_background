@@ -10,7 +10,10 @@ namespace Site\Helpers;
 
 use Core\BaseHelper;
 use Core\Helpers\SmartConst;
+use Core\Helpers\SmartCurl;
+use Core\Helpers\SmartData;
 use Core\Helpers\SmartDateHelper;
+use Core\Helpers\SmartFileHelper;
 use Core\Helpers\SmartGeneral;
 use Core\Helpers\SmartPdfHelper;
 //
@@ -661,10 +664,27 @@ class InvoiceHelper extends BaseHelper
 
         ];
         $html = InvoicePdf::getHtml($data);
+        $this->intiate_curl($html,$id);
         //    $html = '<p>hello </p>';
         // echo $html;
-        $path = "invoice" . DS . $id . DS . "invoice.pdf";
-        SmartPdfHelper::genPdf($html, $path);
+        //$path = "invoice" . DS . $id . DS . "invoice.pdf";
+        //SmartPdfHelper::genPdf($html, $path);
+    }
+
+    private function intiate_curl($html,$id){
+        $data = new \stdClass();
+        $data->content = base64_encode($html);
+        $curl = new SmartCurl();
+        $_output = $curl->post("/taskapi/html_to_pdf",$data);
+        $_output_obj = json_decode($_output);
+        if(isset($_output_obj->data)){
+            $path = "invoice" . DS . $id . DS . "invoice.pdf";
+           // file_put_contents($filePath, $pdfContent);
+
+            SmartFileHelper::storeFile($_output_obj->data,$path);
+        }
+      //  var_dump($_output);
+
     }
 
     private function getOneDayCount($_data, $date)

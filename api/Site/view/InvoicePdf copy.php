@@ -43,11 +43,11 @@ class InvoicePdf
   {
     $_data = [];
     ob_start();
-?>
+    ?>
     <div>
 
       <h2>Goods Details</h2>
-      <table style="width:100%;border-collapse:collapse" border="1">
+      <table style="width:100%;" border="1">
         <tr>
           <th>Sl.No</th>
           <th>Description of Goods/Services</th>
@@ -83,7 +83,7 @@ class InvoicePdf
         <?php } ?>
       </table>
     </div>
-  <?php
+    <?php
     $html = ob_get_clean();
     return $html;
   }
@@ -93,36 +93,38 @@ class InvoicePdf
   public function get_html()
   {
     ob_start();
-  ?>
-    <!DOCTYPE html>
-    <html lang="en">
+    ?>
 
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>Document</title>
+      <style>
+        .head{
+          display: flex;
+        }
+      </style>
+
     </head>
 
     <body>
       <div>
-        <img style="width:170px;" src="Site/view/images/logo.jpeg" alt="logo code" />
+        <img style="width:170px;" src="Site/view/images/logo.jpeg" alt="logo code">
       </div>
-      <div>
+      <div style="text-align:center">
         <table style="width:100%;">
           <tr>
             <td style="width:230px;"></td>
-            <td style="text-align: center;">
-              <h3>TAX INVOICE</h3>
-            </td>
-            <td style="text-align: right; ">
-              <h3>ORIGINAL FOR RECIPIENT</h3>
-            </td>
+            <td style="text-align: center;"><h3>TAX INVOICE</h3></td>
+            <td style="text-align: right; "><h3>ORIGINAL FOR RECIPIENT</h3></td>
           </tr>
         </table>
-      </div>
+        <!-- <h3>TAX INVOICE</h3>
+        <h3 style="text-align: right;">ORIGINAL FOR RECIPIENT</h3> -->
+        
         <h3>(As per Rule 46 of CGST Rules, 2017)</h3>
         <h3>TTL ELECTRIC FUEL PRIVATE LIMITED</h3>
-        <h3><?php echo $this->get("address") ?></h3>
+        <h3><?php echo $this->get("address") ?></h>
         <div style="border:1px solid black; margin-bottom: 0;">
           <table style="width:100%;">
             <tr>
@@ -133,13 +135,14 @@ class InvoicePdf
                 <p><?php echo $this->get("additional_info") ?></p>
               </td>
               <td style="text-align: right;">
-                <img style="width:150px; text-align: right;" src="Site/view/images/qr_code.jpg" alt="qr code" />
+                <img style="width:150px; text-align: right;" src="Site/view/images/qr_code.jpg" alt="qr code">
               </td>
             </tr>
-          </table>       
+          </table>
+       
       </div>
 
-      
+
       <table style="width:100%; margin-top: 0;" border="1">
         <tr>
           <td>
@@ -175,14 +178,18 @@ class InvoicePdf
             <p><b>GSTIN: 07AALCR6444B1ZE</b></p>
           </td>
           <td>
-            <p>REINVENT AGROCHAIN PRIVATE LIMITED,<br />
+            <p>REINVENT AGROCHAIN PRIVATE LIMITED,</p><br />
             Lower Ground Floor, C-10, South Extension Part 2, , Delhi110049,</p><br />
             <p><b>State/State Code: Delhi/07</b></p><br />
             <p><b>GSTIN: 07AALCR6444B1ZE</b></p>
           </td>
         </tr>
       </table>
+      </div>
       <?php echo $this->gettable() ?>
+
+
+
 
       <div style="padding-top:10px">    
         <table style="width:100%; " border="1">
@@ -208,17 +215,18 @@ class InvoicePdf
             <td><?php echo $this->get("other_charge") ?></td>
             <td><?php echo $this->get("total_inv_amt") ?></td>
           </tr>
+
         </table>
       </div>
 
-      
-  <hr/>
+  <hr>
       <div style="text-align:center">
         <h2>Corporate Office Address:1-8-303/48/9, TIRUMALA CHAMBERS, PENDERGHAST</h2>
         <h2>ROAD, SINDHI COLONY, BEGUMPET, HYDERABAD, TELANGANA - 500016</h2>
         <h2>PAN No: AAICT7241B CIN No: U74999TG2021PTC153003</h2>
       </div>
 
+      
       <div>
         <table style="width:100% ; border-collapse:collapse" border="1" >
           <tr>
@@ -241,16 +249,15 @@ class InvoicePdf
             <th>Subject to Hyderabad Jurisdiction only </th>
             <th style=" border-top: 0;">Authorized Signatory</th>
           </tr>
+          
+        
           </table>
           </div>
 
 
-
     </body>
 
-    </html>
-
-<?php
+    <?php
     $html = ob_get_contents();
     ob_clean();
     return $html;
