@@ -5,6 +5,10 @@ namespace Site\Controller;
 use Core\Helpers\SmartData as Data;
 use Core\BaseController;
 use Core\Helpers\SmartData;
+use Core\Helpers\SmartDateHelper;
+use Core\Helpers\SmartExcellHelper;
+use Core\Helpers\SmartFileHelper;
+use Core\Helpers\SmartGeneral;
 use Site\Helpers\VendorRateHelper as VendorRateHelper;
 use Site\Helpers\VendorRateSubHelper as VendorRateSubHelper;
 use Site\Helpers\HubsHelper;
@@ -110,6 +114,42 @@ class VendorRateController extends BaseController
         }
         $this->response($data);
     }
+
+    public function exportExcel()
+    {      
+        $data = $this->_helper->getAllData("",[]);
+        $out = [];
+        // HERE WE NEED TO DESING
+        foreach ($data as $obj) {                     
+            $_rates =  $this->_sub_helper->getAllByVendorRateId($obj->ID);
+            foreach($_rates as $_key=>$_db){
+               // var_dump($_db);
+                //exit();
+                $_dt = [
+                    "Hub Name"=>$_key===0 ? $obj->hub_id : "", 
+                    "Customer"=>$_key===0 ? $obj->vendor_company : "",
+                    "Type"=>isset($_db->sd_hsn_id) ? $_db->sd_hsn_id["label"] : "",
+                    "VH Type"=>$_db->vehicle_type, 
+                    "Rate Type"=>isset($_db->rate_type) ? $_db->rate_type["label"] :"",
+                    "Start"=>$_db->min_start,
+                    "End"=>$_db->min_end,
+                    "Price"=>$_db->price,
+                    "Extra Price"=>$_db->extra_price,
+                    "Min Count"=>$_db->min_units_vehicle,  
+                    "Effective Date"=>$_key===0 ? SmartDateHelper::dateFormat($obj->effective_date) : ""   
+                 ];  
+                 $out[] = $_dt;
+            }
+        }   
+        //
+        $path = SmartFileHelper::getDataPath() . "vendor_rate" . DS . date("Y-m-d") ."_rates.xlsx";
+        SmartFileHelper::createDirectoryRecursive($path);
+        $excel = new SmartExcellHelper($path, 0);
+        $excel->createExcelFromData($out);
+        $this->responseFileBase64($path);
+        // $this->responseMsg("created success");
+    }
+
     /**
      * 
      */

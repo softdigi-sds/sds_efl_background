@@ -7,6 +7,9 @@
  */
 
 namespace Core\Helpers;
+
+use Exception;
+
 // others
 
 /**
@@ -32,5 +35,16 @@ class SmartDateHelper
             $dates[] = $date->format('Y-m-d'); // You can format the date as needed
         }
         return $dates;
+    }
+
+
+    static public function dateFormat($_date, $format="d-m-Y")
+    {    
+        try{
+            $_start = new \DateTime($_date);     
+            return $_start->format($format);
+        }catch(\Exception $ex){
+            return $_date;
+        }        
     }
 }
