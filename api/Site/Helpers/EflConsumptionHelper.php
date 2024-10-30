@@ -37,7 +37,7 @@ class EflConsumptionHelper extends BaseHelper
     const schema_sub = [
         "sd_efl_consumption_id" => SmartConst::SCHEMA_INTEGER,
         "sd_meter_types_id" => SmartConst::SCHEMA_INTEGER,
-        "count" => SmartConst::SCHEMA_INTEGER
+        "count" => SmartConst::SCHEMA_FLOAT
     ];
     const schema_cms = [
         "txn_id" => SmartConst::SCHEMA_INTEGER,

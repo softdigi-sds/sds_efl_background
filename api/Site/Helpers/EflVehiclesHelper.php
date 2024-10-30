@@ -258,14 +258,15 @@ class EflVehiclesHelper extends BaseHelper
         INNER JOIN " . Table::EFL_VEHICLES . " t2 ON t2.ID=t1.sd_efl_vehicles_id";
         $sql = "t2.sd_hub_id=:hub_id AND t2.sd_customer_id=:ID AND t2.sd_date BETWEEN :start_date AND :end_date";
         if ($count === false) {
-            $sql .= " GROUP BY date";
+            $data_in = ["hub_id" => $hub_id, "ID" => $id, "start_date" => $start_date, "end_date" => $end_date];           
+            $sql .= " GROUP BY date,sd_vehicle_types_id";
         } else {
             $sql .= " GROUP BY sd_vehicle_types_id";
             $data_in = ["hub_id" => $hub_id, "ID" => $id, "start_date" => $start_date, "end_date" => $end_date];
         }
        
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
-
+        //var_dump($data);
         return $data;
         // if($count==true){
         //     $count =  isset($data->count) ? $data->count : 0;

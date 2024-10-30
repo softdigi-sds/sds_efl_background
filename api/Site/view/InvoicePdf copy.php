@@ -219,7 +219,7 @@ class InvoicePdf
         </table>
       </div>
 
-  <hr>
+  <hr/>
       <div style="text-align:center">
         <h2>Corporate Office Address:1-8-303/48/9, TIRUMALA CHAMBERS, PENDERGHAST</h2>
         <h2>ROAD, SINDHI COLONY, BEGUMPET, HYDERABAD, TELANGANA - 500016</h2>

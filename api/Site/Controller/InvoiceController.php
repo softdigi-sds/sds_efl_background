@@ -175,7 +175,11 @@ class InvoiceController extends BaseController
         $data = $this->_helper->getOneData($id);
         if (isset($data->ID)) {
             $data->sub_data = $this->_invoice_sub_helper->getAllByInvoiceId($data->ID);
+            // loop over sub_data 
+           
         }
+       // exit();
+
         $this->_helper->generateInvoicePdf($id,$data);
 
         $path = "invoice" . DS . $id . DS . "invoice.pdf";
@@ -190,11 +194,21 @@ class InvoiceController extends BaseController
 
 
 
-        $id = 3;
-        $data = $this->_helper->getOneData($id);
+        $id = 55;
+        $_dt = $data = $this->_helper->getOneData($id);
         if (isset($data->ID)) {
             $data->sub_data = $this->_invoice_sub_helper->getAllByInvoiceId($data->ID);
+            $_sub_data_vehicle=[];
+            foreach(  $data->sub_data  as $_obj){
+                if($_obj->vehicle_id > 0){
+                    $_item_data = $this->_helper->getVehicleCount($_dt ,$_obj->vehicle_id,$_obj->price);
+                    $_sub_data_vehicle[] = $_item_data;
+                }
+            }
+            $data->sub_data_vehicle = $_sub_data_vehicle;           
         }
+       // var_dump($data);
+       // exit();
         $this->_helper->generateInvoicePdf($id,$data);
         // $html = InvoicePdf::getHtml([]);
         // $path = "invoice" . DS . $id . DS . "invoice.pdf";

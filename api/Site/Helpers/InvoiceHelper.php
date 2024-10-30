@@ -19,6 +19,7 @@ use Core\Helpers\SmartPdfHelper;
 //
 use Site\Helpers\TableHelper as Table;
 use Site\View\InvoicePdf;
+use Site\view\VehiclesPdf;
 
 /**
  * Description of Data
@@ -200,13 +201,39 @@ class InvoiceHelper extends BaseHelper
      */
     public function getOneData($id)
     {
-        $from = Table::INVOICE . " t1 INNER JOIN " . Table::BILL . " t2 ON t2.ID=t1.sd_bill_id";
-        $select = ["t1.*,t2.bill_start_date,t2.bill_end_date"];
+        $from = Table::INVOICE . " t1 
+        INNER JOIN " . Table::BILL . " t12 ON t12.ID=t1.sd_bill_id
+        INNER JOIN " . Table::SD_CUSTOMER . " t2 ON t1.sd_customer_id=t2.ID
+        INNER JOIN " . Table::SD_CUSTOMER_ADDRESS . " t4 ON t1.sd_customer_address_id=t4.ID 
+        INNER JOIN " . Table::HUBS . " t3 ON t1.sd_hub_id=t3.ID 
+        INNER JOIN " . Table::EFLOFFICE . " t6 ON t3.sd_efl_office_id=t6.ID
+        ";
+        $select = [
+            "t1.*,t12.bill_start_date,t12.bill_end_date,
+            DATE_FORMAT(t12.bill_start_date,'%Y-%m-%d') as start_date, DATE_FORMAT(t12.bill_end_date,'%Y-%m-%d') as end_date",
+            "t2.vendor_company,t3.hub_id,t4.billing_to,t4.address_one,t4.address_two,t4.gst_no,t2.pan_no,t4.pin_code",
+            "t6.address_one as of_add,t6.gst_no as of_gst,t6.pan_no as of_pan,t6.cin_no as off_cin,t6.office_city as of_city,t6.pin_code as of_pin",
+            "(SELECT t20.short_name FROM " . Table::STATEDB . " t20 WHERE t20.ID = t6.state LIMIT 0,1) as of_state",
+            "(SELECT t21.short_name FROM " . Table::STATEDB . " t21 WHERE t21.ID = t4.state_name LIMIT 0,1) as customer_state",
+     
+        ];
         $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
         $group_by = "";
         $order_by = "";
         $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
+        if(isset($data->ID)){
+            $data->cust_igst_amt = $data->of_state!=$data->customer_state ? $data->total_taxable * (18 / 100 ) : 0;
+            $data->cust_cgst_amt = $data->of_state!=$data->customer_state ? $data->total_taxable * (9 / 100 ) : 0;
+            $data->cust_sgst_amt = $data->of_state!=$data->customer_state ? $data->total_taxable * (9 / 100 ) : 0;
+            $data->cees_amt = "0.00";
+            $data->state_cees = "0.00";
+            $data->roundoff_amt = "0.00";
+            $data->other_charge = "0.00";
+            $data->due_date = "20/11/2024";
+            $data->invoice_date = "01/11/2024";
+
+        }
         return $data;
     }
     /**
@@ -664,9 +691,15 @@ class InvoiceHelper extends BaseHelper
 
         ];
         $html = InvoicePdf::getHtml($data);
+        // 
+        // foreach($data->sub_data_vehicle as $single_vh_data){
+        //     $html .= VehiclesPdf::getHtml($single_vh_data);
+        // }
+        echo $html;
         $this->intiate_curl($html,$id);
-        //    $html = '<p>hello </p>';
-        // echo $html;
+           // $html = '<p>hello </p>';
+        echo $html;
+        exit();
         //$path = "invoice" . DS . $id . DS . "invoice.pdf";
         //SmartPdfHelper::genPdf($html, $path);
     }
@@ -679,18 +712,16 @@ class InvoiceHelper extends BaseHelper
         $_output_obj = json_decode($_output);
         if(isset($_output_obj->data)){
             $path = "invoice" . DS . $id . DS . "invoice.pdf";
-           // file_put_contents($filePath, $pdfContent);
-
             SmartFileHelper::storeFile($_output_obj->data,$path);
         }
       //  var_dump($_output);
 
     }
 
-    private function getOneDayCount($_data, $date)
+    private function getOneDayCount($_data, $date,$vehicle_id=0)
     {
         foreach ($_data as $obj) {
-            if ($obj->date == $date) {
+            if ($obj->date == $date && $obj->sd_vehicle_types_id==$vehicle_id) {
                 return $obj->count;
                 break;
             }
@@ -705,7 +736,7 @@ class InvoiceHelper extends BaseHelper
         //var_dump($_data);
         // with the dates and vendor id get the counts data
         $vehicle_obj = new EflVehiclesHelper($this->db);
-        $_vehicle_count_data = $vehicle_obj->getVehicleInvoiceByDateVendor($_data->sd_vendor_id, $_data->bill_start_date, $_data->bill_end_date, false);
+        $_vehicle_count_data = $vehicle_obj->getVehicleInvoiceByDateVendor($_data->sd_customer_id, $_data->bill_start_date, $_data->bill_end_date, false);
         // var_dump($_vehicle_count_data);
         $dates = SmartDateHelper::getDatesBetween($_data->bill_start_date, $_data->bill_end_date);
         $days_count = count($dates) > 0 ? count($dates) : 1;
@@ -725,6 +756,34 @@ class InvoiceHelper extends BaseHelper
         }
         $_data_out = (array)$_data;
         $_data_out["avg_vehicles"] = $_data_out["total_vehicles"];
+        $_data_out["sub_data"] = $sub_data;
+        return $_data_out;
+    }
+
+
+    public function getVehicleCount($_data,$vehicle_id,$price){
+        $vehicle_obj = new EflVehiclesHelper($this->db);
+        $_vehicle_count_data = $vehicle_obj->getVehicleInvoiceByDateVendor($_data->sd_hub_id,$_data->sd_customer_id, $_data->bill_start_date, $_data->bill_end_date, false);
+       // var_dump($_vehicle_count_data);
+        $dates = SmartDateHelper::getDatesBetween($_data->bill_start_date, $_data->bill_end_date);
+        $days_count = count($dates) > 0 ? count($dates) : 1;
+        $sub_data = [];       
+        //echo "<br/><br/>";
+        foreach ($dates as $date) {
+            $day_count = $this->getOneDayCount($_vehicle_count_data, $date,$vehicle_id);
+            $day_value =$price / $days_count;
+            $_sub_data = [
+                "date" => $date,
+                "count" => $day_count,
+                "charge_month" =>$price,
+                "charge_per_day" => round($day_value, 2),
+                "total" => round($day_count * $day_value),
+            ];
+            $sub_data[] = $_sub_data;
+        }
+      //  var_dump($sub_data);
+        $_data_out = (array)$_data;
+       // $_data_out["avg_vehicles"] = $_data_out["total_vehicles"];
         $_data_out["sub_data"] = $sub_data;
         return $_data_out;
     }
