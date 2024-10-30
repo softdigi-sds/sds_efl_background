@@ -51,14 +51,70 @@ class VehiclesPdf
   public function get_html()
   {
     $vehicle_data = isset($this->data["sub_data"]) ? $this->data["sub_data"] : [];
-    ob_start();
-  ?>
-  
-    <p> hello </p>
+    $html = '   
+    <table style="width:100%;font-size:11px;"><tr><td colspan="2" style="text-align:center">
+    <b>Annexure-'.$this->get("annexure").'</b></td></tr>
+    <tr><td>Invoice No: '.$this->get("invoice_number").'</td><td>Description:'.$this->get("type_desc").'</td></tr></table>
+    <table style="width:100%;font-size:11px;  border-collapse: collapse;" border="1">       
+        <tr>
+          <td>BILLING FOR EV CHARGING</td>
+          <td>'.$this->get("vendor_company").'</td>
+          <td colspan="3"></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td rowspan="2">Charges Per Vehicle Per Month Rate</td>
+          <td rowspan="2">Charges PER VEHICLE PER DAY</td>
+          <td rowspan="2">TOTAL CHARGES PER DAY</td>
+        </tr>
+        <tr>
+          <td style="text-align:center" >Date</td>
+          <td style="text-align:center" >TOTAL COUNT</td>
+        </tr>';
+        foreach ($vehicle_data as $obj) { 
+             $html .= '<tr>
+            <td style="text-align:center" >' .$obj["date"] .'</td>
+            <td style="text-align:center" >' .$obj["count"] .'</td>
+            <td style="text-align:center" >' .$obj["charge_month"] .'</td>
+            <td style="text-align:center" >' .$obj["charge_per_day"] .'</td>
+            <td style="text-align:center" >' .$obj["total"] .'</td>
+          </tr>';
+        } 
 
-<?php
-    $html = ob_get_contents();
-    ob_clean();
+        $html .= '
+        <tr style="background-color: yellow;">
+          <td>Total</td>
+          <td>'.$this->get("total_vehicles").'</td>
+          <td></td>
+          <td></td>
+          <td style="text-align:center">'.$this->get("total_vehicles_charge").'</td>
+        </tr>
+         <tr style="background-color: yellow;">
+          <td>Avg. no. of vehicles</td>
+          <td>'.$this->get("avg_vehicles").'</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>';
+        if($this->get("type")==1){
+        $html .='<tr>
+          <td>Max units allowed per Vehicle</td>
+          <td>'.$this->get("min_units_vehicle").'</td>
+          <td>Total units allowed</td>
+          <td>'.$this->get("units_allowed").'</td>
+          <td style="background-color: yellow;"></td>
+        </tr>
+        <tr>
+          <td>Total Units consumed</td>
+          <td>'.$this->get("total_units").'</td>
+          <td>Extra Units consumed</td>
+          <td>'.$this->get("extra_units").'</td>
+          <td></td>
+        </tr>';
+        }
+
+      $html .='</table>';
     return $html;
   }
 
@@ -67,6 +123,7 @@ class VehiclesPdf
 
   public static function getHtml($data)
   {
+    //return "<p>Hello text</p>";
     $obj = new self($data);
     return $obj->get_html();
   }

@@ -35,7 +35,9 @@ class InvoiceSubHelper extends BaseHelper
         "month_avg" => SmartConst::SCHEMA_FLOAT,
         "min_units" => SmartConst::SCHEMA_FLOAT,
         "allowed_units" => SmartConst::SCHEMA_FLOAT,
-        "total" => SmartConst::SCHEMA_FLOAT
+        "total" => SmartConst::SCHEMA_FLOAT,
+        "total_units" => SmartConst::SCHEMA_FLOAT,
+        "extra_units" => SmartConst::SCHEMA_FLOAT
     ];
     /**
      * 
@@ -50,17 +52,26 @@ class InvoiceSubHelper extends BaseHelper
         ],
     ];
 
-    public function getInvoiceDesc($id)
+  
+
+    public function getInvoiceDesc($id,$vehicle_id)
     {
+        $vehicle_type = new VehiclesTypesHelper($this->db);
         $_type = [
-            1 => "ELECTRIC VEHICLE PARKING FEE",
+            1 => "ELECTRIC VEHICLE CHARGING-PARKING FEE",
             2 => "ELECTRIC VEHICLE PARKING FEE",
-            3 => "UNITS BILLED AS PER CMS",
+            3 => "UNITS BILLED AS PER CMS(AC)",
             4 => "Rental",
-            5 => "DC units",
+            5 => "UNITS BILLED AS PER CMS(DC)",
             100 => "Extra Units"
         ];
-        return isset($_type[$id]) ? $_type[$id] : "";
+        $desc = isset($_type[$id]) ? $_type[$id] : "";
+        if($id==1 || $id==2){
+            // add vehicle type also in brackets
+            $vh_desc = $vehicle_type->getVehicleTypeNameWithId($vehicle_id);
+            $desc = $desc . "(" . $vh_desc . ")";
+        }
+        return $desc;
     }
 
     public function getInvoiceHSN($id)
@@ -146,9 +157,12 @@ class InvoiceSubHelper extends BaseHelper
             "month_avg",
             "min_units",
             "allowed_units",
-            "total"
+            "total",
+            "total_units",
+            "extra_units"
         ];
-        $_data["type_desc"] = $this->getInvoiceDesc($_data["type"]);
+        $vh_id = isset($_data["vehicle_id"]) ? $_data["vehicle_id"] : 0;
+        $_data["type_desc"] = $this->getInvoiceDesc($_data["type"],   $vh_id);
         $_data["type_hsn"] = $this->getInvoiceHSN($_data["type"]);
         $id_inserted = $this->insert($columns_insert, $_data);
         return  $id_inserted;

@@ -73,6 +73,11 @@ class VehiclesTypesHelper extends BaseHelper
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }
+
+    public function getVehicleTypeNameWithId($id){
+        $_data = $this->getOneData($id);
+        return isset($_data->vehicle_type) ? $_data->vehicle_type :"";
+    }
     
 
 }

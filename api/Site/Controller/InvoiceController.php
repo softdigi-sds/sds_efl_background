@@ -172,11 +172,20 @@ class InvoiceController extends BaseController
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
         // generate the invoide 
-        $data = $this->_helper->getOneData($id);
+        $_dt = $data = $this->_helper->getOneData($id);
         if (isset($data->ID)) {
             $data->sub_data = $this->_invoice_sub_helper->getAllByInvoiceId($data->ID);
             // loop over sub_data 
-           
+            $_sub_data_vehicle=[];
+            foreach(  $data->sub_data  as $_key=>$_obj){
+               // var_dump($_obj);
+                if($_obj->vehicle_id > 0 && $_obj->count > 0 && ($_obj->type==1 || $_obj->type==2)){
+                    $_item_data = $this->_helper->getVehicleCount($_dt ,$_obj);
+                    $_item_data["annexure"] = ($_key + 1 );
+                    $_sub_data_vehicle[] = $_item_data;
+                }
+            }
+            $data->sub_data_vehicle = $_sub_data_vehicle;  
         }
        // exit();
 
@@ -200,7 +209,8 @@ class InvoiceController extends BaseController
             $data->sub_data = $this->_invoice_sub_helper->getAllByInvoiceId($data->ID);
             $_sub_data_vehicle=[];
             foreach(  $data->sub_data  as $_obj){
-                if($_obj->vehicle_id > 0){
+               // var_dump($_obj);
+                if($_obj->vehicle_id > 0 && $_obj->count > 0 && ($_obj->type==1 || $_obj->type==2)){
                     $_item_data = $this->_helper->getVehicleCount($_dt ,$_obj->vehicle_id,$_obj->price);
                     $_sub_data_vehicle[] = $_item_data;
                 }

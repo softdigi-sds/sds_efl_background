@@ -448,7 +448,9 @@ class InvoiceHelper extends BaseHelper
                     "month_avg" => $_v_obj->count / $day_count,
                     "min_units" => $minimum_units,
                     "allowed_units" => $allowed_units,
-                    "total" => ($_v_obj->count / $day_count) * $parking_price
+                    "total" => ($_v_obj->count / $day_count) * $parking_price,
+                    "total_units"=>$units_count,
+                    "extra_units"=> $units_count - $allowed_units > 0 ? $units_count - $allowed_units : 0
                 ];
                 $out[] = $_dt;
             }
@@ -648,58 +650,12 @@ class InvoiceHelper extends BaseHelper
 
     public function generateInvoicePdf($id,$data)
     {
-        $_data = [
-            'address' => 'ADDRESS',
-            "ack_no" => "GST NUMBER",
-            "ack_date" => "2023-04-01",
-            'irn_no' => 'IRN NUMBER',
-            'additional_info' => 'IRN NUMBER',
-            'invoice_number' => 'INVOICE NUMBER',
-            'invoice_date' => '10/09/2024',
-            'date_of_supply' => '10/09/2024',
-            'items' => [
-                [
-                    'sl_no' => "SERAIL NUMBER",
-                    'description' => 'GOODS/SERVICES',
-                    'hsn_code' => 'HSN CODE',
-                    'quantity' => 'QUANTITY',
-                    'unit' => 'NOS',
-                    'unit_price' => 'UNIT PRICE',
-                    'taxable_amount' => 'TAXABLE AMT',
-                    'tax_details' => 'TAX DETAILS',
-                    'tcs' => '0.0',
-                    'total' => 'TOTAL'
-                ],
-
-
-            ],
-            'itemamt' => [
-                [
-                    'tax_amt'  => '82340.35',
-                    'cgst_amt' => '0.00',
-                    'sgst_amt' => '0.00',
-                    'igst_amt' => '14821.26',
-                    'cees_amt' => '0.00 ',
-                    'state_cees' => '0.00',
-                    'roundoff_amt' => '0',
-                    'other_charge' => '0.00',
-                    'total_inv_amt' => '97161.61',
-                ],
-
-
-            ],
-
-        ];
+       
         $html = InvoicePdf::getHtml($data);
-        // 
-        // foreach($data->sub_data_vehicle as $single_vh_data){
-        //     $html .= VehiclesPdf::getHtml($single_vh_data);
-        // }
-        echo $html;
         $this->intiate_curl($html,$id);
            // $html = '<p>hello </p>';
-        echo $html;
-        exit();
+        //echo $html;
+       // exit();
         //$path = "invoice" . DS . $id . DS . "invoice.pdf";
         //SmartPdfHelper::genPdf($html, $path);
     }
@@ -761,7 +717,7 @@ class InvoiceHelper extends BaseHelper
     }
 
 
-    public function getVehicleCount($_data,$vehicle_id,$price){
+    public function getVehicleCount($_data,$_obj){
         $vehicle_obj = new EflVehiclesHelper($this->db);
         $_vehicle_count_data = $vehicle_obj->getVehicleInvoiceByDateVendor($_data->sd_hub_id,$_data->sd_customer_id, $_data->bill_start_date, $_data->bill_end_date, false);
        // var_dump($_vehicle_count_data);
@@ -770,19 +726,32 @@ class InvoiceHelper extends BaseHelper
         $sub_data = [];       
         //echo "<br/><br/>";
         foreach ($dates as $date) {
-            $day_count = $this->getOneDayCount($_vehicle_count_data, $date,$vehicle_id);
-            $day_value =$price / $days_count;
+            $day_count = $this->getOneDayCount($_vehicle_count_data, $date,$_obj->vehicle_id);
+            $day_value =$_obj->price / $days_count;
             $_sub_data = [
-                "date" => $date,
+                "date" => SmartDateHelper::dateFormat($date),
                 "count" => $day_count,
-                "charge_month" =>$price,
+                "charge_month" =>$_obj->price,
                 "charge_per_day" => round($day_value, 2),
                 "total" => round($day_count * $day_value),
             ];
             $sub_data[] = $_sub_data;
         }
       //  var_dump($sub_data);
-        $_data_out = (array)$_data;
+        $_data_out = [
+            "invoice_number"=>$_data->invoice_number,
+            "type_desc"=>$_obj->type_desc,
+            "type"=>$_obj->type,
+            "vendor_company"=>$_data->vendor_company,
+            "total_vehicles"=>$_obj->count,
+            "avg_vehicles"=>$_obj->month_avg,
+            "min_units_vehicle"=>$_obj->min_units,
+            "units_allowed"=>$_obj->allowed_units,
+            "total_units"=>$_obj->total_units,
+            "extra_units"=>$_obj->extra_units,
+            "total_vehicles_charge"=>$_obj->total
+        ];
+        
        // $_data_out["avg_vehicles"] = $_data_out["total_vehicles"];
         $_data_out["sub_data"] = $sub_data;
         return $_data_out;
