@@ -22,8 +22,9 @@ class SmartCurl
 
     public function __construct($url_type = "")
     {
-        $this->baseUrl = "http://10.19.1.74:9191/api";
-        $this->headers = [];       
+        $this->baseUrl = "http://smartpdf.softdigisolutions.com/api";
+        //http://localhost:9191/api";
+        $this->headers = [];
     }
 
     public function setBearerToken($token)
@@ -78,9 +79,9 @@ class SmartCurl
         }
 
         $response = curl_exec($ch);
-         var_dump($response);
+        var_dump($response);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-         //echo " http code " , $httpCode;
+        //echo " http code " , $httpCode;
         if ($response === false) {
             throw new \Exception(curl_error($ch), curl_errno($ch));
             \CustomErrorHandler::triggerInternalError("Server Not Available");

@@ -40,13 +40,21 @@ class Router
         return $obj->get_route_parameters();
     }
 
+    static public function getApiDir()
+    {
+        if (isset($_ENV["API_DIR"])) {
+            return "/" . $_ENV["API_DIR"] . "/api";
+        }
+        return "/api";
+    }
+
 
     private function get_route_parameters()
     {
         // Get the current URL
         $this->_currentUrl = $_SERVER['REQUEST_URI'];
         //
-        $this->_currentUrl = str_replace("/api", "", $this->_currentUrl);
+        $this->_currentUrl = str_replace($this->getApiDir(), "", $this->_currentUrl);
         // get routes
         $this->get_routes();
         // process and return routes

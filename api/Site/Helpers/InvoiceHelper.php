@@ -215,24 +215,23 @@ class InvoiceHelper extends BaseHelper
             "t6.address_one as of_add,t6.gst_no as of_gst,t6.pan_no as of_pan,t6.cin_no as off_cin,t6.office_city as of_city,t6.pin_code as of_pin",
             "(SELECT t20.short_name FROM " . Table::STATEDB . " t20 WHERE t20.ID = t6.state LIMIT 0,1) as of_state",
             "(SELECT t21.short_name FROM " . Table::STATEDB . " t21 WHERE t21.ID = t4.state_name LIMIT 0,1) as customer_state",
-     
+
         ];
         $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
         $group_by = "";
         $order_by = "";
         $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
-        if(isset($data->ID)){
-            $data->cust_igst_amt = $data->of_state!=$data->customer_state ? $data->total_taxable * (18 / 100 ) : 0;
-            $data->cust_cgst_amt = $data->of_state!=$data->customer_state ? $data->total_taxable * (9 / 100 ) : 0;
-            $data->cust_sgst_amt = $data->of_state!=$data->customer_state ? $data->total_taxable * (9 / 100 ) : 0;
+        if (isset($data->ID)) {
+            $data->cust_igst_amt = $data->of_state != $data->customer_state ? $data->total_taxable * (18 / 100) : 0;
+            $data->cust_cgst_amt = $data->of_state != $data->customer_state ? $data->total_taxable * (9 / 100) : 0;
+            $data->cust_sgst_amt = $data->of_state != $data->customer_state ? $data->total_taxable * (9 / 100) : 0;
             $data->cees_amt = "0.00";
             $data->state_cees = "0.00";
             $data->roundoff_amt = "0.00";
             $data->other_charge = "0.00";
             $data->due_date = "20/11/2024";
             $data->invoice_date = "01/11/2024";
-
         }
         return $data;
     }
@@ -449,8 +448,8 @@ class InvoiceHelper extends BaseHelper
                     "min_units" => $minimum_units,
                     "allowed_units" => $allowed_units,
                     "total" => ($_v_obj->count / $day_count) * $parking_price,
-                    "total_units"=>$units_count,
-                    "extra_units"=> $units_count - $allowed_units > 0 ? $units_count - $allowed_units : 0
+                    "total_units" => $units_count,
+                    "extra_units" => $units_count - $allowed_units > 0 ? $units_count - $allowed_units : 0
                 ];
                 $out[] = $_dt;
             }
@@ -648,36 +647,33 @@ class InvoiceHelper extends BaseHelper
     }
 
 
-    public function generateInvoicePdf($id,$data)
+    public function generateInvoicePdf($id, $data)
     {
-       
+
         $html = InvoicePdf::getHtml($data);
-        $this->intiate_curl($html,$id);
-           // $html = '<p>hello </p>';
-        //echo $html;
-       // exit();
-        //$path = "invoice" . DS . $id . DS . "invoice.pdf";
-        //SmartPdfHelper::genPdf($html, $path);
+        $html_modified = SiteImageHelper::replaceImages($html, []);
+        $this->initiate_curl($html_modified, $id);
     }
 
-    private function intiate_curl($html,$id){
+    private function initiate_curl($html, $id)
+    {
         $data = new \stdClass();
         $data->content = base64_encode($html);
         $curl = new SmartCurl();
-        $_output = $curl->post("/taskapi/html_to_pdf",$data);
+        $_output = $curl->post("/taskapi/html_to_pdf", $data);
         $_output_obj = json_decode($_output);
-        if(isset($_output_obj->data)){
+        if (isset($_output_obj->data)) {
             $path = "invoice" . DS . $id . DS . "invoice.pdf";
-            SmartFileHelper::storeFile($_output_obj->data,$path);
+            SmartFileHelper::storeFile($_output_obj->data, $path);
         }
-      //  var_dump($_output);
+        //  var_dump($_output);
 
     }
 
-    private function getOneDayCount($_data, $date,$vehicle_id=0)
+    private function getOneDayCount($_data, $date, $vehicle_id = 0)
     {
         foreach ($_data as $obj) {
-            if ($obj->date == $date && $obj->sd_vehicle_types_id==$vehicle_id) {
+            if ($obj->date == $date && $obj->sd_vehicle_types_id == $vehicle_id) {
                 return $obj->count;
                 break;
             }
@@ -717,42 +713,43 @@ class InvoiceHelper extends BaseHelper
     }
 
 
-    public function getVehicleCount($_data,$_obj){
+    public function getVehicleCount($_data, $_obj)
+    {
         $vehicle_obj = new EflVehiclesHelper($this->db);
-        $_vehicle_count_data = $vehicle_obj->getVehicleInvoiceByDateVendor($_data->sd_hub_id,$_data->sd_customer_id, $_data->bill_start_date, $_data->bill_end_date, false);
-       // var_dump($_vehicle_count_data);
+        $_vehicle_count_data = $vehicle_obj->getVehicleInvoiceByDateVendor($_data->sd_hub_id, $_data->sd_customer_id, $_data->bill_start_date, $_data->bill_end_date, false);
+        // var_dump($_vehicle_count_data);
         $dates = SmartDateHelper::getDatesBetween($_data->bill_start_date, $_data->bill_end_date);
         $days_count = count($dates) > 0 ? count($dates) : 1;
-        $sub_data = [];       
+        $sub_data = [];
         //echo "<br/><br/>";
         foreach ($dates as $date) {
-            $day_count = $this->getOneDayCount($_vehicle_count_data, $date,$_obj->vehicle_id);
-            $day_value =$_obj->price / $days_count;
+            $day_count = $this->getOneDayCount($_vehicle_count_data, $date, $_obj->vehicle_id);
+            $day_value = $_obj->price / $days_count;
             $_sub_data = [
                 "date" => SmartDateHelper::dateFormat($date),
                 "count" => $day_count,
-                "charge_month" =>$_obj->price,
+                "charge_month" => $_obj->price,
                 "charge_per_day" => round($day_value, 2),
                 "total" => round($day_count * $day_value),
             ];
             $sub_data[] = $_sub_data;
         }
-      //  var_dump($sub_data);
+        //  var_dump($sub_data);
         $_data_out = [
-            "invoice_number"=>$_data->invoice_number,
-            "type_desc"=>$_obj->type_desc,
-            "type"=>$_obj->type,
-            "vendor_company"=>$_data->vendor_company,
-            "total_vehicles"=>$_obj->count,
-            "avg_vehicles"=>$_obj->month_avg,
-            "min_units_vehicle"=>$_obj->min_units,
-            "units_allowed"=>$_obj->allowed_units,
-            "total_units"=>$_obj->total_units,
-            "extra_units"=>$_obj->extra_units,
-            "total_vehicles_charge"=>$_obj->total
+            "invoice_number" => $_data->invoice_number,
+            "type_desc" => $_obj->type_desc,
+            "type" => $_obj->type,
+            "vendor_company" => $_data->vendor_company,
+            "total_vehicles" => $_obj->count,
+            "avg_vehicles" => $_obj->month_avg,
+            "min_units_vehicle" => $_obj->min_units,
+            "units_allowed" => $_obj->allowed_units,
+            "total_units" => $_obj->total_units,
+            "extra_units" => $_obj->extra_units,
+            "total_vehicles_charge" => $_obj->total
         ];
-        
-       // $_data_out["avg_vehicles"] = $_data_out["total_vehicles"];
+
+        // $_data_out["avg_vehicles"] = $_data_out["total_vehicles"];
         $_data_out["sub_data"] = $sub_data;
         return $_data_out;
     }

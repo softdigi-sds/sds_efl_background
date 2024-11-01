@@ -35,12 +35,22 @@ class CustomErrorHandler extends ErrorException
         $db = SmartDatabase::get_instance();
         $db->RollBack();
     }
+    static public function getMode()
+    {
+        if (isset($_ENV["API_MODE"])) {
+            return $_ENV["API_MODE"];
+        }
+        return "";
+    }
+
     /**
      * 
      */
     static private function display_output($json, $error_code)
     {
-       // debug_print_backtrace();
+        if (self::getMode() === "dev") {
+            debug_print_backtrace();
+        }
         self::rollBackDb();
         // ob_clean();
         http_response_code($error_code);
