@@ -18,7 +18,7 @@ use Core\Helpers\SmartGeneral;
 use Core\Helpers\SmartPdfHelper;
 //
 use Site\Helpers\TableHelper as Table;
-use Site\View\InvoicePdf;
+use Site\view\InvoicePdf;
 use Site\view\VehiclesPdf;
 
 /**
