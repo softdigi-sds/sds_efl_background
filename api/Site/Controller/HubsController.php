@@ -34,7 +34,6 @@ class HubsController extends BaseController
         $this->_hub_group_helper = new HubGroupsHelper($this->db);
         $this->_import_helper = new ImportHelper($this->db);
         $this->_office_helper = new EflOfficeHelper($this->db);
-
     }
 
     /**
@@ -45,7 +44,7 @@ class HubsController extends BaseController
         $columns = ["hub_id", "hub_name", "sd_efl_office_id"];
         // do validations
         $this->_helper->validate(HubsHelper::validations, $columns, $this->post);
-        $columns = ["hub_id", "hub_name", "sd_efl_office_id","longitude","latitude"];
+        $columns = ["hub_id", "hub_name", "sd_efl_office_id", "longitude", "latitude"];
         $this->post["status"] = 5;
         $columns[] = "created_by";
         $columns[] = "created_time";
@@ -73,7 +72,7 @@ class HubsController extends BaseController
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["hub_name","status","hub_id"];
+        $columns = ["hub_name", "status", "hub_id"];
         // do validations
         $this->_helper->validate(HubsHelper::validations, $columns, $this->post);
         // extra columns
@@ -111,12 +110,21 @@ class HubsController extends BaseController
         $this->_helper->update($columns, $this->post, $id);
         $this->responseMsg("Status Updated Successfully");
     }
-     /**
+    /**
      * 
      */
     public function getAll()
     {
+        // $incharge = SmartData::post_data("incharge", "INTEGER");
+
         $data = $this->_helper->getAllData();
+        $this->response($data);
+    }
+
+    public function getAllIncharge()
+    {
+        $user_id = SmartAuthHelper::getLoggedInId();
+        $data = $this->_helper->getInchargeHubs($user_id);
         $this->response($data);
     }
     /**
@@ -161,11 +169,12 @@ class HubsController extends BaseController
         $data = $this->_helper->getAllData("", [], $select);
         $this->response($data);
     }
-    public function gethubid(){  
+    public function gethubid()
+    {
         $id = isset($this->post["id"]) ? trim($this->post["id"]) : "";
-        if(strlen($id )< 1){
+        if (strlen($id) < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
-        }    
+        }
         // insert and get id
         $data = $this->_helper->getHubID($id);
         $this->response($data);
@@ -221,5 +230,4 @@ class HubsController extends BaseController
         }
         $this->response($out);
     }
-
 }

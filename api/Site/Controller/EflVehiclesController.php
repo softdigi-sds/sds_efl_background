@@ -177,23 +177,23 @@ class EflVehiclesController extends BaseController
     public function getOneParkingDataHub()
     {
         // $id = isset($this->post["hub_id"]) ? $this->post["hub_id"] : 0;
-        $hub_id = Data::post_select_value("hub_id");     
+        $hub_id = Data::post_select_value("hub_id");
         $start_date = SmartData::post_data("date", "DATE");
         $end_date = SmartData::post_data("end_date", "DATE");
         if ($hub_id  < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid Hub ID");
-        }      
+        }
         $vendor_data = $this->_vendor_rate_helper->getAllWithHubId($hub_id);
-        $types = $this->_vehiclesTypesHelper->getAllData();        
-        foreach ( $vendor_data as $obj) {
-            $_db_out = $this->_helper->getVehicleInvoiceByDateVendor($hub_id,$obj->sd_customer_id,$start_date,$end_date,true);
+        $types = $this->_vehiclesTypesHelper->getAllData();
+        foreach ($vendor_data as $obj) {
+            $_db_out = $this->_helper->getVehicleInvoiceByDateVendor($hub_id, $obj->sd_customer_id, $start_date, $end_date, true);
             $obj->sub_data =  is_array($_db_out) ? $_db_out : [];
             //$out[] = $obj;
         }
-       $out = new \stdClass();
-       $out->data =$vendor_data;
-       $out->types = $types;
-       // var_dump($out);
+        $out = new \stdClass();
+        $out->data = $vendor_data;
+        $out->types = $types;
+        // var_dump($out);
         $this->response($out);
     }
 
@@ -224,7 +224,14 @@ class EflVehiclesController extends BaseController
         $start_date = SmartData::post_data("start_date", "DATE");
         $end_date = SmartData::post_data("end_date", "DATE");
         // get hub details first
-        $hubs = $this->_hubs_helper->getAllData("t1.status=5");
+        $admin_role = SmartAuthHelper::checkRole(["ADMIN"]);
+        if ($admin_role) {
+            $hubs = $this->_hubs_helper->getAllData("t1.status=5");
+        } else {
+            $user_id = SmartAuthHelper::getLoggedInId();
+            $hubs = $this->_hubs_helper->getInchargeHubs($user_id);
+        }
+
         $dates = SmartDateHelper::getDatesBetween($start_date, $end_date);
         // loop over and get sub data   
         foreach ($hubs as $obj) {
@@ -311,7 +318,7 @@ class EflVehiclesController extends BaseController
         // read the excel and process      
         $excel = new SmartExcellHelper($dest_path, 0);
         $excel->init_excel();
-        $out = [];     
+        $out = [];
         for ($i = 2; $i <= $excel->get_last_row(); $i++) {
             $obj = [
                 "hub_name" => $excel->get_cell_value("B", $i),
@@ -320,12 +327,12 @@ class EflVehiclesController extends BaseController
                 "three_count" => $excel->get_cell_value("F", $i),
                 "four_count" => $excel->get_cell_value("G", $i),
                 "ace_count" => $excel->get_cell_value("H", $i),
-                "date" => $excel->getDate($excel->get_cell_value("D", $i)),              
+                "date" => $excel->getDate($excel->get_cell_value("D", $i)),
             ];
             if ($obj["vendor"] == "" || $obj["date"] == "" || $obj["hub_name"] == "") {
                 $obj["status"] = 10;
                 $obj["msg"] = "Improper Data";
-            }else{
+            } else {
                 $rate_data = $this->_vendor_rate_helper->getOneWithHubNamAndCustomerName($obj["hub_name"], $obj["vendor"]);
                 if (isset($rate_data->ID)) {
                     // vendor existed insert or update the data

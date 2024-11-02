@@ -63,12 +63,9 @@ class AuthController extends BaseController
         $db->expiresInTime = 700;
         $db->id = $user_data->ID;
         //$db->roles = $user_data->role;
-        $roles = ["USER"];
-        if ($user_data->euserid === "admin") {
-            $roles[] = "ADMIN";
-        }
-        $roles = $this->getRoles($user_data->ID, $roles);
-        $db->roles =  $roles;
+
+        // $roles = $this->getRoles($user_data->ID, $roles);
+        $db->roles =   $user_data->roles;
         return $db;
     }
 
@@ -127,7 +124,7 @@ class AuthController extends BaseController
         // update the last login time 
         $this->_user_helper->updateLastLogin($user_data->ID);
         // user data
-        $user_data->role = $emailid != "admin@gmail.com" ? ["USER"] : ["ADMIN"];
+        $user_data->roles = $emailid != "admin@gmail.com" ? ["USER"] : ["ADMIN"];
         // updating the visitor count
         $this->updateVisitorCount();
         //
@@ -136,6 +133,12 @@ class AuthController extends BaseController
         $user_data->profile_img = "";
         // update the visitor count
         $this->_site_helper->updateSiteCount();
+        //
+        $roles = ["USER"];
+        if ($user_data->euserid === "admin") {
+            $roles[] = "ADMIN";
+        }
+        $user_data->role = $this->getRoles($user_data->ID, $roles);
         // pay load             
         $this->response($this->get_response($user_data));
     }

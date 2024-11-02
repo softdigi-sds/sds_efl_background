@@ -98,15 +98,27 @@ class HubsHelper extends BaseHelper
         $select[] = " (SELECT COUNT(t5.ID) FROM " . Table::VENDOR_RATE . " t5 WHERE t5.sd_hubs_id=t1.ID) as vendor_count";
         // $order_by="last_modified_time DESC";
         $data =  $this->getAll($select, $from, $sql, $group_by, "office_city ASC,hub_id ASC", $data_in, $single, [], $count);
-       // $city = [];
+        // $city = [];
         if (!empty($data)) {
-            foreach ($data as $dt) {    
-                if(isset($dt->ID)){
+            foreach ($data as $dt) {
+                if (isset($dt->ID)) {
                     $_hub_grp_helper = new HubGroupsHelper($this->db);
                     $dt->role = $_hub_grp_helper->getSelectedRolesWithHubId($dt->ID);
-                } 
+                }
             }
         }
+        return $data;
+    }
+
+    public function getInchargeHubs($userid)
+    {
+        $from = Table::HUB_GROUPS . " t5 
+        INNER JOIN " . Table::HUBS . " t1 ON t1.ID = t5.sd_hub_id  
+        INNER JOIN " . Table::EFLOFFICE . " t2 ON t1.sd_efl_office_id=t2.ID ";
+        $select = ["t1.*, t2.office_city "];
+        $sql = "t5.sd_mt_role_id=:id";
+        $data_in = ["id" => $userid];
+        $data =  $this->getAll($select, $from, $sql, "", "office_city ASC,hub_id ASC", $data_in, false, [], false);
         return $data;
     }
 
