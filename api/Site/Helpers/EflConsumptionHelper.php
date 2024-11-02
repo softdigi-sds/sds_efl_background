@@ -263,7 +263,7 @@ class EflConsumptionHelper extends BaseHelper
         $sql = "t2.sd_hub_id=:hub_id AND t2.sd_customer_id=:id AND t2.sd_date BETWEEN :start_date AND :end_date
          GROUP BY sd_meter_types_id";
         $data_in = ["hub_id" => $hub_id, "id" => $vendor_id,  "start_date" => $start_date, "end_date" => $end_date];
-       // var_dump($data_in);
+        // var_dump($data_in);
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
         return $data;
     }
@@ -305,6 +305,7 @@ class EflConsumptionHelper extends BaseHelper
         );
         return $data;
     }
+
 
     public function getAllByConsumptionCountId($sd_efl_vehicles_id)
     {
