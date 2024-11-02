@@ -93,10 +93,10 @@ class InvoicePdf
   {
     $sub_vh_data = isset($this->data["sub_data_vehicle"]) ? $this->data["sub_data_vehicle"] : [];
     $html = "";
-    foreach( $sub_vh_data as $single_vh_data){
+    foreach ($sub_vh_data as $single_vh_data) {
       $html = VehiclesPdf::getHtml($single_vh_data);
-  }
-  return $html;
+    }
+    return $html;
   }
 
 
@@ -105,7 +105,7 @@ class InvoicePdf
   {
     $sub_vh_data = isset($this->data["sub_data_vehicle"]) ? $this->data["sub_data_vehicle"] : [];
     ob_start();
-  ?>   
+  ?>
     <html lang="en">
 
     <head>
@@ -114,14 +114,14 @@ class InvoicePdf
       <title>INVOICE PDF</title>
       <style>
         .page-break {
-            page-break-before: always;
+          page-break-before: always;
         }
-    </style>
+      </style>
     </head>
 
     <body>
       <div>
-        <img style="width:170px;" src="http://localhost/sds_efl_background/api/images/logo.png" alt="logo code" />
+        <img style="width:170px;" src="[LOGO]" alt="logo code" />
       </div>
       <div style="font-size:11px">
         <table style="width:100%;">
@@ -150,7 +150,7 @@ class InvoicePdf
               <p> IRN No:<?php echo $this->get("irn_number") ?></p>
             </td>
             <td style="text-align: right;">
-              <img style="width:150px; text-align: right;" src="http://localhost/sds_efl_background/api/images/qr_code.jpg" alt="qr code" />
+              <img style="width:150px; text-align: right;" src="[QR_CODE]" alt="qr code" />
             </td>
           </tr>
         </table>
@@ -160,20 +160,20 @@ class InvoicePdf
       <table style="width:100%; margin-top: 0;font-size:11px;border-collapse:collapse" border="1">
         <tr>
           <td>
-            <b>GSTIN:<?php $this->pget("of_gst") ?> </b><br/>
-            <b>Tax is payable under reverse charge: No</b><br/>
-            <b>Invoice No: <?php echo $this->get("invoice_number") ?></b><br/>
-            <b>Invoice Date: <?php echo $this->get("invoice_date") ?></b><br/>
-            <b>Place of Supply: <?php $this->pget("of_city") ?></b><br/>
-            <b>Due Date: <?php $this->pget("due_date") ?></b><br/>
+            <b>GSTIN:<?php $this->pget("of_gst") ?> </b><br />
+            <b>Tax is payable under reverse charge: No</b><br />
+            <b>Invoice No: <?php echo $this->get("invoice_number") ?></b><br />
+            <b>Invoice Date: <?php echo $this->get("invoice_date") ?></b><br />
+            <b>Place of Supply: <?php $this->pget("of_city") ?></b><br />
+            <b>Due Date: <?php $this->pget("due_date") ?></b><br />
           </td>
           <td>
-            <b>Vehicle No:</b> <br/>
-            <b>LR No:</b><br/>
-            <b>Transporter:</b><br/>
-            <b>Date of Supply: <?php echo $this->get("date_of_supply") ?></b><br/>
-            <b>Shipped From: <?php $this->pget("of_city")?></b><br/>
-            <b>Transporter ID:</b><br/>
+            <b>Vehicle No:</b> <br />
+            <b>LR No:</b><br />
+            <b>Transporter:</b><br />
+            <b>Date of Supply: <?php echo $this->get("date_of_supply") ?></b><br />
+            <b>Shipped From: <?php $this->pget("of_city") ?></b><br />
+            <b>Transporter ID:</b><br />
           </td>
         </tr>
         <tr>
@@ -236,7 +236,7 @@ class InvoicePdf
           </tr>
           <tr>
             <th colspan="2" style="text-align: left;">
-              Hub Name :<?php echo $this->get("hub_id")?></th>
+              Hub Name :<?php echo $this->get("hub_id") ?></th>
           </tr>
           <tr>
             <th colspan="2" style="text-align: left;">Remarks :</th>
@@ -253,9 +253,9 @@ class InvoicePdf
             <th style="border-top: 0;padding-left:40px">
               <br />
               <br />
-              <br/>
-              <br/>
-              <span style="color:white;">[_APPSIG]</span>                         
+              <br />
+              <br />
+              <span style="color:white;">[_APPSIG]</span>
               <p style="text-align:center">Authorized Signatory</p>
             </th>
           </tr>
@@ -266,12 +266,12 @@ class InvoicePdf
       <hr />
       <div style="text-align:center">
         <p>
-          Corporate Office Address: <?php echo $this->get("of_add") ?> <br/>
-          PAN No:<?php echo $this->get("of_pan") ?>  CIN No: <?php echo $this->get("off_cin")?>
-      </p>      
-      </div>  
-       
-      <?php foreach( $sub_vh_data as $single_vh_data){ ?>
+          Corporate Office Address: <?php echo $this->get("of_add") ?> <br />
+          PAN No:<?php echo $this->get("of_pan") ?> CIN No: <?php echo $this->get("off_cin") ?>
+        </p>
+      </div>
+
+      <?php foreach ($sub_vh_data as $single_vh_data) { ?>
         <div class="page-break"></div>
         <?php echo  VehiclesPdf::getHtml($single_vh_data); ?>
       <?php } ?>
