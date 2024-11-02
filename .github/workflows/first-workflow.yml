@@ -31,6 +31,7 @@ jobs:
           scp -r $GITHUB_WORKSPACE/api/Site/* github@195.35.23.133:/opt/efl/app/api/Site         
           scp -r $GITHUB_WORKSPACE/api/Core/* github@195.35.23.133:/opt/efl/app/api/Core
           scp -r $GITHUB_WORKSPACE/api/images/* github@195.35.23.133:/opt/efl/app/api/images
+          scp -r $GITHUB_WORKSPACE/api/view/* github@195.35.23.133:/opt/efl/app/api/view
   dev-deploy:
     if: contains(github.event.head_commit.message, 'dev')
     runs-on: ubuntu-latest
