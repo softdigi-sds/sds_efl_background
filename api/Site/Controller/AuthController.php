@@ -40,9 +40,9 @@ class AuthController extends BaseController
 
         foreach ($roles as $role) {
             $role_names[] = $role->label;
-            if ($role->value == intval($system_admin)) {
-                $role_names[] = "ADMIN";
-            }
+            // if ($role->value == intval($system_admin)) {
+            //  $role_names[] = "ADMIN";
+            //  }
         }
         return $role_names;
     }
