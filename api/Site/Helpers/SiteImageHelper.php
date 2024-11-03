@@ -37,7 +37,7 @@ class SiteImageHelper extends BaseHelper
 
         $out = [
             "LOGO" => "logo.png",
-            "QR_CODE" => "qr_code.jpg"
+            //"QR_CODE" => "qr_code.jpg"
         ];
         return $out;
     }

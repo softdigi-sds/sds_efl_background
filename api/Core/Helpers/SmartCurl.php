@@ -20,9 +20,18 @@ class SmartCurl
     private $baseUrl;
     private $headers;
 
+    static public function  getDigiPath()
+    {
+        if (isset($_ENV["DIGI_SERVER"])) {
+            return $_ENV["DIGI_SERVER"];
+        } else {
+            \CustomErrorHandler::triggerInternalError("Invalid Data Path");
+        }
+    }
+
     public function __construct($url_type = "")
     {
-        $this->baseUrl = "http://smartpdf.softdigisolutions.com/api";
+        $this->baseUrl = self::getDigiPath();
         //http://localhost:9191/api";
         $this->headers = [];
     }

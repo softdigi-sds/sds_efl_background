@@ -16,6 +16,7 @@ use Core\Helpers\SmartDateHelper;
 use Core\Helpers\SmartFileHelper;
 use Core\Helpers\SmartGeneral;
 use Core\Helpers\SmartPdfHelper;
+use Core\Helpers\SmartQrCodeHelper;
 //
 use Site\Helpers\TableHelper as Table;
 use Site\view\InvoicePdf;
@@ -168,6 +169,18 @@ class InvoiceHelper extends BaseHelper
         $group_by = "";
         $order_by = "";
         $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, false, []);
+        return $data;
+    }
+
+    public function getOneWithInvoiceNumber($invoice_number)
+    {
+        $from = Table::INVOICE . " t1";
+        $select = ["t1.ID"];
+        $sql = "t1.invoice_number=:ino";
+        $data_in = ["ino" => $invoice_number];
+        $group_by = "";
+        $order_by = "";
+        $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
         return $data;
     }
 
@@ -651,7 +664,12 @@ class InvoiceHelper extends BaseHelper
     {
 
         $html = InvoicePdf::getHtml($data);
-        $html_modified = SiteImageHelper::replaceImages($html, []);
+        $qr_path = "images/" . $id . "_qr.png";
+        $qr_text = isset($data->signed_qr_code) ? $data->signed_qr_code : "test";
+        SmartQrCodeHelper::generateQrImage($qr_text, $qr_path);
+        $html_modified = SiteImageHelper::replaceImages($html, ["QR_CODE" => $id . "_qr.png"]);
+        //echo $html_modified;
+        // exit();
         $this->initiate_curl($html_modified, $id);
     }
 

@@ -14,6 +14,7 @@ use Core\Helpers\SmartData as Data;
 use Site\Helpers\TaxillaExcelHelper;
 
 
+
 class BillController extends BaseController
 {
 
@@ -104,14 +105,14 @@ class BillController extends BaseController
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
         $invoice_data =  $this->_invoice_helper->getInvoiceByBillIdForExport($id);
-       // var_dump($invoice_data);
-        if(!isset($invoice_data[0])){
+        // var_dump($invoice_data);
+        if (!isset($invoice_data[0])) {
             \CustomErrorHandler::triggerInvalid("Invalid data");
         }
         $out = [];
-        foreach($invoice_data as $obj){
+        foreach ($invoice_data as $obj) {
             $out[] = $this->_taxilla_helper->getData($obj);
-        }     
+        }
         //
         $path = SmartFileHelper::getDataPath() . "bills" . DS . $id . DS . "bill.xlsx";
         SmartFileHelper::createDirectoryRecursive($path);
@@ -164,16 +165,73 @@ class BillController extends BaseController
             if (count($invoice_data) > 0) {
                 $_in_data = [
                     "irn_number" => $invoice_data["irn_no"],
-                    "signed_qr_code" => isset($invoice_data["signed_qr_code"]) ? $invoice_data["signed_qr_code"] :"",
+                    "signed_qr_code" => isset($invoice_data["signed_qr_code"]) ? $invoice_data["signed_qr_code"] : "",
                     "ack_no" => $invoice_data["ack_no"],
                     "ack_date" => $invoice_data["ack_date"],
                     "signed_invoice" => $invoice_data["signed_invoice"],
                     "status" => 10
                 ];
                 $this->_invoice_helper->updateInvoiceData($invoiceId, $_in_data);
-               // $this->_invoice_helper->generateInvoicePdf($invoiceId);
+                // $this->_invoice_helper->generateInvoicePdf($invoiceId);
             }
         }
+    }
+
+
+    public function importExcel()
+    {
+        $excel_import = Data::post_array_data("excel");
+        if (!is_array($excel_import) || count($excel_import) < 1) {
+            \CustomErrorHandler::triggerInvalid("Please upload Excel to Import");
+        }
+        // get the excel content
+        $content = isset($excel_import["content"]) ? $excel_import["content"] : "";
+        if (strlen($content) < 10) {
+            \CustomErrorHandler::triggerInvalid("Please upload Excel to Import");
+        }
+        //
+        $insert_id = $this->_import_helper->insertData("CONSUMPTION");
+        // excel path 
+        $store_path = "excel_import" . DS . $insert_id . DS . "import.xlsx";
+        // 
+        $dest_path = SmartFileHelper::storeFile($content, $store_path);
+        // 
+        $this->_import_helper->updatePath($insert_id, $store_path);
+        // read the excel and process
+        $excel = new SmartExcellHelper($dest_path, 0);
+        $excel->init_excel();
+        $out = [];
+        for ($i = 2; $i <= $excel->get_last_row(); $i++) {
+            $obj = [
+                "invoice_number" => $excel->get_cell_value("A", $i),
+                "ack_no" => $excel->get_cell_value("FS", $i),
+                "signed_qr_code" => $excel->get_cell_value("FR", $i),
+                "ack_date" => $excel->getDate($excel->get_cell_value("FT", $i)),
+                "irn_number" => $excel->get_cell_value("C", $i),
+            ];
+            // var_dump($obj);
+            if ($obj["invoice_number"] == "" || $obj["ack_no"] == "") {
+                $obj["status"] = 10;
+                $obj["msg"] = "Improper Data";
+                $out[$obj["invoice_number"]] = $obj;
+            } else {
+                $rate_data = $this->_invoice_helper->getOneWithInvoiceNumber($obj["invoice_number"]);
+                // var_dump($rate_data);
+                if (isset($rate_data->ID)) {
+                    $in_data = $obj;
+                    $in_data["status"] = 10;
+                    $this->_invoice_helper->updateInvoiceData($rate_data->ID, $in_data);
+                    //
+                    $obj["status"] = 5;
+                } else {
+                    $obj["status"] = 10;
+                    $obj["msg"] = "Invoice Number Not Existed or Not Linked";
+                    $out[$obj["invoice_number"]]  = $obj;
+                }
+            }
+        }
+        //var_dump($out);
+        $this->response(array_values($out));
     }
 
     /**
