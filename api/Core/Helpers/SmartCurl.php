@@ -88,7 +88,7 @@ class SmartCurl
         }
 
         $response = curl_exec($ch);
-        var_dump($response);
+        // var_dump($response);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         //echo " http code " , $httpCode;
         if ($response === false) {

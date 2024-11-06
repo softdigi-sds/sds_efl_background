@@ -21,7 +21,7 @@ class SmartData
 
     static public function post_data($name, $type)
     {
-        echo "<br> type " . $type;
+        //echo "<br> type " . $type;
         switch ($type) {
             case "INTEGER":
                 return self::post_int_data($name);
