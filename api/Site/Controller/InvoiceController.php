@@ -137,6 +137,17 @@ class InvoiceController extends BaseController
         $this->response($data);
     }
 
+    public function getInvoiceByCustomerID()
+    {
+        $id = isset($this->post["sd_customer_id"]) ? intval($this->post["sd_customer_id"]) : 0;
+        if ($id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid Customer ID");
+        }
+        // insert and get id
+        $data = $this->_helper->getInvoiceByCustomerId($id);
+        $this->response($data);
+    }
+
 
     public function getOne()
     {
