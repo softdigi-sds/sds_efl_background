@@ -47,4 +47,6 @@ class TableHelper
    //
    const SD_CUSTOMER = "sd_customer";
    const SD_CUSTOMER_ADDRESS = "sd_customer_address";
+
+   const SD_PAYMENT = "sd_payment";
 }

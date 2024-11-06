@@ -264,6 +264,15 @@ class CommonRouter
         $this->_routes["/vehicles_types/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/vehicles_types/get_all_select"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAllSelect"];
     }
+    private function payment_routes()
+    {
+        $controller = "PaymentController";
+        $this->_routes["/payment/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
+        $this->_routes["/payment/update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
+        $this->_routes["/payment/get_all"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAll"];
+        $this->_routes["/payment/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
+        
+    }
 
     private function get_all_Routes()
     {
@@ -288,6 +297,7 @@ class CommonRouter
         $this->efl_hsns_routes();
         $this->meter_readings_routes();
         $this->vehicles_types_routes();
+        $this->payment_routes();
         return $this->_routes;
     }
 
