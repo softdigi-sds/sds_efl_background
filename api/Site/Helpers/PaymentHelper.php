@@ -74,23 +74,25 @@ class PaymentHelper extends BaseHelper
      */
     public function insert(array $columns, array $data)
     {
-        return $this->insertDb(self::schema, Table::BILL, $columns, $data);
+        return $this->insertDb(self::schema, Table::SD_PAYMENT, $columns, $data);
     }
     /**
      * 
      */
-    public function update(array $columns, array $data, int $id)
-    {
-        return $this->updateDb(self::schema, Table::BILL, $columns, $data, $id);
-    }
+  
     /**
      * 
      */
+    
     public function getAllData($sql = "", $data_in = [], $select = [], $group_by = "", $count = false, $single = false)
     {
-        $from = Table::BILL . " t1";
-        $sql = "";
-        $select = !empty($select) ? $select : ["t1.*"];
+        // Define the tables and joins
+        $from = Table::SD_PAYMENT . " t1 LEFT JOIN 
+        " . Table::INVOICE . " t2 ON t1.sd_invoice_id = t2.ID 
+        LEFT JOIN " . Table::SD_CUSTOMER . " t3 ON t1.sd_customer_id = t3.ID";    
+        // Define the default selection if not provided
+        $select = !empty($select) ? $select : ["t1.*, t2.sd_invoice_id, t2.invoice_number, t3.sd_customer_id"];
+        // Execute the query and return the result
         return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
     }
 
@@ -100,7 +102,7 @@ class PaymentHelper extends BaseHelper
      */
     public function getOneData($id)
     {
-        $from = Table::BILL . " t1";
+        $from = Table::SD_PAYMENT . " t1";
         $select = ["t1.*"];
         $sql = " t1.ID=:ID";
         $data_in = ["ID" => $id];
@@ -112,7 +114,8 @@ class PaymentHelper extends BaseHelper
      */
     public function deleteOneId($id)
     {
-        $from = Table::BILL;
+        $from = Table::SD_PAYMENT;
         $this->deleteId($from, $id);
     }
+   
 }

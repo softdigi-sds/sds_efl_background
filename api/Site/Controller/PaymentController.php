@@ -36,34 +36,22 @@ class PaymentController extends BaseController
         $this->_helper->validate(PaymentHelper::validations, $columns, $this->post);
         $columns[] = "created_by";
         $columns[] = "created_time";
-        // insert and get id
-        $id = $this->_helper->insert($columns, $this->post);
 
+        $this->post["sd_invoice_id"] = Data::post_select_value("sd_invoice_id");
+        $this->post["sd_customer_id"] = Data::post_select_value("sd_customer_id");
+    
+        $this->db->_db->Begin();
+       
+        $id = $this->_helper->insert($columns, $this->post);
+       
+        $this->db->_db->commit();
         //
         $this->response($id);
     }
     /**
      * 
      */
-    public function update()
-    {
-        $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
-        if ($id < 1) {
-            \CustomErrorHandler::triggerInvalid("Invalid ID");
-        }
-        $columns = ["sd_invoice_id","sd_customer_id","payment_date","payment_amount"];
-        // do validations
-        $this->_helper->validate(PaymentHelper::validations, $columns, $this->post);
-        // extra columns
-        $columns[] = "last_modified_by";
-        $columns[] = "last_modified_time";
-        // begin transition
-        $this->db->_db->Begin();
-        // insert and get id
-        $id = $this->_helper->update($columns, $this->post, $id);
-        $this->db->_db->commit();
-        $this->response($id);
-    }
+  
     /**
      * 
      */
