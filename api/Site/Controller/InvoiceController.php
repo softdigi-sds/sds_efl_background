@@ -4,7 +4,7 @@ namespace Site\Controller;
 
 
 use Core\BaseController;
-
+use Core\Helpers\SmartData;
 use Site\Helpers\InvoiceHelper;
 use Site\Helpers\BillHelper;
 //use Site\View\InvoicePdf;
@@ -108,6 +108,21 @@ class InvoiceController extends BaseController
         $data = $this->_helper->getAllData();
         $this->response($data);
     }
+
+
+    public function getAllSelect()
+    {
+        $id = SmartData::post_select_value("sd_customer_id"); 
+        //isset($this->post["sd_customer_id"]) ? intval($this->post["sd_customer_id"]) : 0;
+        if ($id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid Customer ID");
+        }
+        $sql = "sd_customer_id=:sd_customer_id";
+        $_data = ["sd_customer_id"=>$id];
+        $data = $this->_helper->getAllData($sql,$_data,["ID as label, invoice_number as label"]);
+        $this->response($data);
+    }
+
     /**
      * 
      */
