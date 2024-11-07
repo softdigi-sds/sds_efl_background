@@ -119,7 +119,7 @@ class InvoiceController extends BaseController
 
         $sql = "sd_customer_id=:sd_customer_id";
         $_data = ["sd_customer_id"=>$id];
-        $data = $this->_helper->getAllData($sql,$_data,["ID as label, invoice_number as label"]);
+        $data = $this->_helper->getAllData($sql,$_data,["ID as value, invoice_number as label"]);
         $this->response($data);
     }
 
