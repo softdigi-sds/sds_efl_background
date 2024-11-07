@@ -51,19 +51,19 @@ class PaymentHelper extends BaseHelper
                 "msg" => "Please Specify sd customer id"
             ]
         ],
-        "payment_date"=> [
-           [
-              "type" => SmartConst::VALID_REQUIRED,
-              "msg" => "Please Specify payment date"
-           ]
+        "payment_date" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Specify payment date"
+            ]
         ],
 
-        "payment_amount"=> [
-    [
-        "type" => SmartConst::VALID_REQUIRED,
-        "msg" => "Please Specify payment amount"
-    ]
-],
+        "payment_amount" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Specify payment amount"
+            ]
+        ],
 
 
     ];
@@ -79,17 +79,17 @@ class PaymentHelper extends BaseHelper
     /**
      * 
      */
-  
+
     /**
      * 
      */
-    
+
     public function getAllData($sql = "", $data_in = [], $select = [], $group_by = "", $count = false, $single = false)
     {
         // Define the tables and joins
-        $from = Table::SD_PAYMENT . " t1 LEFT JOIN 
-        " . Table::INVOICE . " t2 ON t1.sd_invoice_id = t2.ID 
-        LEFT JOIN " . Table::SD_CUSTOMER . " t3 ON t1.sd_customer_id = t3.ID";    
+        $from = Table::SD_PAYMENT . " t1 
+        INNER JOIN " . Table::INVOICE . " t2 ON t1.sd_invoice_id = t2.ID 
+        INNER JOIN " . Table::SD_CUSTOMER . " t3 ON t1.sd_customer_id = t3.ID";
         // Define the default selection if not provided
         $select = !empty($select) ? $select : ["t1.*, t2.sd_invoice_id, t2.invoice_number, t3.sd_customer_id"];
         // Execute the query and return the result
@@ -117,5 +117,4 @@ class PaymentHelper extends BaseHelper
         $from = Table::SD_PAYMENT;
         $this->deleteId($from, $id);
     }
-   
 }
