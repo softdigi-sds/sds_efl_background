@@ -68,7 +68,6 @@ class PaymentHelper extends BaseHelper
 
     ];
 
-
     /**
      * 
      */
@@ -91,7 +90,7 @@ class PaymentHelper extends BaseHelper
         INNER JOIN " . Table::INVOICE . " t2 ON t1.sd_invoice_id = t2.ID 
         INNER JOIN " . Table::SD_CUSTOMER . " t3 ON t1.sd_customer_id = t3.ID";
         // Define the default selection if not provided
-        $select = !empty($select) ? $select : ["t1.*, t2.sd_invoice_id, t2.invoice_number, t3.sd_customer_id"];
+        $select = !empty($select) ? $select : ["t1.*, t1.sd_invoice_id, t2.invoice_number, t1.sd_customer_id"];
         // Execute the query and return the result
         return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
     }
