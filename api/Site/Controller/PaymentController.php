@@ -31,7 +31,7 @@ class PaymentController extends BaseController
      */
     public function insert()
     {
-        $columns = ["sd_invoice_id","sd_customer_id","payment_date","payment_amount"];
+        $columns = ["sd_invoice_id","sd_customer_id","payment_amount","payment_mode","payment_date"];
         // do validations
         $this->_helper->validate(PaymentHelper::validations, $columns, $this->post);
         $columns[] = "created_by";

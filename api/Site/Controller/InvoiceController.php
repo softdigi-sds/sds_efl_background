@@ -112,10 +112,10 @@ class InvoiceController extends BaseController
 
     public function getAllSelect()
     {
-        $id = SmartData::post_select_value("sd_customer_id"); 
-        print_r($id);
-        exit();
-        //isset($this->post["sd_customer_id"]) ? intval($this->post["sd_customer_id"]) : 0;
+        // $id = SmartData::post_select_value("sd_customer_id"); 
+        // print_r($id);
+        // exit();
+        $id = isset($this->post["sd_customer_id"]) ? intval($this->post["sd_customer_id"]) : 0;
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid Customer ID");
         }

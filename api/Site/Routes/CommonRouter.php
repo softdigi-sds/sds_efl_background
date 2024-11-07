@@ -267,7 +267,7 @@ class CommonRouter
     {
         $controller = "PaymentController";
         $this->_routes["/payment/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
-        $this->_routes["/payment/update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
+        $this->_routes["/payment/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
         $this->_routes["/payment/get_all"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getAll"];
         $this->_routes["/payment/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         
