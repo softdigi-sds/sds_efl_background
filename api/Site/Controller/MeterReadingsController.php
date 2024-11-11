@@ -9,13 +9,14 @@ use Core\Helpers\SmartData as Data;
 use Core\Helpers\SmartData;
 use Site\Helpers\MeterReadingsHelper;
 use Site\Helpers\HubsHelper;
-
+use Site\Helpers\EflConsumptionHelper;
 
 class MeterReadingsController extends BaseController
 {
 
     private MeterReadingsHelper $_helper;
     private HubsHelper $_hubs_helper;
+    private EflConsumptionHelper $_consumption_helper;
 
     function __construct($params)
     {
@@ -24,6 +25,8 @@ class MeterReadingsController extends BaseController
         $this->_helper = new MeterReadingsHelper($this->db);
 
         $this->_hubs_helper = new HubsHelper($this->db);
+        //
+        $this->_consumption_helper = new EflConsumptionHelper($this->db);
     }
 
     /**
@@ -95,7 +98,9 @@ class MeterReadingsController extends BaseController
             foreach ($obj->meter_data as $_obj) {
                 $dates[$_obj->month] = $_obj->month;
                 $_obj->meter_reading = intval($_obj->meter_end) - intval($_obj->meter_start);
-                $_obj->cms_reading = 0;
+                $_sub_data =  $this->_consumption_helper->getCountByHubAndStartEndDate($obj->ID,  $_obj->meter_start_date,  $_obj->meter_end_date);
+               // $obj->total = 
+                $_obj->cms_reading = $this->_consumption_helper->hubTotal($_sub_data);
                 $_obj->deviation =  $_obj->meter_reading > 0 ?  (($_obj->cms_reading - $_obj->meter_reading) / $_obj->meter_reading)  * 100 : 0;
             }
         }

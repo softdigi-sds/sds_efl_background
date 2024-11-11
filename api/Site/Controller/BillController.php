@@ -81,6 +81,14 @@ class BillController extends BaseController
         $data = $this->_helper->getAllData();
         $this->response($data);
     }
+
+    public function getAllSelect()
+    {
+        $select = ["t1.ID as value","t1.bill_start_date as label"];
+        $data = $this->_helper->getAllData("",[], $select);
+        $this->response($data);
+    }
+
     /**
      * 
      */

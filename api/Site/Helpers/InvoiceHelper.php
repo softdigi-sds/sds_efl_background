@@ -155,6 +155,21 @@ class InvoiceHelper extends BaseHelper
     }
 
 
+    public function getAllReport($sql,$data_in)
+    {
+        $from = Table::INVOICE . " t1 
+        LEFT JOIN " . Table::SD_CUSTOMER . " t2 ON t1.sd_customer_id=t2.ID 
+        LEFT JOIN " . Table::HUBS . " t3 ON t1.sd_hub_id=t3.ID ";
+        $select = ["t1.*, t2.vendor_company, t3.hub_id "];
+        $select[] ="(SELECT SUM(t20.payment_amount) FROM ".Table::SD_PAYMENT." t20 WHERE t20.sd_invoice_id=t1.ID) as paid";
+       // $sql = "t1.sd_customer_id=:sd_customer_id";
+       // $data_in = ["sd_customer_id" => $_id];
+        $group_by = "";
+        $order_by = "";
+        $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, false, []);
+        return $data;
+    }
+
     public function getInvoiceByCustomerId($_id)
     {
         $from = Table::INVOICE . " t1 
