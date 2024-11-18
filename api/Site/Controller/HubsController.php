@@ -44,7 +44,7 @@ class HubsController extends BaseController
         $columns = ["hub_id", "hub_name", "sd_efl_office_id"];
         // do validations
         $this->_helper->validate(HubsHelper::validations, $columns, $this->post);
-        $columns = ["hub_id", "hub_name", "sd_efl_office_id", "longitude", "latitude"];
+        $columns = ["hub_id", "hub_name", "sd_efl_office_id", "longitude", "latitude","hub_capacity"];
         $this->post["status"] = 5;
         $columns[] = "created_by";
         $columns[] = "created_time";
@@ -72,7 +72,7 @@ class HubsController extends BaseController
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["hub_name", "status", "hub_id"];
+        $columns = ["hub_name", "status", "hub_id","hub_capacity"];
         // do validations
         $this->_helper->validate(HubsHelper::validations, $columns, $this->post);
         // extra columns

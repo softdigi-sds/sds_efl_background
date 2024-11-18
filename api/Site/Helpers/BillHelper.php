@@ -79,8 +79,7 @@ class BillHelper extends BaseHelper
      */
     public function getAllData($sql = "", $data_in = [], $select = [], $group_by = "", $count = false, $single = false)
     {
-        $from = Table::BILL . " t1";
-        $sql = "";
+        $from = Table::BILL . " t1";      
         $select = !empty($select) ? $select : ["t1.*"];
         return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
     }
@@ -121,6 +120,17 @@ class BillHelper extends BaseHelper
             "total_amount"
         ];
         $this->update($columns, $data, $id);
+    }
+
+
+    public function getBillData($year)
+    {       
+        $sql = "YEAR(t1.bill_end_date)=:year";
+        $select = ["t1.ID,t1.bill_start_date,t1.bill_end_date,MONTHNAME(t1.bill_end_date) as month"];
+        $data_in = ["year" => $year];
+        return $this->getAllData($sql,$data_in,$select);
+       // $data =  $this->getAll($select, $from, $sql, "", "",  $data_in, false, [], false);
+        //return $data;
     }
 
 

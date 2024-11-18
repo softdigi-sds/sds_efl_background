@@ -121,4 +121,14 @@ class PaymentHelper extends BaseHelper
         $from = Table::SD_PAYMENT;
         $this->deleteId($from, $id);
     }
+
+    /**
+     * 
+     */
+    public function getAllWithCustomerId($_id){
+        $sql = "t1.sd_customer_id=:id";
+        $data_in= ["id"=>$_id];
+        $select =["t1.payment_date as date,t1.payment_mode as ref_no,t1.payment_amount as amount,'2' as status"];
+        return $this->getAllData($sql,$data_in,$select);
+    }
 }

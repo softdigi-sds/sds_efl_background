@@ -54,8 +54,12 @@ class HubsHelper extends BaseHelper
                 "msg" => "Please Enter hub name"
             ]
         ],
-
-
+        "hub_capacity"=>[
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Enter Hub Capacity"
+            ]
+        ],
         "sd_efl_office_id" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
