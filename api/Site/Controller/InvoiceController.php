@@ -224,6 +224,28 @@ class InvoiceController extends BaseController
     }
 
 
+    public function getSingInfo()
+    {
+        $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+        if ($id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid ID");
+        }
+        $output = $this->_helper->initiate_curl_sign($id);
+        $this->response($output);
+    }
+
+    public function checkSingInfo()
+    {
+        $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+        if ($id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid ID");
+        }
+        
+       // $output = $this->_helper->initiate_curl_sign($id);
+        //$this->response($output);
+    }
+
+
     public function getPdf()
     {
 

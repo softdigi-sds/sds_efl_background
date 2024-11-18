@@ -176,4 +176,25 @@ class SmartFileHelper
         }
         return  $xlsxFiles;
     }
+    /**
+     * Reads the content of a file and encodes it in Base64.
+     *
+     * @param string $filePath The path to the file.
+     * @return string|false The Base64-encoded content or false if the file can't be read.
+     */
+    static public function encodeFileToBase64(string $file_path)
+    {
+        $filePath = self::getDataPath() . $file_path;
+        // Check if the file exists and is readable
+        if (!file_exists($filePath) || !is_readable($filePath)) {
+            return false;
+        }
+        // Read the file content
+        $fileContent = file_get_contents($filePath);
+        if ($fileContent === false) {
+            return false;
+        }
+        // Encode the content in Base64
+        return base64_encode($fileContent);
+    }
 }

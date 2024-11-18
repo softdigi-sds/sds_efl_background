@@ -9,6 +9,7 @@
 namespace Site\Helpers;
 
 use Core\BaseHelper;
+use Core\Helpers\SdDigiHelper;
 use Core\Helpers\SmartConst;
 use Core\Helpers\SmartCurl;
 use Core\Helpers\SmartData;
@@ -716,6 +717,10 @@ class InvoiceHelper extends BaseHelper
         $this->initiate_curl($html_modified, $id);
     }
 
+    public function getInvoicePath($id){
+        return "invoice" . DS . $id . DS . "invoice.pdf";
+    }
+
     private function initiate_curl($html, $id)
     {
         $data = new \stdClass();
@@ -727,8 +732,17 @@ class InvoiceHelper extends BaseHelper
             $path = "invoice" . DS . $id . DS . "invoice.pdf";
             SmartFileHelper::storeFile($_output_obj->data, $path);
         }
-        //  var_dump($_output);
+    }
 
+    public function initiate_curl_sign($id)
+    {
+        $invoice_path = $this->getInvoicePath($id);
+        $content = SmartFileHelper::encodeFileToBase64($invoice_path);
+        $data = SdDigiHelper::getDigiObjectSingleSign($content,"USER","USER","AUTH_SIGN");
+        $curl = new SmartCurl();
+        $_output = $curl->post("/taskapi/insert_sign", $data);
+        $_output_obj = json_decode($_output);
+        return $_output_obj;
     }
 
     private function getOneDayCount($_data, $date, $vehicle_id = 0)
