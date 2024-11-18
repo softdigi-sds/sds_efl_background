@@ -90,9 +90,11 @@ class VendorRateHelper extends BaseHelper
     {
         $from = Table::VENDOR_RATE . " t1 
         INNER JOIN " . Table::HUBS . " t2 ON t1.sd_hubs_id=t2.ID 
+        INNER JOIN " . Table::EFLOFFICE . " t12 ON t2.sd_efl_office_id=t12.ID 
+        LEFT JOIN " . Table::STATEDB . " t13 ON t13.ID=t12.state
         INNER JOIN " . Table::SD_CUSTOMER_ADDRESS . " t3 ON t1.sd_customer_address_id=t3.ID 
         INNER JOIN " . Table::SD_CUSTOMER . " t4 ON t3.sd_customers_id=t4.ID ";
-        $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t4.vendor_company,t4.ID as cust_id"];
+        $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t4.vendor_company,t4.ID as cust_id","t13.short_name"];
         $data =  $this->getAll($select, $from, $sql, $group_by, "t1.effective_date DESC", $data_in, $single, [], $count);
        //exit();
         return $data;
@@ -125,6 +127,8 @@ class VendorRateHelper extends BaseHelper
             $data->sd_customer_address_id = [];
             $data->sd_customer_address_id["value"] = $vendor_add_id;
             $data->sd_customer_address_id["label"] = $data->address_one;
+            $data->bill_type = ["value"=>$data->bill_type,"label"=>$data->bill_type];
+
         }
         return $data;
     }

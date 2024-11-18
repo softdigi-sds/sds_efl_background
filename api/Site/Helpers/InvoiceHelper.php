@@ -590,6 +590,7 @@ class InvoiceHelper extends BaseHelper
         $_data["sd_customer_id"] = $_obj->sd_customer_id;
         $_data["sd_customer_address_id"] = $_obj->sd_customer_address_id;
         $_data["sd_vendor_rate_id"] = $_obj->ID;
+        $_data["bill_type"] = $_obj->bill_type;
         // get consumption with dates     
         $total_unit_types =  $this->getConsumptionWithVendor($_obj->sd_hubs_id, $_obj->sd_customer_id, $start_date, $end_date);
         // get vehicle count with dates
@@ -606,7 +607,7 @@ class InvoiceHelper extends BaseHelper
         $_data["gst_percentage"] = 18;
         $_data["gst_amount"] = $_data["total_taxable"] * ($_data["gst_percentage"] / 100);
         $_data["total_amount"] =  $_data["total_taxable"]  +   $_data["gst_amount"];
-        $_data["short_name"] = "TEST";
+        $_data["short_name"] = $_obj->short_name;
         return $_data;
     }
 
@@ -647,6 +648,7 @@ class InvoiceHelper extends BaseHelper
                 "gst_amount",
                 "total_amount",
                 "sd_customer_address_id",
+                "invoice_date"
             ];
             $this->update($update_columns, $data, $exist_data->ID);
             return $exist_data->ID;
@@ -665,6 +667,7 @@ class InvoiceHelper extends BaseHelper
     public function insertUpdateSingle($data)
     {
         $exist_data = $this->checkInvoiceExists($data["sd_bill_id"], $data["sd_hub_id"], $data["sd_customer_id"]);
+        $data["invoice_date"] = date("Y-m-d");
         $sub_data = $data["sub_data"];
         if (isset($exist_data->ID)) {
             $this->updateInvoiceDataNew($data);
@@ -681,7 +684,8 @@ class InvoiceHelper extends BaseHelper
                 "status",
                 "gst_percentage",
                 "gst_amount",
-                "total_amount"
+                "total_amount",
+                "invoice_date"
             ];
 
             $id = $this->insert($insert_columns, $data);

@@ -66,6 +66,12 @@ class SmartData
         return isset($id_arr["value"]) ? intval($id_arr["value"]) : 0;
     }
 
+    static public function post_select_string($name)
+    {
+        $id_arr = self::post_array_data($name);
+        return isset($id_arr["value"]) ? trim($id_arr["value"]) : 0;
+    }
+
     /**
      * 
      * @param type $name
