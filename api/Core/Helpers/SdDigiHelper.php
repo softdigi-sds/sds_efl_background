@@ -19,10 +19,10 @@ use stdClass;
 class SdDigiHelper
 {
 
-    static public function getDigiObjectSingleSign($content, $user_name, $user_id, $sig_name)
+    static public function getDigiObjectSingleSign($content, $user_name, $user_id, $sig_name,$url)
     {
         $_obj = new stdClass();
-        $_obj->redirectUrl = "http://localhost:3000/e-fuel/vendor-wish/1";
+        $_obj->redirectUrl = $url;
         $_obj->type = "SINGLE_SIGN";
         $single_file = self::getDscDataObj("", [[$sig_name, []]]);
         $_obj->dscData = [$single_file];

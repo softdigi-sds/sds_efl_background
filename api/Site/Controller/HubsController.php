@@ -44,7 +44,7 @@ class HubsController extends BaseController
         $columns = ["hub_id", "hub_name", "sd_efl_office_id"];
         // do validations
         $this->_helper->validate(HubsHelper::validations, $columns, $this->post);
-        $columns = ["hub_id", "hub_name", "sd_efl_office_id", "longitude", "latitude","hub_capacity"];
+        $columns = ["hub_id", "hub_name", "sd_efl_office_id", "longitude", "latitude","hub_capacity","hub_area","hub_rental"];
         $this->post["status"] = 5;
         $columns[] = "created_by";
         $columns[] = "created_time";
@@ -78,6 +78,8 @@ class HubsController extends BaseController
         // extra columns
         $columns[] = "longitude";
         $columns[] = "latitude";
+        $columns[] = "hub_area";
+        $columns[] = "hub_rental";
         $columns[] = "last_modified_by";
         $columns[] =  "last_modified_time";
         // begin transition

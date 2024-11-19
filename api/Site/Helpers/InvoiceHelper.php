@@ -22,6 +22,7 @@ use Core\Helpers\SmartQrCodeHelper;
 use Site\Helpers\TableHelper as Table;
 use Site\view\InvoicePdf;
 use Site\view\VehiclesPdf;
+use stdClass;
 
 /**
  * Description of Data
@@ -60,6 +61,10 @@ class InvoiceHelper extends BaseHelper
         "ack_no" => SmartConst::SCHEMA_VARCHAR,
         "ack_date" => SmartConst::SCHEMA_DATE,
         "signed_invoice" => SmartConst::SCHEMA_TEXT,
+        "sign_token" => SmartConst::SCHEMA_TEXT,
+        "invoice_date" => SmartConst::SCHEMA_CDATE,
+        "signed_time" => SmartConst::SCHEMA_CDATETIME,
+        "signed_by" => SmartConst::SCHEMA_CUSER_ID,
         "status" => SmartConst::SCHEMA_INTEGER,
     ];
     /**
@@ -156,15 +161,15 @@ class InvoiceHelper extends BaseHelper
     }
 
 
-    public function getAllReport($sql,$data_in)
+    public function getAllReport($sql, $data_in)
     {
         $from = Table::INVOICE . " t1 
         LEFT JOIN " . Table::SD_CUSTOMER . " t2 ON t1.sd_customer_id=t2.ID 
         LEFT JOIN " . Table::HUBS . " t3 ON t1.sd_hub_id=t3.ID ";
         $select = ["t1.*, t2.vendor_company, t3.hub_id "];
-        $select[] ="(SELECT SUM(t20.payment_amount) FROM ".Table::SD_PAYMENT." t20 WHERE t20.sd_invoice_id=t1.ID) as paid";
-       // $sql = "t1.sd_customer_id=:sd_customer_id";
-       // $data_in = ["sd_customer_id" => $_id];
+        $select[] = "(SELECT SUM(t20.payment_amount) FROM " . Table::SD_PAYMENT . " t20 WHERE t20.sd_invoice_id=t1.ID) as paid";
+        // $sql = "t1.sd_customer_id=:sd_customer_id";
+        // $data_in = ["sd_customer_id" => $_id];
         $group_by = "";
         $order_by = "";
         $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, false, []);
@@ -207,7 +212,7 @@ class InvoiceHelper extends BaseHelper
         LEFT JOIN " . Table::HUBS . " t3 ON t1.sd_hub_id=t3.ID 
         LEFT JOIN " . Table::EFLOFFICE . " t12 ON t3.sd_efl_office_id=t12.ID
         ";
-        $select = ["t1.*, t2.vendor_company, t3.hub_id ","t12.office_city"];
+        $select = ["t1.*, t2.vendor_company, t3.hub_id ", "t12.office_city"];
         $sql = "t1.sd_bill_id=:bill_id";
         $data_in = ["bill_id" => $bill_id];
         $group_by = "";
@@ -219,7 +224,7 @@ class InvoiceHelper extends BaseHelper
     public function getOneWithInvoiceNumber($invoice_number)
     {
         $from = Table::INVOICE . " t1";
-        $select = ["t1.ID"];
+        $select = ["t1.ID,t1.status"];
         $sql = "t1.invoice_number=:ino";
         $data_in = ["ino" => $invoice_number];
         $group_by = "";
@@ -661,6 +666,19 @@ class InvoiceHelper extends BaseHelper
         $db->insert_update_data($_id, $sub_data);
     }
 
+
+    private function getNextSerialNumber($state, $fin_year)
+    {
+        $from = TABLE::INVOICE . " t1";
+        $sql = "t1.state_name=:state_name AND invoice_fin_year=:invoice_fin_year";
+        $data_in = ["state_name" => $state, "invoice_fin_year" => $fin_year];
+        $select = ["(MAX(invoice_serial_number)) as in_number"];
+        $group_by = "";
+        $order_by = "";
+        $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
+        return isset($data->in_number) ? $data->in_number + 1 : 1;
+    }
+
     /**
      * 
      */
@@ -670,8 +688,11 @@ class InvoiceHelper extends BaseHelper
         $data["invoice_date"] = date("Y-m-d");
         $sub_data = $data["sub_data"];
         if (isset($exist_data->ID)) {
-            $this->updateInvoiceDataNew($data);
-            $this->insert_invoice_sub($exist_data->ID, $sub_data);
+            if ($exist_data->status  < 5) {
+                // to avoid updatation after irn number generated
+                $this->updateInvoiceDataNew($data);
+                $this->insert_invoice_sub($exist_data->ID, $sub_data);
+            }
             return $exist_data->ID;
         } else {
             $insert_columns = [
@@ -685,9 +706,10 @@ class InvoiceHelper extends BaseHelper
                 "gst_percentage",
                 "gst_amount",
                 "total_amount",
-                "invoice_date"
+                "invoice_date",
+                "state_name"
             ];
-
+            $data["state_name"] =  $data["short_name"];
             $id = $this->insert($insert_columns, $data);
             $up_columns = [
                 "invoice_fin_year",
@@ -695,10 +717,11 @@ class InvoiceHelper extends BaseHelper
                 "invoice_number",
             ];
             $fin_year = "24-25";
-            $invoice_number = "EFL/" . $data["short_name"] . DS . $id . "/24-25";
+            $serial_number = $this->getNextSerialNumber($data["state_name"], $fin_year);
+            $invoice_number = "EFL/" . $data["short_name"] . DS .  $serial_number . "/" . $fin_year;
             $up_data = [
                 "invoice_fin_year" => $fin_year,
-                "invoice_serial_number" => $id,
+                "invoice_serial_number" => $serial_number,
                 "invoice_number" => $invoice_number,
             ];
             $this->update($up_columns, $up_data, $id);
@@ -708,12 +731,32 @@ class InvoiceHelper extends BaseHelper
     }
 
 
+    public function prepareGenerateInvoice($data, $sub_helper)
+    {
+        $_dt = $data;
+        $data->sub_data = $sub_helper->getAllByInvoiceId($data->ID);
+        // loop over sub_data 
+        $_sub_data_vehicle = [];
+        foreach ($data->sub_data  as $_key => $_obj) {
+            // var_dump($_obj);
+            if ($_obj->vehicle_id > 0 && $_obj->count > 0 && ($_obj->type == 1 || $_obj->type == 2)) {
+                $_item_data = $this->getVehicleCount($_dt, $_obj);
+                $_item_data["annexure"] = ($_key + 1);
+                $_sub_data_vehicle[] = $_item_data;
+            }
+        }
+        $data->sub_data_vehicle = $_sub_data_vehicle;
+        $this->generateInvoicePdf($data->ID, $data);
+    }
+
+
     public function generateInvoicePdf($id, $data)
     {
 
         $html = InvoicePdf::getHtml($data);
         $qr_path = "images/" . $id . "_qr.png";
-        $qr_text = isset($data->signed_qr_code) ? $data->signed_qr_code : "test";
+        // $qr_text = isset($data->signed_qr_code) ? $data->signed_qr_code : "test";
+        $qr_text = isset($data->irn_number) ? $data->irn_number : "test";
         SmartQrCodeHelper::generateQrImage($qr_text, $qr_path);
         $html_modified = SiteImageHelper::replaceImages($html, ["QR_CODE" => $id . "_qr.png"]);
         //echo $html_modified;
@@ -721,7 +764,8 @@ class InvoiceHelper extends BaseHelper
         $this->initiate_curl($html_modified, $id);
     }
 
-    public function getInvoicePath($id){
+    public function getInvoicePath($id)
+    {
         return "invoice" . DS . $id . DS . "invoice.pdf";
     }
 
@@ -738,15 +782,34 @@ class InvoiceHelper extends BaseHelper
         }
     }
 
-    public function initiate_curl_sign($id)
+    public function initiate_curl_sign($data)
     {
-        $invoice_path = $this->getInvoicePath($id);
+        $invoice_path = $this->getInvoicePath($data->ID);
         $content = SmartFileHelper::encodeFileToBase64($invoice_path);
-        $data = SdDigiHelper::getDigiObjectSingleSign($content,"USER","USER","AUTH_SIGN");
+        $public_server = SmartGeneral::getEnv("PUBLIC_SERVER");
+        $url = $public_server . "/e-fuel/vendor-wish/" . $data->sd_bill_id . "?invoice_id=" . $data->ID . "&&";
+        $data = SdDigiHelper::getDigiObjectSingleSign($content, "USER", "USER", "AUTH_SIGN", $url);
         $curl = new SmartCurl();
         $_output = $curl->post("/taskapi/insert_sign", $data);
         $_output_obj = json_decode($_output);
         return $_output_obj;
+    }
+
+    public function verify_sign_info($token)
+    {
+        $data = new stdClass();
+        $data->id = $token;
+        $curl = new SmartCurl();
+        $_output = $curl->post("/taskapi/get_task", $data);
+        $_output_obj = json_decode($_output);
+        return $_output_obj;
+    }
+
+
+    public function storeSignedFile($id, $content)
+    {
+        $path = "invoice" . DS . $id . DS . "invoicesign.pdf";
+        SmartFileHelper::storeFile($content, $path);
     }
 
     private function getOneDayCount($_data, $date, $vehicle_id = 0)
