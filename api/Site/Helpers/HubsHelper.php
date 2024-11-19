@@ -26,6 +26,9 @@ class HubsHelper extends BaseHelper
     const schema = [
         "hub_id" => SmartConst::SCHEMA_VARCHAR,
         "hub_name" => SmartConst::SCHEMA_VARCHAR,
+        "hub_capacity" => SmartConst::SCHEMA_INTEGER,
+        "hub_area" => SmartConst::SCHEMA_VARCHAR,
+        "hub_rental" => SmartConst::SCHEMA_FLOAT,
         "sd_efl_office_id" => SmartConst::SCHEMA_INTEGER,
         "longitude" => SmartConst::SCHEMA_FLOAT,
         "latitude" => SmartConst::SCHEMA_FLOAT,
@@ -54,8 +57,12 @@ class HubsHelper extends BaseHelper
                 "msg" => "Please Enter hub name"
             ]
         ],
-
-
+        "hub_capacity"=>[
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Enter Hub Capacity"
+            ]
+        ],
         "sd_efl_office_id" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,

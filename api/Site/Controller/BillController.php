@@ -181,7 +181,7 @@ class BillController extends BaseController
                     "ack_no" => $invoice_data["ack_no"],
                     "ack_date" => $invoice_data["ack_date"],
                     "signed_invoice" => $invoice_data["signed_invoice"],
-                    "status" => 10
+                    "status" => 5
                 ];
                 $this->_invoice_helper->updateInvoiceData($invoiceId, $_in_data);
                 // $this->_invoice_helper->generateInvoicePdf($invoiceId);
@@ -230,14 +230,20 @@ class BillController extends BaseController
                 $rate_data = $this->_invoice_helper->getOneWithInvoiceNumber($obj["invoice_number"]);
                 // var_dump($rate_data);
                 if (isset($rate_data->ID)) {
-                    $in_data = $obj;
-                    $in_data["status"] = 10;
-                    $this->_invoice_helper->updateInvoiceData($rate_data->ID, $in_data);
-                    //
-                    $obj["status"] = 5;
+                    if ($rate_data->status != 10) {
+                        $in_data = $obj;
+                        $in_data["status"] = 5;
+                        $this->_invoice_helper->updateInvoiceData($rate_data->ID, $in_data);
+                        //
+                        $obj["status"] = 5;
+                    } else {
+                        $obj["status"] = 10;
+                        $obj["msg"] = "Invoice Already Signed";
+                        $out[$obj["invoice_number"]]  = $obj;
+                    }
                 } else {
                     $obj["status"] = 10;
-                    $obj["msg"] = "Invoice Number Not Existed or Not Linked";
+                    $obj["msg"] = "Invoice Number Not Existed";
                     $out[$obj["invoice_number"]]  = $obj;
                 }
             }

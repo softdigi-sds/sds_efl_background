@@ -11,6 +11,7 @@ use Site\Helpers\PaymentHelper;
 use Core\Helpers\SmartData as Data;
 use Core\Helpers\SmartData;
 use Site\Helpers\InvoiceHelper;
+use stdClass;
 
 class PaymentController extends BaseController
 {
@@ -130,5 +131,29 @@ class PaymentController extends BaseController
         $out = new \stdClass();
         $out->msg = "Removed Successfully";
         $this->response($out);
+    }
+
+
+    public function getAllCustomerLedger()
+    {
+        $sd_customer_id = SmartData::post_data("sd_customer_id", "INTEGER");
+        $invoice_data =  $this->_invoice_helper->getInvoiceReportByCustomer($sd_customer_id);
+        $payment_data = $this->_helper->getAllWithCustomerId($sd_customer_id);
+        $out = array_merge($invoice_data,  $payment_data);
+        // // Sort the array in ascending order by date
+        // usort($out, fn($a, $b) => $a->date <=> $b->date);
+        // $amount = 0;
+        // // Calculate the running amount and set the `rem` property
+        // foreach ($out as $obj) {
+        //     $amount += ($obj->status == "1" ? $obj->amount : ($obj->status == "2" ? -$obj->amount : 0));
+        //     $obj->rem = $amount;
+        // }
+        // Sort the array in descending order by date
+        usort($out, fn($a, $b) => $b->date <=> $a->date);
+        $db = new stdClass();
+        $db->invoice_data = $invoice_data;
+        $db->payment_data = $payment_data;
+        $db->data = $out;
+        $this->response($db);
     }
 }

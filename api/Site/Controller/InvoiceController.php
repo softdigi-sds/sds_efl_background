@@ -198,29 +198,54 @@ class InvoiceController extends BaseController
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
         // generate the invoide 
-        $_dt = $data = $this->_helper->getOneData($id);
-        if (isset($data->ID)) {
-            $data->sub_data = $this->_invoice_sub_helper->getAllByInvoiceId($data->ID);
-            // loop over sub_data 
-            $_sub_data_vehicle=[];
-            foreach(  $data->sub_data  as $_key=>$_obj){
-               // var_dump($_obj);
-                if($_obj->vehicle_id > 0 && $_obj->count > 0 && ($_obj->type==1 || $_obj->type==2)){
-                    $_item_data = $this->_helper->getVehicleCount($_dt ,$_obj);
-                    $_item_data["annexure"] = ($_key + 1 );
-                    $_sub_data_vehicle[] = $_item_data;
-                }
-            }
-            $data->sub_data_vehicle = $_sub_data_vehicle;  
-        }
-       // exit();
-
-        $this->_helper->generateInvoicePdf($id,$data);
-
+        $data = $this->_helper->getOneData($id);
         $path = "invoice" . DS . $id . DS . "invoice.pdf";
-        //
+        if (isset($data->ID) && $data->status!==10) {
+            $this->_helper->prepareGenerateInvoice($data,$this->_invoice_sub_helper);
+        }else{
+            $path = "invoice" . DS . $id . DS . "invoicesign.pdf";
+        }
+       
         $path = SmartFileHelper::getDataPath() .  $path;
         $this->responseFileBase64($path);
+    }
+
+
+    public function getSingInfo()
+    {
+        $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+        if ($id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid ID");
+        }
+        $data = $this->_helper->getOneData($id);
+        $this->_helper->prepareGenerateInvoice($data,$this->_invoice_sub_helper);        
+        $output = $this->_helper->initiate_curl_sign($data);
+        $token = isset($output->data) ? $output->data : "";
+        $this->_helper->update(["sign_token"],["sign_token"=>$token],$id);
+        $this->response($output);
+    }
+
+    public function checkSingInfo()
+    {
+        $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+        if ($id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid ID");
+        }
+        $token = SmartData::post_data("token","STRING");
+        $output = $this->_helper->verify_sign_info($token);
+        $status = isset($output->data) && isset($output->data->task_status) ? $output->data->task_status : "FAILED";
+        if($status==="COMPLETED"){
+            $content = $output->data->content;
+            $this->_helper->storeSignedFile($id,$content);
+            $update_data = [
+                "status"=>10,
+                "signed_invoice"=>$content
+            ];
+            $this->_helper->update(["status","signed_time","signed_by","signed_invoice"],$update_data,$id);
+            $this->responseMsg("Signature Verified");
+        }else{
+            \CustomErrorHandler::triggerInvalid("Signature Filed");
+        }
     }
 
 

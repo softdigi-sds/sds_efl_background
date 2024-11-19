@@ -9,51 +9,61 @@
 namespace Core\Helpers;
 // others
 use \Firebase\JWT\JWT;
+
 /**
  * Description of Validator
  *
  * @author kms
  */
-class SmartGeneral {
+class SmartGeneral
+{
 
-    static public function jwt_encode($payload){
+    static public function jwt_encode($payload)
+    {
         $secret_key =  $_ENV["JWT"];
         return  JWT::encode($payload, $secret_key, 'HS256');
     }
 
-    static public function hashString($string){
-
-    }
+    static public function hashString($string) {}
     /**
      * 
      */
-    static public function hashPassword($password){
+    static public function hashPassword($password)
+    {
         return  password_hash($password, PASSWORD_DEFAULT);
     }
     /**
      * 
      */
-    static public function getCurrentDbDate(){
+    static public function getCurrentDbDate()
+    {
         return date("Y-m-d");
     }
     /**
      * 
      */
-    static public function getCurrentDbDateTime(){
+    static public function getCurrentDbDateTime()
+    {
         return date("Y-m-d H:i:s");
     }
 
-    static public function getMonth(){
+    static public function getMonth()
+    {
         return date("m");
     }
-    static public function getYear(){
+    static public function getYear()
+    {
         return date("Y");
     }
     /**
      * 
      */
-    static public function getExt(string $fileName){
-       return pathinfo($fileName, PATHINFO_EXTENSION);
+    static public function getExt(string $fileName)
+    {
+        return pathinfo($fileName, PATHINFO_EXTENSION);
     }
-   
+
+    static public function getEnv(string $index_name){
+        return isset($_ENV[ $index_name]) ? $_ENV[ $index_name] :"";
+    }
 }

@@ -21,7 +21,7 @@ class SmartQrCodeHelper
   {
     $finalPath =  SmartFileHelper::getDataPath() . $filePath;
     SmartFileHelper::createDirectoryRecursive($finalPath);
-    \QRcode::png("" . $text, $finalPath, QR_ECLEVEL_H, 3);
+    \QRcode::png("" . $text, $finalPath, QR_ECLEVEL_L, 3);
     return $finalPath;
   }
 
@@ -29,7 +29,8 @@ class SmartQrCodeHelper
   {
     // $finalPath =  SmartFileHelper::getDataPath() . $filePath;
     //SmartFileHelper::createDirectoryRecursive($finalPath);
-    \QRcode::png("" . $text, $filePath, QR_ECLEVEL_H, 3);
+    $data = trim(str_replace(["\r", "\n"], '', $text));
+    \QRcode::png("" . $data, $filePath, QR_ECLEVEL_L, 10);
     return $filePath;
   }
 }

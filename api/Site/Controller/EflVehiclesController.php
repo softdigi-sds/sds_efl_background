@@ -18,6 +18,7 @@ use Site\Helpers\VendorRateHelper;
 use Core\Helpers\SmartPdfHelper;
 use Site\Helpers\HubsHelper;
 use Site\Helpers\VehiclesTypesHelper;
+use Site\Helpers\BillHelper;
 
 
 class EflVehiclesController extends BaseController
@@ -30,6 +31,7 @@ class EflVehiclesController extends BaseController
     //private VehiclesPdf $_vehicles_pdf_helper;
     private VehiclesTypesHelper $_vehiclesTypesHelper;
     private HubsHelper $_hubs_helper;
+    private BillHelper $_bill_helper;
 
     function __construct($params)
     {
@@ -48,6 +50,7 @@ class EflVehiclesController extends BaseController
         $this->_vehiclesTypesHelper = new VehiclesTypesHelper($this->db);
         //
         $this->_hubs_helper = new HubsHelper($this->db);
+        $this->_bill_helper = new BillHelper($this->db);
     }
 
     /**
@@ -293,6 +296,38 @@ class EflVehiclesController extends BaseController
             "count" => $count
         ];
         return $arr;
+    }
+
+
+    public function getAllHubCapacity()
+    {
+        $year = isset($this->post["year"]) ? intval($this->post["year"]) : "";
+        if ($year < 0) {
+            \CustomErrorHandler::triggerInvalid("Invalid month or date ");
+        }
+        $out = new \stdClass();
+        $hubs = $this->_hubs_helper->getAllData("t1.status=5");
+        //$data = $this->_helper->GetAllMeterData($year, $month);
+        //  $out = [];
+        $dates = [];
+        foreach ($hubs as $obj) {
+            $obj->bill_data = $this->_bill_helper->getBillData($year);
+            //
+            foreach ($obj->bill_data as $_obj) {
+                $dates[$_obj->month] = $_obj->month;
+                $date_count_dates = SmartDateHelper::getDatesBetween($_obj->bill_start_date, $_obj->bill_end_date);
+                $data_count = count($date_count_dates);
+               // $_obj->capa = intval($_obj->bill_start_date) - intval($_obj->bill_end_date);
+                $_sub_data =  $this->_helper->getCountByHubAndStartEndDate($obj->ID,  $_obj->bill_start_date,  $_obj->bill_end_date);
+               // $obj->total = 
+                $_obj->_reading = $this->_helper->hubTotal($_sub_data);
+                $_obj->_average =  round($_obj->_reading / $data_count,2);
+               // $_obj->deviation =  $_obj->meter_reading > 0 ?  (($_obj->cms_reading - $_obj->meter_reading) / $_obj->meter_reading)  * 100 : 0;
+            }
+        }
+        $out->data = $hubs;
+        $out->dates = array_keys($dates);
+        $this->response($out);
     }
 
 

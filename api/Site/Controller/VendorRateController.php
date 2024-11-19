@@ -49,7 +49,9 @@ class VendorRateController extends BaseController
         $columns[] = "created_by";
         $columns[] = "cms_name";
         $columns[] = "vendor_code";
+        $columns[] = "bill_type";
         // data
+        $this->post["bill_type"] =  Data::post_select_string("bill_type");
         $this->post["sd_hubs_id"] = Data::post_select_value("sd_hubs_id");
         $this->post["sd_customer_id"] = Data::post_select_value("sd_customer_id");
         $this->post["sd_customer_address_id"] = Data::post_select_value("sd_customer_address_id");
@@ -86,6 +88,8 @@ class VendorRateController extends BaseController
         $columns[] = "last_modified_by";
         $columns[] = "cms_name";
         $columns[] = "vendor_code";
+        $columns[] = "bill_type";
+        $this->post["bill_type"] =  Data::post_select_string("bill_type");
         $this->_helper->update($columns, $this->post, $id);
         //
         $rate_data = Data::post_array_data("rate_data");
