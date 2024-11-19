@@ -123,8 +123,13 @@ class BillHelper extends BaseHelper
         $this->update($columns, $data, $id);
     }
 
-
-   
-
-
+    public function checkBillExists($start_date, $end_date)
+    {
+        $from = Table::BILL . " t1";
+        $select = ["t1.*"];
+        $sql = "NOT (" . $start_date . " > t1.bill_end_date OR '" . $end_date . "' < t1.bill_start_date);";
+        $data_in = [];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        return $data;
+    }
 }
