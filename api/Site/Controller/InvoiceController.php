@@ -239,8 +239,9 @@ class InvoiceController extends BaseController
             $this->_helper->storeSignedFile($id,$content);
             $update_data = [
                 "status"=>10,
+                "signed_invoice"=>$content
             ];
-            $this->_helper->update(["status","signed_time","signed_by"],$update_data,$id);
+            $this->_helper->update(["status","signed_time","signed_by","signed_invoice"],$update_data,$id);
             $this->responseMsg("Signature Verified");
         }else{
             \CustomErrorHandler::triggerInvalid("Signature Filed");
