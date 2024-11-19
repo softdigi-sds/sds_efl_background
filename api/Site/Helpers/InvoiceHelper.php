@@ -785,7 +785,7 @@ class InvoiceHelper extends BaseHelper
     public function initiate_curl_sign($data)
     {
         $invoice_path = $this->getInvoicePath($data->ID);
-        $content = SmartFileHelper::encodeFileToBase64($invoice_path);
+        $content = SmartFileHelper::encodeFileToBase64(file_path: $invoice_path);
         $public_server = SmartGeneral::getEnv("PUBLIC_URL");
         $url = $public_server . "/e-fuel/vendor-wish/" . $data->sd_bill_id . "?invoice_id=" . $data->ID . "&&";
         $data = SdDigiHelper::getDigiObjectSingleSign($content, "USER", "USER", "AUTH_SIGN", $url);

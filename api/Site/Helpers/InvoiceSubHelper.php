@@ -52,21 +52,21 @@ class InvoiceSubHelper extends BaseHelper
         ],
     ];
 
-  
 
-    public function getInvoiceDesc($id,$vehicle_id)
+
+    public function getInvoiceDesc($id, $vehicle_id)
     {
         $vehicle_type = new VehiclesTypesHelper($this->db);
         $_type = [
             1 => "ELECTRIC VEHICLE CHARGING-PARKING FEE",
             2 => "ELECTRIC VEHICLE PARKING FEE",
             3 => "UNITS BILLED AS PER CMS(AC)",
-            4 => "Rental",
+            4 => "Rent for Accommodation ",
             5 => "UNITS BILLED AS PER CMS(DC)",
             100 => "Extra Units"
         ];
         $desc = isset($_type[$id]) ? $_type[$id] : "";
-        if($id==1 || $id==2){
+        if ($id == 1 || $id == 2) {
             // add vehicle type also in brackets
             $vh_desc = $vehicle_type->getVehicleTypeNameWithId($vehicle_id);
             $desc = $desc . "(" . $vh_desc . ")";
@@ -80,7 +80,7 @@ class InvoiceSubHelper extends BaseHelper
             1 => "996743",
             2 => "996743",
             3 => "998714",
-            4 => "Rental",
+            4 => "997212",
             5 => "998714",
             100 => "998714"
         ];
