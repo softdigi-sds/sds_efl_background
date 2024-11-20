@@ -45,6 +45,10 @@ class BillController extends BaseController
         $this->_helper->validate(BillHelper::validations, $columns, $this->post);
         $columns[] = "created_by";
         $columns[] = "created_time";
+        $exist_data = $this->_helper->checkBillExists($this->post["bill_start_date"], $this->post["bill_end_date"]);
+        if (isset($exist_data->ID)) {
+            \CustomErrorHandler::triggerInvalid("Bill Exists");
+        }
         // insert and get id
         $id = $this->_helper->insert($columns, $this->post);
 
