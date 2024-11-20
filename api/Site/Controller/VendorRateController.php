@@ -121,6 +121,7 @@ class VendorRateController extends BaseController
         $this->response($data);
     }
 
+
     public function exportExcel()
     {
         $data = $this->_helper->getAllData("", []);
