@@ -114,13 +114,16 @@ class MeterReadingsHelper extends BaseHelper
 
     public function getOneData($id)
     {
-        $from = Table::METER_READINGS . " t1 ";
-        $select = ["t1.*"];
+        $from = Table::METER_READINGS . " t1 LEFT JOIN  ".Table::HUBS." t2 ON t2.ID =t1.sd_hub_id";
+        $select = ["t1.*,t2.hub_id"];
         $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
         $group_by = "";
         $order_by = "";
-        $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);        
+        $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []); 
+        if(isset($data->ID)){
+            $data->sd_hub_id =["value"=>$data->sd_hub_id,"label"=>$data->hub_id];
+        }       
         return $data;
     }
 
