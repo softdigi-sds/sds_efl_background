@@ -123,8 +123,10 @@ class MeterReadingsController extends BaseController
                 $_sub_data =  $this->_consumption_helper->getCountByHubAndStartEndDate($obj->ID,  $_obj->meter_start_date,  $_obj->meter_end_date);
                // var_dump($_sub_data);
                 // $obj->total = 
-                $_obj->cms_reading = $this->_consumption_helper->hubTotal($_sub_data);
+                $_obj->cms_reading =  round($this->_consumption_helper->hubTotal($_sub_data));
                 $_obj->deviation =  $_obj->meter_reading > 0 ?  (($_obj->cms_reading - $_obj->meter_reading) / $_obj->meter_reading)  * 100 : 0;
+                $_obj->deviation = round( $_obj->deviation,2);
+
             }
         }
         $out->data = $hubs;
@@ -185,7 +187,7 @@ class MeterReadingsController extends BaseController
                 } else {
                     $obj["status"] = 10;
                     $obj["msg"] = "Hub Is Not Existed ";
-                    $out[$obj["vendor"]] = $obj;
+                    $out[$obj["hub_name"]] = $obj;
                 }
             }
         }
