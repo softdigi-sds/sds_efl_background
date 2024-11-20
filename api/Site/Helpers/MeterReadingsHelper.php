@@ -29,6 +29,7 @@ class MeterReadingsHelper extends BaseHelper
         "meter_month" => SmartConst::SCHEMA_INTEGER,
         "meter_start" => SmartConst::SCHEMA_FLOAT,
         "meter_end" => SmartConst::SCHEMA_FLOAT,
+        "meter_cost" => SmartConst::SCHEMA_FLOAT,
         "created_by" => SmartConst::SCHEMA_CUSER_ID,
         "created_time" => SmartConst::SCHEMA_CDATETIME,
         "last_modified_by" => SmartConst::SCHEMA_CUSER_ID,

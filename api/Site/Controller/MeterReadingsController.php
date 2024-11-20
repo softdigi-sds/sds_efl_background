@@ -46,6 +46,7 @@ class MeterReadingsController extends BaseController
         $this->_helper->validate(MeterReadingsHelper::validations, $columns, $this->post);
         $columns[] = "created_by";
         $columns[] = "created_time";
+        $columns[] = "meter_cost";
         // insert and get id
         $id = $this->_helper->insert($columns, $this->post);
 
@@ -69,7 +70,7 @@ class MeterReadingsController extends BaseController
         $this->post["sd_hub_id"] = SmartData::post_select_value("sd_hub_id");
         // do validations
         $this->_helper->validate(MeterReadingsHelper::validations, $columns, $this->post);
-
+        $columns[] = "meter_cost";
         // insert and get id
         $this->_helper->update($columns, $this->post, $id);
         //
