@@ -119,7 +119,7 @@ class MeterReadingsController extends BaseController
         }
         $out->data = $hubs;
         $out->dates = array_keys($dates);
-       // $this->response($out);
+        $this->response($out);
     }
 
     public function getAllOld()
