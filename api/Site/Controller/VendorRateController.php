@@ -83,13 +83,15 @@ class VendorRateController extends BaseController
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
         $this->db->_db->Begin();
-        $columns = [];
+        $columns = ["sd_customer_address_id"];
         $columns[] = "last_modified_time";
         $columns[] = "last_modified_by";
         $columns[] = "cms_name";
         $columns[] = "vendor_code";
         $columns[] = "bill_type";
         $this->post["bill_type"] =  Data::post_select_string("bill_type");
+        $this->post["sd_customer_address_id"] = Data::post_select_value("sd_customer_address_id");
+
         $this->_helper->update($columns, $this->post, $id);
         //
         $rate_data = Data::post_array_data("rate_data");
@@ -102,15 +104,15 @@ class VendorRateController extends BaseController
 
     public function getAll()
     {
-        $hub_id = SmartData::post_data("hub_id","INTEGER");
+        $hub_id = SmartData::post_data("hub_id", "INTEGER");
         $sql = "";
-        $data_in = [];    
-        if (intval($hub_id) > 0) {         
+        $data_in = [];
+        if (intval($hub_id) > 0) {
             $sql = "t1.sd_hubs_id=:id";
             $data_in["id"] = $hub_id;
-        } 
+        }
         // insert and get id
-        $data = $this->_helper->getAllData($sql,$data_in);
+        $data = $this->_helper->getAllData($sql, $data_in);
         $out = [];
         foreach ($data as $obj) {
             $obj->rates =  $this->_sub_helper->getAllByVendorRateId($obj->ID);
@@ -120,33 +122,33 @@ class VendorRateController extends BaseController
     }
 
     public function exportExcel()
-    {      
-        $data = $this->_helper->getAllData("",[]);
+    {
+        $data = $this->_helper->getAllData("", []);
         $out = [];
         // HERE WE NEED TO DESING
-        foreach ($data as $obj) {                     
+        foreach ($data as $obj) {
             $_rates =  $this->_sub_helper->getAllByVendorRateId($obj->ID);
-            foreach($_rates as $_key=>$_db){
-               // var_dump($_db);
+            foreach ($_rates as $_key => $_db) {
+                // var_dump($_db);
                 //exit();
                 $_dt = [
-                    "Hub Name"=>$_key===0 ? $obj->hub_id : "", 
-                    "Customer"=>$_key===0 ? $obj->vendor_company : "",
-                    "Type"=>isset($_db->sd_hsn_id) ? $_db->sd_hsn_id["label"] : "",
-                    "VH Type"=>$_db->vehicle_type, 
-                    "Rate Type"=>isset($_db->rate_type) ? $_db->rate_type["label"] :"",
-                    "Start"=>$_db->min_start,
-                    "End"=>$_db->min_end,
-                    "Price"=>$_db->price,
-                    "Extra Price"=>$_db->extra_price,
-                    "Min Count"=>$_db->min_units_vehicle,  
-                    "Effective Date"=>$_key===0 ? SmartDateHelper::dateFormat($obj->effective_date) : ""   
-                 ];  
-                 $out[] = $_dt;
+                    "Hub Name" => $_key === 0 ? $obj->hub_id : "",
+                    "Customer" => $_key === 0 ? $obj->vendor_company : "",
+                    "Type" => isset($_db->sd_hsn_id) ? $_db->sd_hsn_id["label"] : "",
+                    "VH Type" => $_db->vehicle_type,
+                    "Rate Type" => isset($_db->rate_type) ? $_db->rate_type["label"] : "",
+                    "Start" => $_db->min_start,
+                    "End" => $_db->min_end,
+                    "Price" => $_db->price,
+                    "Extra Price" => $_db->extra_price,
+                    "Min Count" => $_db->min_units_vehicle,
+                    "Effective Date" => $_key === 0 ? SmartDateHelper::dateFormat($obj->effective_date) : ""
+                ];
+                $out[] = $_dt;
             }
-        }   
+        }
         //
-        $path = SmartFileHelper::getDataPath() . "vendor_rate" . DS . date("Y-m-d") ."_rates.xlsx";
+        $path = SmartFileHelper::getDataPath() . "vendor_rate" . DS . date("Y-m-d") . "_rates.xlsx";
         SmartFileHelper::createDirectoryRecursive($path);
         $excel = new SmartExcellHelper($path, 0);
         $excel->createExcelFromData($out);
@@ -308,7 +310,7 @@ class VendorRateController extends BaseController
         $i = 1;
         foreach ($_data as $obj) {
             if ($obj->hub !== "HUB_ID") {
-                $v_data = $this->_helper->getOneWithHubNamAndCustomerName($obj->hub,$obj->vendor);
+                $v_data = $this->_helper->getOneWithHubNamAndCustomerName($obj->hub, $obj->vendor);
                 // $hub_id = $this->_hubs_helper->getHubID($obj->hub);
                 if (isset($v_data->ID)) {
                     $exits_data = $this->_helper->getOneByVendor($v_data->sd_hubs_id, $v_data->ID);
@@ -334,13 +336,13 @@ class VendorRateController extends BaseController
 
     public function migrate_customer_id()
     {
-        $_data = $this->_helper->getAllData();  
-        foreach($_data as $obj){
+        $_data = $this->_helper->getAllData();
+        foreach ($_data as $obj) {
             $_udata = [
-                "sd_customer_id"=>$obj->cust_id
+                "sd_customer_id" => $obj->cust_id
             ];
-            $this->_helper->update(["sd_customer_id"],$_udata,$obj->ID);
-        }    
+            $this->_helper->update(["sd_customer_id"], $_udata, $obj->ID);
+        }
         var_dump($_data);
     }
 }
