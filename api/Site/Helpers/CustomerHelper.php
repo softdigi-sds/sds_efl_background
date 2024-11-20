@@ -221,6 +221,17 @@ class CustomerHelper extends BaseHelper
     }
 
 
+    public function getAddressDataWithCustomerId($id)
+    {
+        $from = Table::SD_CUSTOMER_ADDRESS . " t1";
+        $select = ["t1.*"];
+        $sql = "t1.sd_customers_id=:ID";
+        $data_in = ["ID" => $id];
+        $data = $this->getAll($select,  $from, $sql, "", "", $data_in, false, []);     
+        return $data;
+    }
+
+
 
     // migration functions
 

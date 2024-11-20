@@ -188,6 +188,10 @@ class SmartModel
        // return $id;
     }
 
+    public function exec($query){
+        $this->_db->executeQuery($query);
+    }
+
     /**
      * 
      */

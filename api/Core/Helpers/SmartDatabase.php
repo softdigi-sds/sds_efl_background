@@ -156,6 +156,17 @@ class SmartDatabase {
             }
             $this->stmt->bindValue($param, $value, $type);
     }
+
+    public function executeQuery($query){
+        try{
+            $this->query($query);
+            $return = $this->stmt->execute(); 
+            return $return;
+         } catch(\PDOException $e){             
+            $this->trigger_error_message($e);        
+        }
+    }
+
     /**
      * 
      * @return type

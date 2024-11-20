@@ -12,6 +12,7 @@ use Site\Helpers\StateDbHelper;
 use Core\Helpers\SmartFileHelper;
 use Core\Helpers\SmartExcellHelper;
 use Site\Helpers\ImportHelper;
+use Site\Helpers\TableHelper as Table;
 
 class CustomerController extends BaseController
 {
@@ -220,7 +221,7 @@ class CustomerController extends BaseController
         $this->response($data);
     }
 
-    public function migrate()
+    public function migrate_old()
     {
         $_add_data = $this->_helper->getAllAddressData();
         $columns = ["vendor_company", "vendor_name",  "pan_no", "status", "created_by", "created_time"];
@@ -241,5 +242,52 @@ class CustomerController extends BaseController
                 $this->_helper->updateId($obj->ID, $data->ID);
             }
         }
+    }
+
+    private function replace($add_id,$removal_required){
+        $ids = implode(",",$removal_required);
+        $sql = "UPDATE ".Table::VENDOR_RATE." SET sd_customer_address_id=".$add_id." WHERE sd_customer_address_id IN (". $ids.") ";
+        echo $sql ."<br/>";
+        $this->_helper->db->exec($sql);
+
+        $invoice_sql = "UPDATE ".Table::INVOICE." SET sd_customer_address_id=".$add_id." WHERE sd_customer_address_id IN (". $ids.") ";
+        echo $invoice_sql ."<br/>";
+        $this->_helper->db->exec($invoice_sql);
+        //$this->_helper->db->exec($sql);
+        $delete_customer_address = "DELETE FROM " . Table::SD_CUSTOMER_ADDRESS ." WHERE ID IN (".$ids.")";
+        echo  $delete_customer_address ."<br/>";
+        $this->_helper->db->exec( $delete_customer_address);
+    }
+
+    public function migrate()
+    {
+        $customers = $this->_helper->getAllData();        
+        foreach($customers as $_obj){
+            $address = $this->_helper->getAddressDataWithCustomerId($_obj->ID);
+            $gst_data = [];
+            foreach($address as $_db){
+                if(isset( $gst_data[$_db->gst_no])){
+                    $gst_data[$_db->gst_no][]=$_db->ID;
+                }else{
+                    $gst_data[$_db->gst_no]=[$_db->ID];
+                }
+               
+            }
+            //if(count($gst))
+            foreach($gst_data as $gst_number=>$gst_ids){
+                // actual id required is 
+                $actual_id_required = $gst_ids[0];
+                // 
+                if(count($gst_ids) > 1){
+                    $removal_required = array_slice($gst_ids, 1);
+                    $this->replace($actual_id_required,$removal_required);
+                }             
+                // now first replace this in vendor rate and invoice tables
+            }
+
+
+            $_obj->gst_data =  $gst_data;            
+        }
+        //var_dump($customers);
     }
 }
