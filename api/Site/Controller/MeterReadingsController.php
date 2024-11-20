@@ -80,6 +80,16 @@ class MeterReadingsController extends BaseController
      * 
      */
 
+     public function getOne()
+     {
+         $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+         if ($id < 1) {
+             \CustomErrorHandler::triggerInvalid("Invalid ID");
+         }
+         // insert and get id
+         $data = $this->_helper->getOneData($id);
+         $this->response($data);
+     }
 
 
     public function getAll()
@@ -96,18 +106,20 @@ class MeterReadingsController extends BaseController
         foreach ($hubs as $obj) {
             $obj->meter_data = $this->_helper->getHubData($obj->ID, $year);
             //
+            var_dump($obj->meter_data);
             foreach ($obj->meter_data as $_obj) {
                 $dates[$_obj->month] = $_obj->month;
                 $_obj->meter_reading = intval($_obj->meter_end) - intval($_obj->meter_start);
                 $_sub_data =  $this->_consumption_helper->getCountByHubAndStartEndDate($obj->ID,  $_obj->meter_start_date,  $_obj->meter_end_date);
-               // $obj->total = 
+                var_dump($_sub_data);
+                // $obj->total = 
                 $_obj->cms_reading = $this->_consumption_helper->hubTotal($_sub_data);
                 $_obj->deviation =  $_obj->meter_reading > 0 ?  (($_obj->cms_reading - $_obj->meter_reading) / $_obj->meter_reading)  * 100 : 0;
             }
         }
         $out->data = $hubs;
         $out->dates = array_keys($dates);
-        $this->response($out);
+       // $this->response($out);
     }
 
     public function getAllOld()
@@ -126,4 +138,7 @@ class MeterReadingsController extends BaseController
         }
         $this->response($data);
     }
+
+
+
 }

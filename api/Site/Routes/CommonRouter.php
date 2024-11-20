@@ -262,6 +262,7 @@ class CommonRouter
         $controller = "MeterReadingsController";
         $this->_routes["/meter_readings/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
         $this->_routes["/meter_readings/get_all"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAll"];
+        $this->_routes["/meter_readings/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
     }
     private function vehicles_types_routes()
     {

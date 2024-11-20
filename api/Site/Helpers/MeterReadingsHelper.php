@@ -112,6 +112,18 @@ class MeterReadingsHelper extends BaseHelper
         return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
     }
 
+    public function getOneData($id)
+    {
+        $from = Table::METER_READINGS . " t1 ";
+        $select = ["t1.*"];
+        $sql = "t1.ID=:ID";
+        $data_in = ["ID" => $id];
+        $group_by = "";
+        $order_by = "";
+        $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);        
+        return $data;
+    }
+
 
     public function GetAllMeterData($year, $month)
     {
