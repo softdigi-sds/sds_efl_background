@@ -141,4 +141,15 @@ class BillHelper extends BaseHelper
         // $data =  $this->getAll($select, $from, $sql, "", "",  $data_in, false, [], false);
         //return $data;
     }
+
+    public function updateBillDetails($id){
+        $from = Table::INVOICE . " t1";
+        $select = [" SUM(gst_amount) as gst_amount,SUM(total_amount) as total_amount,COUNT(ID) as total_invoices"];
+        $sql = " t1.sd_bill_id=:ID";
+        $data_in = ["ID" => $id];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        if(isset( $data->total_invoices)){
+            $this->update(["gst_amount","total_amount","total_invoices"],(array)$data,$id);
+        }
+    }
 }

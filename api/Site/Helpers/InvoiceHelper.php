@@ -365,6 +365,7 @@ class InvoiceHelper extends BaseHelper
         foreach ($_r_data  as $_obj) {
             //echo " hub id " . $_obj->sd_hubs_id . " cid " .  $_obj->sd_customer_id . " <br/>";
             $_data = $this->prepareSingleVendorData($bill_id, $_obj, $start_date, $end_date,  $date_count);
+            $_data["invoice_type"]=1;
             // var_dump($_data);
             if ($_data["total_taxable"] > 0) {
                 $this->insertUpdateSingle($_data);

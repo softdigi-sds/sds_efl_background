@@ -10,6 +10,7 @@ use Site\Helpers\BillHelper;
 //use Site\View\InvoicePdf;
 use Core\Helpers\SmartFileHelper;
 use Site\Helpers\InvoiceSubHelper;
+use Site\Helpers\HubsHelper;
 
 
 
@@ -20,6 +21,7 @@ class InvoiceController extends BaseController
     private BillHelper $_bill_helper;
     // private InvoicePdf $_invoice_pdf_helper;
     private InvoiceSubHelper $_invoice_sub_helper;
+    private HubsHelper $_hub_helper;
     function __construct($params)
     {
         parent::__construct($params);
@@ -28,6 +30,7 @@ class InvoiceController extends BaseController
         $this->_bill_helper = new BillHelper($this->db);
         //   $this->_invoice_pdf_helper = new InvoicePdf($this->db);
         $this->_invoice_sub_helper = new InvoiceSubHelper($this->db);
+        $this->_hub_helper= new HubsHelper($this->db);
     }
 
     /**
@@ -246,6 +249,39 @@ class InvoiceController extends BaseController
         }else{
             \CustomErrorHandler::triggerInvalid("Signature Filed");
         }
+    }
+
+
+    public function insertManual(){
+        $id = SmartData::post_data("bill_id","INTEGER");
+        if($id < 1){
+            \CustomErrorHandler::triggerInvalid("Bill_id is required");
+        }
+        $data = [];
+        $sub_data = SmartData::post_array_data("sub_data");
+        $total_taxable = 0;
+        $tax = "18";
+        foreach($sub_data as $_sub_arr){
+            $total_taxable += floatval($_sub_arr["price"]);
+            $tax = floatval($_sub_arr["tax"]);
+        }
+        $data["sd_hub_id"]  = SmartData::post_select_value("sd_hub_id");
+        $hub_data = $this->_hub_helper->getOneData($data["sd_hub_id"]);
+        $data["sd_customer_id"]  = SmartData::post_select_value("sd_customer_id");
+        $data["sd_customer_address_id"]  = SmartData::post_select_value("sd_customer_address_id");
+        $data["sd_vendor_rate_id"]   = 0;
+        $data["total_taxable"] = $total_taxable;
+        $data["status"] = 0;
+        $data["invoice_type"] = 2;
+        $data["gst_percentage"] = $tax;
+        $data["gst_amount"] = $total_taxable * ($tax / 100);
+        $data["total_amount"] =  $data["total_taxable"] +   $data["gst_amount"];
+        $data["short_name"] = $hub_data->short_name;
+        $data["sub_data"] = $sub_data;
+        $this->_helper->insertUpdateSingle($data);
+        $this->_bill_helper->updateBillDetails($id);
+        $this->responseMsg("Invoice Added/Updated");
+
     }
 
 

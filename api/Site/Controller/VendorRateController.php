@@ -132,6 +132,9 @@ class VendorRateController extends BaseController
                 $_dt = [
                     "Hub Name"=>$_key===0 ? $obj->hub_id : "", 
                     "Customer"=>$_key===0 ? $obj->vendor_company : "",
+                    "PAN"=>$_key===0 ? $obj->pan_no : "",
+                    "GST"=>$_key===0 ? $obj->gst_no : "",
+                    "Address"=>$_key===0 ? $obj->address_one : "",
                     "Type"=>isset($_db->sd_hsn_id) ? $_db->sd_hsn_id["label"] : "",
                     "VH Type"=>$_db->vehicle_type, 
                     "Rate Type"=>isset($_db->rate_type) ? $_db->rate_type["label"] :"",

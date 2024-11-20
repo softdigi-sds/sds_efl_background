@@ -135,8 +135,11 @@ class HubsHelper extends BaseHelper
      */
     public function getOneData($id)
     {
-        $from = Table::HUBS . " t1 INNER JOIN " . Table::EFLOFFICE . " t2 ON t1.sd_efl_office_id=t2.ID ";
-        $select = ["t1.*, t2.office_city "];
+        $from = Table::HUBS . " t1 
+        INNER JOIN " . Table::EFLOFFICE . " t2 ON t1.sd_efl_office_id=t2.ID
+        LEFT JOIN " . Table::STATEDB . " t13 ON t13.ID=t2.state
+         ";
+        $select = ["t1.*, t2.office_city ","t13.short_name"];
         $sql = "t1.ID=:ID";
         $data_in = ["ID" => $id];
         $group_by = "";
