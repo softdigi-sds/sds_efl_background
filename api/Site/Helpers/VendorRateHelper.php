@@ -94,7 +94,12 @@ class VendorRateHelper extends BaseHelper
         LEFT JOIN " . Table::STATEDB . " t13 ON t13.ID=t12.state
         INNER JOIN " . Table::SD_CUSTOMER_ADDRESS . " t3 ON t1.sd_customer_address_id=t3.ID 
         INNER JOIN " . Table::SD_CUSTOMER . " t4 ON t3.sd_customers_id=t4.ID ";
-        $select = !empty($select) ? $select : ["t1.*, t2.hub_id, t4.vendor_company,t4.ID as cust_id","t13.short_name"];
+        $select = !empty($select) ? $select : ["t1.*,
+         t2.hub_id, t4.vendor_company,t4.ID as cust_id",
+         "t3.address_one,t3.gst_no",
+         "t4.pan_no",
+        "t13.short_name"
+    ];
         $data =  $this->getAll($select, $from, $sql, $group_by, "t1.effective_date DESC", $data_in, $single, [], $count);
        //exit();
         return $data;

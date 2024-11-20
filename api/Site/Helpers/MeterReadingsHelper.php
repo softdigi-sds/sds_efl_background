@@ -29,6 +29,7 @@ class MeterReadingsHelper extends BaseHelper
         "meter_month" => SmartConst::SCHEMA_INTEGER,
         "meter_start" => SmartConst::SCHEMA_FLOAT,
         "meter_end" => SmartConst::SCHEMA_FLOAT,
+        "meter_cost" => SmartConst::SCHEMA_FLOAT,
         "created_by" => SmartConst::SCHEMA_CUSER_ID,
         "created_time" => SmartConst::SCHEMA_CDATETIME,
         "last_modified_by" => SmartConst::SCHEMA_CUSER_ID,
@@ -111,6 +112,21 @@ class MeterReadingsHelper extends BaseHelper
         return $this->getAll($select, $from, $sql, $group_by, "", $data_in, $single, [], $count);
     }
 
+    public function getOneData($id)
+    {
+        $from = Table::METER_READINGS . " t1 LEFT JOIN  ".Table::HUBS." t2 ON t2.ID =t1.sd_hub_id";
+        $select = ["t1.*,t2.hub_id"];
+        $sql = "t1.ID=:ID";
+        $data_in = ["ID" => $id];
+        $group_by = "";
+        $order_by = "";
+        $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []); 
+        if(isset($data->ID)){
+            $data->sd_hub_id =["value"=>$data->sd_hub_id,"label"=>$data->hub_id];
+        }       
+        return $data;
+    }
+
 
     public function GetAllMeterData($year, $month)
     {
@@ -136,5 +152,32 @@ class MeterReadingsHelper extends BaseHelper
         $data_in = ["id" => $hub_id, "year" => $year];
         $data =  $this->getAll($select, $from, $sql, "", "",  $data_in, false, [], false);
         return $data;
+    }
+
+    public function checkMeterDataExists($hub_id,$start_date)
+    {
+        $from = Table::METER_READINGS . " t1 ";
+        $select = ["t1.*"];
+        $sql = "t1.sd_hub_id=:sd_hub_id AND ".$start_date." BETWEEN t1.meter_start_date AND t1.meter_end_date";
+        $data_in = ["sd_hub_id" => $hub_id];
+        $group_by = "";
+        $order_by = "";
+        $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);        
+        return $data;
+    }
+
+    public function insertUpdate($_data){
+        $exist_data = $this->checkMeterDataExists($_data["sd_hub_id"],$_data["meter_start_date"]);        
+        $columns = [ "sd_hub_id", "meter_start_date", "meter_end_date", "meter_start", "meter_end","meter_cost"];
+        if(isset($exist_data->ID)){          
+            $this->update($columns,$_data,$exist_data->ID);
+        }else{
+            $columns[] = "created_by";
+            $columns[] = "created_time";
+            $this->insert($columns,$_data);
+        }
+
+       
+        
     }
 }
