@@ -185,8 +185,12 @@ class InvoiceController extends BaseController
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
+        $invoicd_data = $this->_helper->getOneData($id);
+        $this->_invoice_sub_helper->deleteWithInvoiceId($id);
         // insert and get id
         $this->_helper->deleteOneId($id);
+        
+        $this->_bill_helper->updateBillDetails($invoicd_data->sd_bill_id);
         $out = new \stdClass();
         $out->msg = "Removed Successfully";
         $this->response($out);
@@ -258,15 +262,22 @@ class InvoiceController extends BaseController
             \CustomErrorHandler::triggerInvalid("Bill_id is required");
         }
         $data = [];
-        $sub_data = SmartData::post_array_data("sub_data");
+        $sub_data = SmartData::post_array_data("rate_data");
+        if(count($sub_data)  < 1 ){
+            \CustomErrorHandler::triggerInvalid("Atleast one invoice item is required");
+        }
         $total_taxable = 0;
         $tax = "18";
-        foreach($sub_data as $_sub_arr){
+        foreach($sub_data as $key=>$_sub_arr){
             $total_taxable += floatval($_sub_arr["price"]);
             $tax = floatval($_sub_arr["tax"]);
+            $tax_value = floatval($_sub_arr["price"]) * (floatval($_sub_arr["price"]) / 100 );
+            $sub_arr["total"] = floatval($_sub_arr["price"]) +  $tax_value;
+            $sub_data[$key] = $_sub_arr;
         }
-        $data["sd_hub_id"]  = SmartData::post_select_value("sd_hub_id");
+        $data["sd_hub_id"]  = SmartData::post_select_value("sd_hubs_id");
         $hub_data = $this->_hub_helper->getOneData($data["sd_hub_id"]);
+        
         $data["sd_customer_id"]  = SmartData::post_select_value("sd_customer_id");
         $data["sd_customer_address_id"]  = SmartData::post_select_value("sd_customer_address_id");
         $data["sd_vendor_rate_id"]   = 0;
@@ -278,8 +289,11 @@ class InvoiceController extends BaseController
         $data["total_amount"] =  $data["total_taxable"] +   $data["gst_amount"];
         $data["short_name"] = $hub_data->short_name;
         $data["sub_data"] = $sub_data;
+        $data["sd_bill_id"] = $id;
+        $this->db->_db->Begin();
         $this->_helper->insertUpdateSingle($data);
         $this->_bill_helper->updateBillDetails($id);
+        $this->db->_db->commit();
         $this->responseMsg("Invoice Added/Updated");
 
     }

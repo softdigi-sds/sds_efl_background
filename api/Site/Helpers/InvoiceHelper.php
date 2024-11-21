@@ -665,6 +665,7 @@ class InvoiceHelper extends BaseHelper
     {
         $db = new InvoiceSubHelper($this->db);
         $db->insert_update_data($_id, $sub_data);
+     
     }
 
 
@@ -708,7 +709,8 @@ class InvoiceHelper extends BaseHelper
                 "gst_amount",
                 "total_amount",
                 "invoice_date",
-                "state_name"
+                "state_name",
+                "invoice_type"
             ];
             $data["state_name"] =  $data["short_name"];
             $id = $this->insert($insert_columns, $data);

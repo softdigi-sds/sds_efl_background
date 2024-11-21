@@ -143,6 +143,12 @@ class InvoiceSubHelper extends BaseHelper
         $this->deleteId($from, $id);
     }
 
+    public function deleteWithInvoiceId($_id){
+        $sql = "sd_invoice_id=:id";
+        $data_in = ["id"=>$_id];
+        $this->deleteBySql(Table::SD_INVOICE_SUB,$sql,$data_in);
+    }
+
 
     public function insert_update_single($_data)
     {
@@ -162,8 +168,8 @@ class InvoiceSubHelper extends BaseHelper
             "extra_units"
         ];
         $vh_id = isset($_data["vehicle_id"]) ? $_data["vehicle_id"] : 0;
-        $_data["type_desc"] = $this->getInvoiceDesc($_data["type"],   $vh_id);
-        $_data["type_hsn"] = $this->getInvoiceHSN($_data["type"]);
+        $_data["type_desc"] = isset($_data["type"]) ? $this->getInvoiceDesc($_data["type"],   $vh_id) : $_data["type_desc"];
+        $_data["type_hsn"] =  isset($_data["type"]) ? $this->getInvoiceHSN($_data["type"]) :  $_data["type_hsn"];
         $id_inserted = $this->insert($columns_insert, $_data);
         return  $id_inserted;
     }
