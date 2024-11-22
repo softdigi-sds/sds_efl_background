@@ -28,6 +28,7 @@ class SdDigiHelper
         $_obj->dscData = [$single_file];
         $data = new \stdClass();
         $data->content = $content;
+        $data->redirect_url = $url;
         $data->task_user_id = $user_id;
         $data->task_user_name =  $user_name;
         $data->task_fields = json_encode($_obj);
