@@ -8,6 +8,7 @@
 
 namespace Site\Routes;
 
+
 class SiteIndexRouter{    
 
     private function get_all_routes(){
