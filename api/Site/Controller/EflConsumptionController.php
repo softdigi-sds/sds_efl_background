@@ -249,9 +249,12 @@ class EflConsumptionController extends BaseController
                 "hub_name" => $excel->get_cell_value("F", $i),
                 "vendor" => $excel->get_cell_value("AG", $i),
                 "point_type" => $excel->get_cell_value("L", $i),
-                "date" => $excel->getDate($excel->get_cell_value("N", $i)),
+                "date" => $excel->getDate($excel->get_cell_value("B", $i)),
                 "count" => $excel->get_cell_value("V", $i),
             ];
+
+          //  echo $excel->get_cell_value("N", $i) . " out " . $obj["date"] . " <br/>"; 
+
              //var_dump($obj);
              //exit();
             if ($obj["vendor"] == "" || $obj["date"] == "") {
