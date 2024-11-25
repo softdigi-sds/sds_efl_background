@@ -251,7 +251,8 @@ class EflConsumptionController extends BaseController
                 "date" => $excel->getDate($excel->get_cell_value("N", $i)),
                 "count" => $excel->get_cell_value("V", $i),
             ];
-            // var_dump($obj);
+             //var_dump($obj);
+             //exit();
             if ($obj["vendor"] == "" || $obj["date"] == "") {
                 $obj["status"] = 10;
                 $obj["msg"] = "Improper Data";
@@ -266,7 +267,7 @@ class EflConsumptionController extends BaseController
                     $new_count =  $prev_count  + floatval($obj["count"]);
                     $type = isset($obj["point_type"]) && $obj["point_type"] == "DC" ? 2 : 1;
                     $sub_data = [
-                        $this->prepare_sub_object($new_count, 1, $type),
+                        $this->prepare_sub_object($new_count, $type),
                     ];
                     $_vehicle_data = [
                         "sd_hub_id" => $rate_data->sd_hubs_id,

@@ -661,10 +661,10 @@ class InvoiceHelper extends BaseHelper
         }
     }
 
-    private function insert_invoice_sub($_id, $sub_data)
+    private function insert_invoice_sub($_id, $sub_data,$meter_type="CMS")
     {
         $db = new InvoiceSubHelper($this->db);
-        $db->insert_update_data($_id, $sub_data);
+        $db->insert_update_data($_id, $sub_data,$meter_type);
      
     }
 
@@ -693,7 +693,7 @@ class InvoiceHelper extends BaseHelper
             if ($exist_data->status  < 5) {
                 // to avoid updatation after irn number generated
                 $this->updateInvoiceDataNew($data);
-                $this->insert_invoice_sub($exist_data->ID, $sub_data);
+                $this->insert_invoice_sub($exist_data->ID, $sub_data,$data["bill_type"]);
             }
             return $exist_data->ID;
         } else {
@@ -729,7 +729,7 @@ class InvoiceHelper extends BaseHelper
             ];
             $this->update($up_columns, $up_data, $id);
             // update the invoice sub data 
-            $this->insert_invoice_sub($id, $sub_data);
+            $this->insert_invoice_sub($id, $sub_data,$data["bill_type"]);
         }
     }
 
