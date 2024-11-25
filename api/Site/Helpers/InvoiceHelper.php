@@ -398,6 +398,17 @@ class InvoiceHelper extends BaseHelper
     {
         $charge = 0;
         foreach ($rates as $obj) {
+            if ($obj->sd_hsn_id["value"] == 8) {
+                $charge = $obj->price;
+            }
+        }
+        return $charge;
+    }
+
+    public function getinfraCharge($rates)
+    {
+        $charge = 0;
+        foreach ($rates as $obj) {
             if ($obj->sd_hsn_id["value"] == 6) {
                 $charge = $obj->price;
             }
@@ -587,6 +598,22 @@ class InvoiceHelper extends BaseHelper
         // service charges invoice
         $service_charges = $this->getVehicleServiceCharge($rates);
         if ($service_charges > 0) {
+            $_dt = [
+                "type" => 8,
+                "price" => $service_charges,
+                "count" => 1,
+                "month_avg" => 0,
+                "min_units" => 0,
+                "allowed_units" => 0,
+                "total" => $service_charges
+            ];
+            $out[] = $_dt;
+        }
+
+
+        // service charges invoice
+        $infra_charges = $this->getinfraCharge($rates);
+        if ($infra_charges > 0) {
             $_dt = [
                 "type" => 6,
                 "price" => $service_charges,

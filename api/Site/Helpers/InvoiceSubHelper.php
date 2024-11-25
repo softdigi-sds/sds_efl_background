@@ -96,8 +96,9 @@ class InvoiceSubHelper extends BaseHelper
             3 => "UNITS BILLED AS PER ",
             4 => "RENT FOR ACCOMMODATION  ",
             5 => "UNITS BILLED AS PER ",
-            6 => "SUPPORT SERVICES FEE ",
+            6 => "RENT FOR ACCOMMODATION ",
             7 => "AC UNITS CONSUMED FOR OFFICE AND FACILITY ",
+            8 => "SUPPORT SERVICES FEE ",
             100 => "Extra Units"
         ];
         $_type = $this->modifyTypes($_type_default,$customer_id);
@@ -126,8 +127,9 @@ class InvoiceSubHelper extends BaseHelper
             3 => "998714",
             4 => "997212",
             5 => "998714",
-            6 => "995461",
+            6 => "997212",
             7 => "998714",
+            8 => "995461",
             100 => "998714"
         ];
         return isset($_type[$id]) ? $_type[$id] : "";

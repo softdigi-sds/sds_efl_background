@@ -172,15 +172,20 @@ class EflConsumptionHelper extends BaseHelper
 
     public function insertUpdateNew($_data,$extra=0)
     {
+       // var_dump($_data);
+        //echo "<br/><br/>";
         $insert_columns = ["sd_hub_id", "sd_customer_id", "sd_date", "unit_count", "created_by", "created_time"];
         $update_columns = ["unit_count", "last_modified_by", "last_modified_time"];
         $exist_data = $this->checkExists($_data["sd_hub_id"], $_data["sd_customer_id"], $_data["sd_date"],$extra);
+       // echo "<br/> date : " . $_data["sd_date"] . " customer " . $_data["sd_customer_id"] . "<br/>";
         $sub_data = $_data["sub_data"];
         if (isset($exist_data->ID)) {
+          //  echo " <br/> Exists" . $exist_data->ID . "<br/>";
             $this->update($update_columns, $_data, $exist_data->ID);
             $this->insert_update_data($exist_data->ID, $sub_data);
         } else {
             $id = $this->insert($insert_columns, $_data);
+          //  echo " <br/> New " . $id . "<br/>";
             $this->insert_update_data($id, $sub_data);
         }
     }
@@ -321,7 +326,13 @@ class EflConsumptionHelper extends BaseHelper
     public function insert_update_single($_data)
     {
         $exist_data = $this->getOneByConsumptionId($_data["sd_efl_consumption_id"], $_data["sd_meter_types_id"]);
+        //echo " <br/><br/>";
+        //var_dump($exist_data);
+       // echo " <br/><br/>";
+     //  echo " <br/>eid = " . $_data["sd_efl_consumption_id"] . " mid " .  $_data["sd_meter_types_id"] . " c =" . $_data["count"]; 
+           
         if (isset($exist_data->ID)) {
+          // echo "<br/>existed</br>";
             // exisitng so need to update
             $columns_update = ["count"];
             $this->updateSub($columns_update, $_data, $exist_data->ID);
@@ -332,7 +343,8 @@ class EflConsumptionHelper extends BaseHelper
                 "sd_meter_types_id",
                 "count",
             ];
-            // var_dump($_data);
+           // echo "<br/>new</br>";
+             //var_dump($_data);
             // exit();
             $id_inserted = $this->insertSub($columns_insert, $_data);
             return  $id_inserted;
@@ -350,7 +362,7 @@ class EflConsumptionHelper extends BaseHelper
         }
         foreach ($exist_data as $obj) {
             if (!in_array($obj->ID, $ids)) {
-                $this->deleteId(Table::EFL_CONSUMPTION_SUB, $obj->ID);
+               // $this->deleteId(Table::EFL_CONSUMPTION_SUB, $obj->ID);
             }
         }
         //exit();

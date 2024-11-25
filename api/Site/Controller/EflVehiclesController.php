@@ -406,14 +406,17 @@ class EflVehiclesController extends BaseController
         $sd_hub_id =  Data::post_select_value("sd_hub_id");
         $_data =  $this->_helper->getExportData($sd_hub_id,$start_date,$end_date);
         $out=[];
+        $i= 0;
         foreach($_data as $obj){
             $_dt = [];
+            $_dt["S.NO"] = $i;
             $_dt["HUB Name"] = $obj->hub_id;
             $_dt["Customer"] = $obj->vendor_company;
             $_dt["date"] = $obj->date;
             foreach($obj->subdata as $sub_obj){
                 $_dt[$sub_obj->vehicle_type] = $sub_obj->count;
             }
+            $i++;
             $out[] = $_dt;
         }     
         //

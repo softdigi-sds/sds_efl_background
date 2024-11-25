@@ -365,7 +365,7 @@ class EflVehiclesHelper extends BaseHelper
         }
         foreach ($exist_data as $obj) {
             if (!in_array($obj->ID, $ids)) {
-                $this->deleteId(Table::EFL_VEHICLES_SUB, $obj->ID);
+                //$this->deleteId(Table::EFL_VEHICLES_SUB, $obj->ID);
             }
         }
         //exit();
