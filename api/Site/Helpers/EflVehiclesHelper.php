@@ -386,11 +386,31 @@ class EflVehiclesHelper extends BaseHelper
             $from,
             $sql,
             "",
-            "",
+            "t1.ID ASC",
             $data_in,
             false,
             []
         );
         return $data;
     }
+
+
+    public function getExportData($hub_id,$start_date,$end_date){
+        $select = [
+            "t2.ID,t2.sd_date AS date,t3.hub_id,t4.vendor_company"
+        ];
+        $from = Table::EFL_VEHICLES . " t2 
+        INNER JOIN ".Table::HUBS. " t3 ON t3.ID=t2.sd_hub_id
+        INNER JOIN ".Table::SD_CUSTOMER." t4 ON t4.ID=sd_customer_id";
+        $sql = "t2.sd_hub_id=:hub_id AND t2.sd_date BETWEEN :start_date AND :end_date";
+        $data_in = ["hub_id" => $hub_id, "start_date" => $start_date, "end_date" => $end_date];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, [], false);
+        foreach($data as $obj){
+            $obj->subdata = $this->vehicleTypeCount($obj->ID);
+        }
+        return $data;
+    }
+
+
+
 }

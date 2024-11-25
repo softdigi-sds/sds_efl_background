@@ -123,7 +123,7 @@ class HubsHelper extends BaseHelper
         INNER JOIN " . Table::HUBS . " t1 ON t1.ID = t5.sd_hub_id  
         INNER JOIN " . Table::EFLOFFICE . " t2 ON t1.sd_efl_office_id=t2.ID ";
         $select = ["t1.*, t2.office_city "];
-        $sql = "t5.sd_mt_role_id=:id";
+        $sql = "t5.sd_mt_role_id=:id AND t1.status=5";
         $data_in = ["id" => $userid];
         $data =  $this->getAll($select, $from, $sql, "", "office_city ASC,hub_id ASC", $data_in, false, [], false);
         return $data;

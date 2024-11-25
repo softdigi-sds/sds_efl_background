@@ -397,12 +397,39 @@ class EflVehiclesController extends BaseController
         }
         $this->response(array_values($out));
     }
+
+
+    public function exportExcel()
+    {
+        $start_date = SmartData::post_data("start_date", "DATE");
+        $end_date = SmartData::post_data("end_date", "DATE");
+        $sd_hub_id =  Data::post_select_value("sd_hub_id");
+        $_data =  $this->_helper->getExportData($sd_hub_id,$start_date,$end_date);
+        $out=[];
+        foreach($_data as $obj){
+            $_dt = [];
+            $_dt["HUB Name"] = $obj->hub_id;
+            $_dt["Customer"] = $obj->vendor_company;
+            $_dt["date"] = $obj->date;
+            foreach($obj->subdata as $sub_obj){
+                $_dt[$sub_obj->vehicle_type] = $sub_obj->count;
+            }
+            $out[] = $_dt;
+        }     
+        //
+        $path = SmartFileHelper::getDataPath() . "vhreport" . DS . $sd_hub_id . DS . "reportCount.xlsx";
+        SmartFileHelper::createDirectoryRecursive($path);
+        $excel = new SmartExcellHelper($path, 0);
+        $excel->createExcelFromData($out);
+        $this->responseFileBase64($path);
+        // $this->responseMsg("created success");
+    }
+
+
     public function VehicleReport()
     {
 
-
         $id = 3;
-
         $this->_helper->generateVehiclesPdf($id);
         exit();
     }
