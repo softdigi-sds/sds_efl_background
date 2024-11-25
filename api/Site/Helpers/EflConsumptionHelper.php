@@ -28,6 +28,7 @@ class EflConsumptionHelper extends BaseHelper
         "sd_customer_id" => SmartConst::SCHEMA_INTEGER,
         "sd_date" => SmartConst::SCHEMA_DATE,
         "unit_count" => SmartConst::SCHEMA_FLOAT,
+        "extra_units"=> SmartConst::SCHEMA_INTEGER,
         "created_by" => SmartConst::SCHEMA_CUSER_ID,
         "created_time" => SmartConst::SCHEMA_CDATETIME,
         "last_modified_by" => SmartConst::SCHEMA_CUSER_ID,
@@ -169,11 +170,11 @@ class EflConsumptionHelper extends BaseHelper
     }
 
 
-    public function insertUpdateNew($_data)
+    public function insertUpdateNew($_data,$extra=0)
     {
         $insert_columns = ["sd_hub_id", "sd_customer_id", "sd_date", "unit_count", "created_by", "created_time"];
         $update_columns = ["unit_count", "last_modified_by", "last_modified_time"];
-        $exist_data = $this->checkExists($_data["sd_hub_id"], $_data["sd_customer_id"], $_data["sd_date"]);
+        $exist_data = $this->checkExists($_data["sd_hub_id"], $_data["sd_customer_id"], $_data["sd_date"],$extra);
         $sub_data = $_data["sub_data"];
         if (isset($exist_data->ID)) {
             $this->update($update_columns, $_data, $exist_data->ID);
@@ -185,10 +186,10 @@ class EflConsumptionHelper extends BaseHelper
     }
 
 
-    public function checkExists($hub_id, $vendor_id, $date)
+    public function checkExists($hub_id, $vendor_id, $date,$extra=0)
     {
-        $sql = "sd_hub_id=:sd_hub_id AND sd_customer_id=:sd_customer_id AND sd_date=:sd_date ";
-        $data_in = ["sd_hub_id" => $hub_id, "sd_customer_id" => $vendor_id, "sd_date" => $date];
+        $sql = "sd_hub_id=:sd_hub_id AND sd_customer_id=:sd_customer_id AND sd_date=:sd_date AND extra_units=:extra_dt";
+        $data_in = ["sd_hub_id" => $hub_id, "sd_customer_id" => $vendor_id, "sd_date" => $date,"extra_dt"=>$extra];
         $exist_data = $this->getAllData($sql, $data_in, ["ID"], "", false, true);
         return $exist_data;
     }

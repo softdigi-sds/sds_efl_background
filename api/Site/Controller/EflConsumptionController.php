@@ -50,12 +50,13 @@ class EflConsumptionController extends BaseController
 
         $consump_data = Data::post_array_data("data");
         $hub_id = Data::post_select_value("hub_id");
+        $extra = Data::post_data("extra","INTEGER");
         $date = Data::post_data("date", "STRING");
         foreach ($consump_data as $data) {
             $data["sd_hub_id"] = $hub_id;
             $data["sd_date"] =  $date;
             // if (isset($data["sd_hub_id"])) {
-            $this->_helper->insertUpdateNew($data);
+            $this->_helper->insertUpdateNew($data, $extra );
             // }
         }
         $this->responseMsg(msg: "Consumption Report has been appended successfully");
@@ -278,7 +279,7 @@ class EflConsumptionController extends BaseController
                         "sub_data" => $sub_data
                     ];
                     $dates[$index] =  $new_count;
-                    $this->_helper->insertUpdateNew($_vehicle_data);
+                    $this->_helper->insertUpdateNew($_vehicle_data,0);
                     $obj["status"] = 5;
                 } else {
                     $obj["status"] = 10;
