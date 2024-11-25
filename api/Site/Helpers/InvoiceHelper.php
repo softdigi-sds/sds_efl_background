@@ -368,7 +368,7 @@ class InvoiceHelper extends BaseHelper
             $_data["invoice_type"]=1;
             // var_dump($_data);
             if ($_data["total_taxable"] > 0) {
-                $this->insertUpdateSingle($_data);
+                $this->insertUpdateSingle($_data);              
                 $dt["gst_amount"]  += $_data["gst_amount"];
                 $dt["total_amount"]  += $_data["total_amount"];
                 $dt["total_invoices"]++;
@@ -388,6 +388,17 @@ class InvoiceHelper extends BaseHelper
         $charge = 0;
         foreach ($rates as $obj) {
             if ($obj->sd_hsn_id["value"] == 4) {
+                $charge = $obj->price;
+            }
+        }
+        return $charge;
+    }
+
+    public function getVehicleServiceCharge($rates)
+    {
+        $charge = 0;
+        foreach ($rates as $obj) {
+            if ($obj->sd_hsn_id["value"] == 6) {
                 $charge = $obj->price;
             }
         }
@@ -459,6 +470,9 @@ class InvoiceHelper extends BaseHelper
             } else if ($obj->sd_hsn_id["value"] == 5 && $meter_id == 2) {
                 $unit_price = $obj->price;
                 $hsn_id = 3;
+            }else if ($obj->sd_hsn_id["value"] == 7 && $meter_id == 3) {
+                $unit_price = $obj->price;
+                $hsn_id = 7;
             }
         }
         // echo " <br/><br/> unit charge " . $charge;
@@ -570,6 +584,20 @@ class InvoiceHelper extends BaseHelper
             ];
             $out[] = $_dt;
         }
+        // service charges invoice
+        $service_charges = $this->getVehicleServiceCharge($rates);
+        if ($service_charges > 0) {
+            $_dt = [
+                "type" => 6,
+                "price" => $service_charges,
+                "count" => 1,
+                "month_avg" => 0,
+                "min_units" => 0,
+                "allowed_units" => 0,
+                "total" => $service_charges
+            ];
+            $out[] = $_dt;
+        }
         //var_dump($out);
         return $out;
     }
@@ -661,10 +689,10 @@ class InvoiceHelper extends BaseHelper
         }
     }
 
-    private function insert_invoice_sub($_id, $sub_data,$meter_type="CMS")
+    private function insert_invoice_sub($_id, $sub_data,$_data)
     {
         $db = new InvoiceSubHelper($this->db);
-        $db->insert_update_data($_id, $sub_data,$meter_type);
+        $db->insert_update_data($_id, $sub_data,$_data);
      
     }
 
@@ -693,7 +721,7 @@ class InvoiceHelper extends BaseHelper
             if ($exist_data->status  < 5) {
                 // to avoid updatation after irn number generated
                 $this->updateInvoiceDataNew($data);
-                $this->insert_invoice_sub($exist_data->ID, $sub_data,$data["bill_type"]);
+                $this->insert_invoice_sub($exist_data->ID, $sub_data,$data);
             }
             return $exist_data->ID;
         } else {
@@ -729,7 +757,7 @@ class InvoiceHelper extends BaseHelper
             ];
             $this->update($up_columns, $up_data, $id);
             // update the invoice sub data 
-            $this->insert_invoice_sub($id, $sub_data,$data["bill_type"]);
+            $this->insert_invoice_sub($id, $sub_data,$data);
         }
     }
 

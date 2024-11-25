@@ -52,31 +52,67 @@ class InvoiceSubHelper extends BaseHelper
         ],
     ];
 
+    //  4 => "RENT(LOCATION MAINTENANCE FEE(R)) ",
+    //  7=>  "CHARGING UNITS BILLLED AS PER SUB METER FOR LOCATION MAINTENANCE(E)
 
 
-    public function getInvoiceDesc($id, $vehicle_id,$bill_type="CMS")
+    public function getCustomerData($customer_id){
+
+        $customer_specific = [
+            29 => [
+                4 => "RENT(LOCATION MAINTENANCE FEE(R)) ",
+                7 => "CHARGING UNITS BILLED AS PER SUB METER FOR LOCATION MAINTENANCE(E)"
+            ]
+        ];
+        return isset($customer_specific[$customer_id]) ? $customer_specific[$customer_id] : [];
+    }
+
+    public function modifyTypes($types, $customer_id)
+    {
+        $customer_specific = $this->getCustomerData($customer_id);
+       // var_dump($customer_specific);
+        if(empty($customer_specific)){
+            return $types;
+        }
+       // var_dump( $customer_specific);
+        //exit();
+        foreach ($types as $key => $desc) {
+            $types[$key] = isset($customer_specific[$key]) ? $customer_specific[$key] : $desc;
+        }
+        return $types;
+    }
+
+
+    public function getInvoiceDesc($_data, $vehicle_id)
     {
         $vehicle_type = new VehiclesTypesHelper($this->db);
-        $_type = [
+        $id = $_data["type"];
+        $bill_type = isset($_data["bill_type"]) ? $_data["bill_type"] : "CMS";
+        $customer_id = isset($_data["sd_customer_id"]) ? $_data["sd_customer_id"] : 0;
+       // var_dump($_data);
+        $_type_default = [
             1 => "ELECTRIC VEHICLE CHARGING-PARKING FEE",
             2 => "ELECTRIC VEHICLE PARKING FEE",
             3 => "UNITS BILLED AS PER ",
-            4 => "Rent for Accommodation ",
+            4 => "RENT FOR ACCOMMODATION  ",
             5 => "UNITS BILLED AS PER ",
+            6 => "SUPPORT SERVICES FEE ",
+            7 => "AC UNITS CONSUMED FOR OFFICE AND FACILITY ",
             100 => "Extra Units"
         ];
+        $_type = $this->modifyTypes($_type_default,$customer_id);
         $desc = isset($_type[$id]) ? $_type[$id] : "";
-        $cms_sub_meter = $bill_type=="SUB_METER" ? "SUB METER" : "CMS";        
+        $cms_sub_meter = $bill_type == "SUB_METER" ? "SUB METER" : "CMS";
         if ($id == 1 || $id == 2) {
             // add vehicle type also in brackets
             $vh_desc = $vehicle_type->getVehicleTypeNameWithId($vehicle_id);
             $desc = $desc . "(" . $vh_desc . ")";
         }
-        if($id==3){                        
-            $desc = $desc .  $cms_sub_meter ."(AC)";
+        if ($id == 3) {
+            $desc = $desc .  $cms_sub_meter . "(AC)";
         }
-        if($id==5){
-            $desc = $desc .  $cms_sub_meter ."(DC)";
+        if ($id == 5) {
+            $desc = $desc .  $cms_sub_meter . "(DC)";
         }
 
         return $desc;
@@ -90,6 +126,8 @@ class InvoiceSubHelper extends BaseHelper
             3 => "998714",
             4 => "997212",
             5 => "998714",
+            6 => "995461",
+            7 => "998714",
             100 => "998714"
         ];
         return isset($_type[$id]) ? $_type[$id] : "";
@@ -151,10 +189,11 @@ class InvoiceSubHelper extends BaseHelper
         $this->deleteId($from, $id);
     }
 
-    public function deleteWithInvoiceId($_id){
+    public function deleteWithInvoiceId($_id)
+    {
         $sql = "sd_invoice_id=:id";
-        $data_in = ["id"=>$_id];
-        $this->deleteBySql(Table::SD_INVOICE_SUB,$sql,$data_in);
+        $data_in = ["id" => $_id];
+        $this->deleteBySql(Table::SD_INVOICE_SUB, $sql, $data_in);
     }
 
 
@@ -176,18 +215,19 @@ class InvoiceSubHelper extends BaseHelper
             "extra_units"
         ];
         $vh_id = isset($_data["vehicle_id"]) ? $_data["vehicle_id"] : 0;
-        $_data["type_desc"] = isset($_data["type"]) ? $this->getInvoiceDesc($_data["type"],   $vh_id,$_data["bill_type"]) : $_data["type_desc"];
+        $_data["type_desc"] = isset($_data["type"]) ? $this->getInvoiceDesc($_data,   $vh_id) : $_data["type_desc"];
         $_data["type_hsn"] =  isset($_data["type"]) ? $this->getInvoiceHSN($_data["type"]) :  $_data["type_hsn"];
         $id_inserted = $this->insert($columns_insert, $_data);
         return  $id_inserted;
     }
 
-    public function insert_update_data($_id, $data,$meter_type)
+    public function insert_update_data($_id, $data, $_data)
     {
         $this->deleteBySql(Table::SD_INVOICE_SUB, "sd_invoice_id=:id", ["id" => $_id]);
         foreach ($data as $rate_data) {
             $rate_data["sd_invoice_id"] = $_id;
-            $rate_data["bill_type"] = $meter_type;
+            $rate_data["bill_type"] = $_data["bill_type"];
+            $rate_data["sd_customer_id"] = $_data["sd_customer_id"];
             $this->insert_update_single($rate_data);
         }
     }
