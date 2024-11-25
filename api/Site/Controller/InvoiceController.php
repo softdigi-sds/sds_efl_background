@@ -290,6 +290,7 @@ class InvoiceController extends BaseController
         $data["short_name"] = $hub_data->short_name;
         $data["sub_data"] = $sub_data;
         $data["sd_bill_id"] = $id;
+        $data["bill_type"] = "CMS";
         $this->db->_db->Begin();
         $this->_helper->insertUpdateSingle($data);
         $this->_bill_helper->updateBillDetails($id);
