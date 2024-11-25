@@ -262,10 +262,11 @@ class EflConsumptionController extends BaseController
                 // var_dump($rate_data);
                 if (isset($rate_data->ID)) {
                     // vendor existed insert or update the data
-                    $index = $rate_data->ID . "_" . $obj["date"];
+                    $type = isset($obj["point_type"]) && $obj["point_type"] == "DC" ? 2 : 1;
+                    $index = $rate_data->ID . "_" . $obj["date"]."_". $type;
                     $prev_count = isset($dates[$index]) ? $dates[$index] : 0;
                     $new_count =  $prev_count  + floatval($obj["count"]);
-                    $type = isset($obj["point_type"]) && $obj["point_type"] == "DC" ? 2 : 1;
+                 
                     $sub_data = [
                         $this->prepare_sub_object($new_count, $type),
                     ];
