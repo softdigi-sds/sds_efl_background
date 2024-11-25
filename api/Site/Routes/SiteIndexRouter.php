@@ -8,9 +8,13 @@
 
 namespace Site\Routes;
 
-class SiteIndexRouter{    
 
-    private function get_all_routes(){
+
+class SiteIndexRouter
+{
+
+    private function get_all_routes()
+    {
         // common routes
         $common_routes = CommonRouter::getRoutes();
         // all routes
@@ -18,13 +22,13 @@ class SiteIndexRouter{
     }
 
 
+
     /**
      * 
      */
-    static public function getRoutes(){
+    static public function getRoutes()
+    {
         $obj = new self();
         return $obj->get_all_routes();
-    } 
-
+    }
 }
-

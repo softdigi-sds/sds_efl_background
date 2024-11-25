@@ -317,12 +317,12 @@ class EflVehiclesController extends BaseController
                 $dates[$_obj->month] = $_obj->month;
                 $date_count_dates = SmartDateHelper::getDatesBetween($_obj->bill_start_date, $_obj->bill_end_date);
                 $data_count = count($date_count_dates);
-               // $_obj->capa = intval($_obj->bill_start_date) - intval($_obj->bill_end_date);
+                // $_obj->capa = intval($_obj->bill_start_date) - intval($_obj->bill_end_date);
                 $_sub_data =  $this->_helper->getCountByHubAndStartEndDate($obj->ID,  $_obj->bill_start_date,  $_obj->bill_end_date);
-               // $obj->total = 
+                // $obj->total = 
                 $_obj->_reading = $this->_helper->hubTotal($_sub_data);
-                $_obj->_average =  round($_obj->_reading / $data_count,2);
-               // $_obj->deviation =  $_obj->meter_reading > 0 ?  (($_obj->cms_reading - $_obj->meter_reading) / $_obj->meter_reading)  * 100 : 0;
+                $_obj->_average =  round($_obj->_reading / $data_count, 2);
+                // $_obj->deviation =  $_obj->meter_reading > 0 ?  (($_obj->cms_reading - $_obj->meter_reading) / $_obj->meter_reading)  * 100 : 0;
             }
         }
         $out->data = $hubs;
@@ -361,7 +361,8 @@ class EflVehiclesController extends BaseController
                 "two_count" => $excel->get_cell_value("E", $i),
                 "three_count" => $excel->get_cell_value("F", $i),
                 "four_count" => $excel->get_cell_value("G", $i),
-                "ace_count" => $excel->get_cell_value("H", $i),
+                "zen_count" => $excel->get_cell_value("H", $i),
+                "ace_count" => $excel->get_cell_value("I", $i),
                 "date" => $excel->getDate($excel->get_cell_value("D", $i)),
             ];
             if ($obj["vendor"] == "" || $obj["date"] == "" || $obj["hub_name"] == "") {
@@ -375,7 +376,8 @@ class EflVehiclesController extends BaseController
                         $this->prepare_sub_object($obj["two_count"], 1),
                         $this->prepare_sub_object($obj["three_count"], 2),
                         $this->prepare_sub_object($obj["four_count"], 3),
-                        $this->prepare_sub_object($obj["ace_count"], 4),
+                        $this->prepare_sub_object($obj["zen_count"], 4),
+                        $this->prepare_sub_object($obj["ace_count"], 5),
                     ];
                     $_vehicle_data = [
                         "sd_hub_id" =>  $rate_data->sd_hubs_id,
