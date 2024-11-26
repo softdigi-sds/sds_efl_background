@@ -541,8 +541,9 @@ class InvoiceHelper extends BaseHelper
                     "extra_units" => $units_count - $allowed_units > 0 ? $units_count - $allowed_units : 0
                 ];
                 $out[] = $_dt;
-                if ($allowed_units > 0 && $units_count > 0) {
-                    $remaining_units = $units_count - $allowed_units;
+                $remaining_units = $units_count - $allowed_units;
+                if ($allowed_units > 0 && $units_count > 0 && $remaining_units > 0) {
+
                     $remaining_unit_price = $remaining_units * $extra_price;
                     // add a charging row
                     $_dt = [
