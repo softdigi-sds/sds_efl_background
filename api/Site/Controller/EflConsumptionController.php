@@ -50,16 +50,16 @@ class EflConsumptionController extends BaseController
 
         $consump_data = Data::post_array_data("data");
         $hub_id = Data::post_select_value("hub_id");
-        $extra = Data::post_data("extra","INTEGER");
+        $extra = Data::post_data("extra","INTEGER");        
         $date = Data::post_data("date", "STRING");
         foreach ($consump_data as $data) {
             $data["sd_hub_id"] = $hub_id;
             $data["sd_date"] =  $date;
             // if (isset($data["sd_hub_id"])) {
-            $this->_helper->insertUpdateNew($data, $extra );
+            $this->_helper->insertUpdateNew($data, 0);
             // }
         }
-        $this->responseMsg(msg: "Consumption Report has been appended successfully");
+      //  $this->responseMsg(msg: "Consumption Report has been appended successfully");
     }
     /**
      * 
@@ -160,6 +160,7 @@ class EflConsumptionController extends BaseController
             $_db_out = $this->_helper->getConsumptionInvoiceByDateVendor($hub_id,$obj->sd_customer_id,$start_date,$end_date);
             //var_dump($_db_out);
             $obj->sub_data =  is_array($_db_out) ? $_db_out : [];
+            $obj->ext_data =   [];
             //$out[] = $obj;
         }
         //exit();

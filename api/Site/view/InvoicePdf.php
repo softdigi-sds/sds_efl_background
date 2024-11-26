@@ -71,7 +71,7 @@ class InvoicePdf
             </td>
             <td><?php echo $this->getIndex($obj, "type_hsn") ?> </td>
             <td><?php echo $this->getIndex($obj, "count") ?></td>
-            <td>NOS </td>
+            <td><?php echo $this->getIndex($obj, "unit") ?> </td>
             <td><?php echo $this->getIndex($obj, "price") ?></td>
             <td>0.00</td>
             <td>0</td>

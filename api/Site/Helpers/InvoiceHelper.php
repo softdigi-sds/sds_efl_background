@@ -285,9 +285,9 @@ class InvoiceHelper extends BaseHelper
         $order_by = "";
         $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
         if (isset($data->ID)) {
-            $data->cust_igst_amt = $data->of_state != $data->customer_state ? $data->total_taxable * (18 / 100) : 0;
-            $data->cust_cgst_amt = $data->of_state != $data->customer_state ? $data->total_taxable * (9 / 100) : 0;
-            $data->cust_sgst_amt = $data->of_state != $data->customer_state ? $data->total_taxable * (9 / 100) : 0;
+            $data->cust_igst_amt = $data->of_state != $data->customer_state ? round($data->total_taxable * (18 / 100),2) : 0;
+            $data->cust_cgst_amt = $data->of_state == $data->customer_state ? round($data->total_taxable * (9 / 100),2) : 0;
+            $data->cust_sgst_amt = $data->of_state == $data->customer_state ? round($data->total_taxable * (9 / 100),2) : 0;
             $data->cees_amt = "0.00";
             $data->state_cees = "0.00";
             $data->roundoff_amt = "0.00";
@@ -802,6 +802,16 @@ class InvoiceHelper extends BaseHelper
                 $_item_data["annexure"] = ($_key + 1);
                 $_sub_data_vehicle[] = $_item_data;
             }
+            $_obj->unit = "NOS";
+            if($_obj->type == 1 || $_obj->type == 3){
+                $_obj->count = $_obj->month_avg;
+            }
+            if($_obj->type == 3 || $_obj->type == 5 || $_obj->type==7 || $_obj->type==100){
+                $_obj->unit = "UNITS";
+            }
+
+            
+
         }
         $data->sub_data_vehicle = $_sub_data_vehicle;
         $this->generateInvoicePdf($data->ID, $data);
