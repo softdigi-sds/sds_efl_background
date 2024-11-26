@@ -285,9 +285,9 @@ class InvoiceHelper extends BaseHelper
         $order_by = "";
         $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);
         if (isset($data->ID)) {
-            $data->cust_igst_amt = $data->of_state != $data->customer_state ? round($data->total_taxable * (18 / 100),2) : 0;
-            $data->cust_cgst_amt = $data->of_state == $data->customer_state ? round($data->total_taxable * (9 / 100),2) : 0;
-            $data->cust_sgst_amt = $data->of_state == $data->customer_state ? round($data->total_taxable * (9 / 100),2) : 0;
+            $data->cust_igst_amt = $data->of_state != $data->customer_state ? round($data->total_taxable * (18 / 100), 2) : 0;
+            $data->cust_cgst_amt = $data->of_state == $data->customer_state ? round($data->total_taxable * (9 / 100), 2) : 0;
+            $data->cust_sgst_amt = $data->of_state == $data->customer_state ? round($data->total_taxable * (9 / 100), 2) : 0;
             $data->cees_amt = "0.00";
             $data->state_cees = "0.00";
             $data->roundoff_amt = "0.00";
@@ -365,10 +365,10 @@ class InvoiceHelper extends BaseHelper
         foreach ($_r_data  as $_obj) {
             //echo " hub id " . $_obj->sd_hubs_id . " cid " .  $_obj->sd_customer_id . " <br/>";
             $_data = $this->prepareSingleVendorData($bill_id, $_obj, $start_date, $end_date,  $date_count);
-            $_data["invoice_type"]=1;
+            $_data["invoice_type"] = 1;
             // var_dump($_data);
             if ($_data["total_taxable"] > 0) {
-                $this->insertUpdateSingle($_data);              
+                $this->insertUpdateSingle($_data);
                 $dt["gst_amount"]  += $_data["gst_amount"];
                 $dt["total_amount"]  += $_data["total_amount"];
                 $dt["total_invoices"]++;
@@ -481,7 +481,7 @@ class InvoiceHelper extends BaseHelper
             } else if ($obj->sd_hsn_id["value"] == 5 && $meter_id == 2) {
                 $unit_price = $obj->price;
                 $hsn_id = 5;
-            }else if ($obj->sd_hsn_id["value"] == 7 && $meter_id == 3) {
+            } else if ($obj->sd_hsn_id["value"] == 7 && $meter_id == 3) {
                 $unit_price = $obj->price;
                 $hsn_id = 7;
             }
@@ -532,7 +532,7 @@ class InvoiceHelper extends BaseHelper
                     "vehicle_id" => $_v_obj->sd_vehicle_types_id,
                     "price" => $parking_price,
                     "count" => $_v_obj->count,
-                    "month_avg" => $_v_obj->count / $day_count,
+                    "month_avg" => round($_v_obj->count / $day_count, 2),
                     "min_units" => $minimum_units,
                     "allowed_units" => $allowed_units,
                     "total" => ($_v_obj->count / $day_count) * $parking_price,
@@ -716,11 +716,10 @@ class InvoiceHelper extends BaseHelper
         }
     }
 
-    private function insert_invoice_sub($_id, $sub_data,$_data)
+    private function insert_invoice_sub($_id, $sub_data, $_data)
     {
         $db = new InvoiceSubHelper($this->db);
-        $db->insert_update_data($_id, $sub_data,$_data);
-     
+        $db->insert_update_data($_id, $sub_data, $_data);
     }
 
 
@@ -748,7 +747,7 @@ class InvoiceHelper extends BaseHelper
             if ($exist_data->status  < 5) {
                 // to avoid updatation after irn number generated
                 $this->updateInvoiceDataNew($data);
-                $this->insert_invoice_sub($exist_data->ID, $sub_data,$data);
+                $this->insert_invoice_sub($exist_data->ID, $sub_data, $data);
             }
             return $exist_data->ID;
         } else {
@@ -784,7 +783,7 @@ class InvoiceHelper extends BaseHelper
             ];
             $this->update($up_columns, $up_data, $id);
             // update the invoice sub data 
-            $this->insert_invoice_sub($id, $sub_data,$data);
+            $this->insert_invoice_sub($id, $sub_data, $data);
         }
     }
 
@@ -803,15 +802,12 @@ class InvoiceHelper extends BaseHelper
                 $_sub_data_vehicle[] = $_item_data;
             }
             $_obj->unit = "NOS";
-            if($_obj->type == 1 || $_obj->type == 3){
+            if ($_obj->type == 1 || $_obj->type == 3) {
                 $_obj->count = $_obj->month_avg;
             }
-            if($_obj->type == 3 || $_obj->type == 5 || $_obj->type==7 || $_obj->type==100){
+            if ($_obj->type == 3 || $_obj->type == 5 || $_obj->type == 7 || $_obj->type == 100) {
                 $_obj->unit = "UNITS";
             }
-
-            
-
         }
         $data->sub_data_vehicle = $_sub_data_vehicle;
         $this->generateInvoicePdf($data->ID, $data);
