@@ -541,26 +541,27 @@ class InvoiceHelper extends BaseHelper
                     "extra_units" => $units_count - $allowed_units > 0 ? $units_count - $allowed_units : 0
                 ];
                 $out[] = $_dt;
+                if ($allowed_units > 0 && $units_count > 0) {
+                    $remaining_units = $units_count - $allowed_units;
+                    $remaining_unit_price = $remaining_units * $extra_price;
+                    // add a charging row
+                    $_dt = [
+                        "type" => 100,
+                        "vehicle_id" => 0,
+                        "price" => $extra_price,
+                        "count" => $remaining_units,
+                        "month_avg" => 0,
+                        "min_units" => $units_count,
+                        "allowed_units" => $allowed_units,
+                        "total" => $remaining_unit_price
+                    ];
+                    $out[] = $_dt;
+                }
             }
             //echo ""  . $_v_obj->sd_vehicle_types_id . " c=" . $_v_obj->count . " p " . $parking_price . " " . $allowed_units . " " . $minimum_units . "<br/>";
         }
         // if anything like allowed units is mentioned then it means extra units should be inserted as one more invoice
-        if ($allowed_units > 0 && $units_count > 0) {
-            $remaining_units = $units_count - $allowed_units;
-            $remaining_unit_price = $remaining_units * $extra_price;
-            // add a charging row
-            $_dt = [
-                "type" => 100,
-                "vehicle_id" => 0,
-                "price" => $extra_price,
-                "count" => $remaining_units,
-                "month_avg" => 0,
-                "min_units" => $units_count,
-                "allowed_units" => $allowed_units,
-                "total" => $remaining_unit_price
-            ];
-            $out[] = $_dt;
-        }
+
         // go for ac dc things
         //  var_dump($units);
         foreach ($units as $_u_obj) {
@@ -803,7 +804,7 @@ class InvoiceHelper extends BaseHelper
                 $_sub_data_vehicle[] = $_item_data;
             }
             $_obj->unit = "NOS";
-            if ($_obj->type == 1 || $_obj->type == 3) {
+            if ($_obj->type == 1 || $_obj->type == 2) {
                 $_obj->count = $_obj->month_avg;
             }
             if ($_obj->type == 3 || $_obj->type == 5 || $_obj->type == 7 || $_obj->type == 100) {

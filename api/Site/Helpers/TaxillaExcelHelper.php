@@ -28,6 +28,14 @@ class TaxillaExcelHelper extends BaseHelper
     {
         $cgst = $sgst =  $_dt->total * (9 / 100);
         $igst =  $_dt->total * (18 / 100);
+        $quantity = $_dt->count;
+        if ($_dt->type == 1 || $_dt->type == 2) {
+            $quantity = $_dt->month_avg;
+        }
+        $units = "NOS";
+        if ($_dt->type == 3 || $_dt->type == 5 || $_dt->type == 7) {
+            $units = "UNITS";
+        }
 
         $out = [
             "Transaction Reference Number" => $_dt->invoice_number,
@@ -55,8 +63,8 @@ class TaxillaExcelHelper extends BaseHelper
             "PO Number" => "",
             "PO Date" => "",
             "Line item ID" => "1",
-            "Quantity" => $_dt->count,
-            "UQC" => "NOS",
+            "Quantity" => $quantity,
+            "UQC" => $units,
             "Rate per Quantity" => $_dt->price,
             "Gross Value" => $_dt->total,
             "Discount Before GST" => "",
