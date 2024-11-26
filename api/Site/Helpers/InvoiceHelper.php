@@ -243,8 +243,9 @@ class InvoiceHelper extends BaseHelper
         INNER JOIN " . Table::HUBS . " t3 ON t1.sd_hub_id=t3.ID 
         INNER JOIN " . Table::EFLOFFICE . " t6 ON t3.sd_efl_office_id=t6.ID ";
         $select = [
-            "t10.*,t1.invoice_number,t2.vendor_company,t3.hub_id,t4.billing_to,t4.address_one,t4.address_two,
-        t4.gst_no,t2.pan_no,t4.pin_code, t1.ack_date",
+            "t10.*,t1.invoice_number,t2.vendor_company,t3.hub_id,
+            t4.billing_to,t4.address_one,t4.address_two,
+        t4.gst_no,t2.pan_no,t4.pin_code, t1.ack_date,t1.sd_customer_id,t1.sd_hub_id",
             "t6.address_one as of_add,t6.gst_no as of_gst,t6.pan_no as of_pan,t6.office_city as of_city,t6.pin_code as of_pin",
             "(SELECT t20.short_name FROM " . Table::STATEDB . " t20 WHERE t20.ID = t6.state LIMIT 0,1) as of_state",
             "(SELECT t21.short_name FROM " . Table::STATEDB . " t21 WHERE t21.ID = t4.state_name LIMIT 0,1) as customer_state",
@@ -535,7 +536,7 @@ class InvoiceHelper extends BaseHelper
                     "month_avg" => round($_v_obj->count / $day_count, 2),
                     "min_units" => $minimum_units,
                     "allowed_units" => $allowed_units,
-                    "total" => ($_v_obj->count / $day_count) * $parking_price,
+                    "total" => round($_v_obj->count / $day_count, 2) * $parking_price,
                     "total_units" => $units_count,
                     "extra_units" => $units_count - $allowed_units > 0 ? $units_count - $allowed_units : 0
                 ];
