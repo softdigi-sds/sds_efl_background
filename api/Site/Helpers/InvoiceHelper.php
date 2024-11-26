@@ -272,7 +272,7 @@ class InvoiceHelper extends BaseHelper
         ";
         $select = [
             "t1.*,t12.bill_start_date,t12.bill_end_date,
-            DATE_FORMAT(t12.bill_start_date,'%Y-%m-%d') as start_date, DATE_FORMAT(t12.bill_end_date,'%Y-%m-%d') as end_date",
+            DATE_FORMAT(t12.bill_start_date,'%d-%m-%Y') as start_date, DATE_FORMAT(t12.bill_end_date,'%d-%m-%Y') as end_date",
             "t2.vendor_company,t3.hub_id,t4.billing_to,t4.address_one,t4.address_two,t4.gst_no,t2.pan_no,t4.pin_code",
             "t6.address_one as of_add,t6.gst_no as of_gst,t6.pan_no as of_pan,t6.cin_no as off_cin,t6.office_city as of_city,t6.pin_code as of_pin",
             "(SELECT t20.short_name FROM " . Table::STATEDB . " t20 WHERE t20.ID = t6.state LIMIT 0,1) as of_state",
