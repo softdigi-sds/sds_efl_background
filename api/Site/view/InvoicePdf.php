@@ -7,7 +7,7 @@
 
 namespace Site\view;
 // use Site\images\qr_code;
-
+use Core\Helpers\SmartGeneral;
 
 
 
@@ -232,7 +232,8 @@ class InvoicePdf
       <div style="font-size:11px">
         <table style="width:100% ; border-collapse:collapse" border="1">
           <tr>
-            <th colspan="2" style="text-align: left;">Net Invoice Value: Ninety Seven Thousand One Hundred Sixty One Rupees and Sixty One Paisa</th>
+            <th colspan="2" style="text-align: left;">Net Invoice Value: <?php echo SmartGeneral::convertToIndianCurrency($this->get("total_amount"))?>
+             </th>
           </tr>
           <tr>
             <th colspan="2" style="text-align: left;">

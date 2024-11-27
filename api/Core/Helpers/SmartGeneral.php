@@ -63,7 +63,54 @@ class SmartGeneral
         return pathinfo($fileName, PATHINFO_EXTENSION);
     }
 
-    static public function getEnv(string $index_name){
-        return isset($_ENV[ $index_name]) ? $_ENV[ $index_name] :"";
+    static public function getEnv(string $index_name)
+    {
+        return isset($_ENV[$index_name]) ? $_ENV[$index_name] : "";
+    }
+
+    static public function convertToWords($number)
+    {
+        $words = array(
+            0 => '', 1 => 'One', 2 => 'Two', 3 => 'Three', 4 => 'Four', 5 => 'Five', 
+            6 => 'Six', 7 => 'Seven', 8 => 'Eight', 9 => 'Nine', 10 => 'Ten', 
+            11 => 'Eleven', 12 => 'Twelve', 13 => 'Thirteen', 14 => 'Fourteen', 
+            15 => 'Fifteen', 16 => 'Sixteen', 17 => 'Seventeen', 18 => 'Eighteen', 19 => 'Nineteen', 
+            20 => 'Twenty', 30 => 'Thirty', 40 => 'Forty', 50 => 'Fifty', 
+            60 => 'Sixty', 70 => 'Seventy', 80 => 'Eighty', 90 => 'Ninety'
+        );
+    
+        $places = ['', 'Thousand', 'Lakh', 'Crore'];
+        
+        if ($number == 0) {
+            return 'Zero';
+        }
+    
+        $output = '';
+        $num = str_pad($number, ceil(strlen($number) / 2) * 2, '0', STR_PAD_LEFT);
+        $numArray = str_split($num, 2);
+        $placeLevel = count($numArray) - 1;
+    
+        foreach ($numArray as $index => $pair) {
+            $pair = intval($pair);
+            if ($pair > 0) {
+                if ($pair < 20) {
+                    $output .= $words[$pair] . " ";
+                } else {
+                    $output .= $words[floor($pair / 10) * 10] . " " . $words[$pair % 10] . " ";
+                }
+                if ($placeLevel > 0) {
+                    $output .= $places[$placeLevel] . " ";
+                }
+            }
+            $placeLevel--;
+        }
+        return trim(preg_replace('/\s+/', ' ', $output));
+    }
+
+    static public function convertToIndianCurrency($number) {
+        $no = floor($number);
+        $decimal = round($number - $no, 2) * 100;
+        $decimalPart = ($decimal > 0) ? " and " . self::convertToWords($decimal) . " Paisa" : "";    
+        return self::convertToWords($no) . " Rupees" . $decimalPart;
     }
 }

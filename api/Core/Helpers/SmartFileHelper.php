@@ -197,4 +197,52 @@ class SmartFileHelper
         // Encode the content in Base64
         return base64_encode($fileContent);
     }
+
+    // Array of file paths with custom names
+// $filePaths = [
+//     'folder1' => [
+//         ['path' => '/path/to/original1.txt', 'name' => 'custom1.txt'],
+//         ['path' => '/path/to/original2.jpg', 'name' => 'custom2.jpg'],
+//     ],
+//     'folder2/subfolder' => [
+//         ['path' => '/path/to/original3.pdf', 'name' => 'custom3.pdf'],
+//         ['path' => '/path/to/original4.png', 'name' => 'custom4.png'],
+//     ],
+//     'loosefile' => ['path' => '/path/to/original5.txt', 'name' => 'custom5.txt']
+// ];
+    static public function createZipWithSubfolders($filePaths, $zipFilePath)
+    {
+        $zip = new \ZipArchive();
+        $base_path = self::getDataPath();
+        // Open the ZIP file for creation
+        if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
+            foreach ($filePaths as $folder => $files) {
+                if (is_array($files)) {
+                    // Create a folder in the ZIP
+                    $zip->addEmptyDir($folder);
+                    foreach ($files as $file) {
+                        if (isset($file['path'], $file['name']) && file_exists($file['path'])) {
+                            // Add file with a custom name inside the folder
+                            $full_path =   $base_path . $file['path'];
+                            $zip->addFile  ($full_path , $folder . '/' . $file['name']);
+                        } else {
+                           // echo "File not found or invalid entry: " . ($file['path'] ?? 'Unknown') . "\n";
+                        }
+                    }
+                } else {
+                    if (isset($files['path'], $files['name']) && file_exists($files['path'])) {
+                        $full_path =   $base_path . $files['path'];
+                        // Add file with a custom name to the root of the ZIP
+                        $zip->addFile(   $full_path , $files['name']);
+                    } else {
+                        //echo "File not found or invalid entry: " . ($files['path'] ?? 'Unknown') . "\n";
+                    }
+                }
+            }
+            $zip->close();
+            //echo "ZIP file created successfully at $zipFilePath\n";
+        } else {
+            //echo "Failed to create ZIP file.\n";
+        }
+    }
 }
