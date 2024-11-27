@@ -58,7 +58,7 @@ class TaxillaExcelHelper extends BaseHelper
             "Supplier State" => $_dt->of_state,
             "Supplier PIN Code" => $_dt->of_pin,
             "Goods/Services" => " Services",
-            "HSN Code" => "996743",
+            "HSN Code" => $_dt->type_hsn,
             "HSN Description" => $_dt->type_desc,
             "PO Number" => "",
             "PO Date" => "",

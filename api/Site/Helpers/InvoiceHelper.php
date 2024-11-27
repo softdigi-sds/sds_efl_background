@@ -238,6 +238,7 @@ class InvoiceHelper extends BaseHelper
     {
         $from =  Table::INVOICE  . " t1 
         INNER JOIN " . Table::SD_INVOICE_SUB . " t10 ON t1.ID = t10.sd_invoice_id
+        INNER JOIN " . Table::BILL . " t22 ON t22.ID = t1.sd_bill_id
         INNER JOIN " . Table::SD_CUSTOMER . " t2 ON t1.sd_customer_id=t2.ID
         INNER JOIN " . Table::SD_CUSTOMER_ADDRESS . " t4 ON t1.sd_customer_address_id=t4.ID 
         INNER JOIN " . Table::HUBS . " t3 ON t1.sd_hub_id=t3.ID 
@@ -246,6 +247,7 @@ class InvoiceHelper extends BaseHelper
             "t10.*,t1.invoice_number,t2.vendor_company,t3.hub_id,
             t4.billing_to,t4.address_one,t4.address_two,
         t4.gst_no,t2.pan_no,t4.pin_code, t1.ack_date,t1.sd_customer_id,t1.sd_hub_id",
+         "DATE_FORMAT(t22.bill_start_date,'%d-%m-%Y') as start_date, DATE_FORMAT(t22.bill_end_date,'%d-%m-%Y') as end_date",
             "t6.address_one as of_add,t6.gst_no as of_gst,t6.pan_no as of_pan,t6.office_city as of_city,t6.pin_code as of_pin",
             "(SELECT t20.short_name FROM " . Table::STATEDB . " t20 WHERE t20.ID = t6.state LIMIT 0,1) as of_state",
             "(SELECT t21.short_name FROM " . Table::STATEDB . " t21 WHERE t21.ID = t4.state_name LIMIT 0,1) as customer_state",
@@ -790,6 +792,15 @@ class InvoiceHelper extends BaseHelper
         }
     }
 
+    public function getTotal($sub_data)
+    {
+        $total = array_reduce($sub_data, function ($carry, $item) {
+            //var_dump($item);
+            return $carry + $item->total;
+        }, 0);
+        return $total;
+    }
+
 
     public function prepareGenerateInvoice($data, $sub_helper)
     {
@@ -813,6 +824,20 @@ class InvoiceHelper extends BaseHelper
             }
         }
         $data->sub_data_vehicle = $_sub_data_vehicle;
+        // modify the subdata here to have single line item in pdf 
+        $customer_id = 3;
+        if($data->sd_customer_id===$customer_id){
+            $s_obj =$data->sub_data[0];
+            $s_obj->type_hsn = 998714;
+            $s_obj->type_desc = "ELECTRIC VEHICLE PARKING AND CHARGING FEE 3WL AND 4WL (from ".$data->start_date." to ".$data->end_date.")";
+            $s_obj->type =101; 
+            $s_obj->count = 1;
+            $s_obj->price = $s_obj->total = $this->getTotal($data->sub_data);
+            $data->sub_data = [$s_obj];
+        }
+
+
+
         $this->generateInvoicePdf($data->ID, $data);
     }
 
@@ -826,8 +851,8 @@ class InvoiceHelper extends BaseHelper
         $qr_text = isset($data->irn_number) ? $data->irn_number : "test";
         SmartQrCodeHelper::generateQrImage($qr_text, $qr_path);
         $html_modified = SiteImageHelper::replaceImages($html, ["QR_CODE" => $id . "_qr.png"]);
-        //echo $html_modified;
-        // exit();
+       // echo $html_modified;
+       //  exit();
         $this->initiate_curl($html_modified, $id);
     }
 

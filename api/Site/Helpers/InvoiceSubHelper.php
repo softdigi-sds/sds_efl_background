@@ -99,7 +99,7 @@ class InvoiceSubHelper extends BaseHelper
             6 => "RENT FOR ACCOMMODATION ",
             7 => "AC UNITS CONSUMED FOR OFFICE AND FACILITY ",
             8 => "SUPPORT SERVICES FEE ",
-            100 => "Extra Units"
+            100 => "EXTRA UNITS BILLED AS PER "
         ];
         $_type = $this->modifyTypes($_type_default,$customer_id);
         $desc = isset($_type[$id]) ? $_type[$id] : "";
@@ -114,6 +114,9 @@ class InvoiceSubHelper extends BaseHelper
         }
         if ($id == 5) {
             $desc = $desc .  $cms_sub_meter . "(DC)";
+        }
+        if ($id == 100) {
+            $desc = $desc .  $cms_sub_meter . "";
         }
 
         return $desc;

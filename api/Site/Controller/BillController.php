@@ -110,6 +110,15 @@ class BillController extends BaseController
         $this->response($data);
     }
 
+    public function getTotal($sub_data)
+    {
+        $total = array_reduce($sub_data, function ($carry, $item) {
+            //var_dump($item);
+            return $carry + $item->total;
+        }, 0);
+        return $total;
+    }
+
     public function exportExcel()
     {
         $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
@@ -137,6 +146,12 @@ class BillController extends BaseController
             }
         }
         foreach ($single_invoices as $sinvoice) {
+            $s_obj = $sinvoice[0];
+            $s_obj->type_desc = "ELECTRIC VEHICLE PARKING & CHARGING FEE 3WL & 4WL (from ".$s_obj->start_date." to ".$s_obj->end_date.")";
+            $s_obj->type =101; 
+            $s_obj->type_hsn = 998714;
+            $s_obj->count = 1;
+            $s_obj->price = $s_obj->total = $this->getTotal($sinvoice);
             $out[] = $this->_taxilla_helper->getData($sinvoice[0]);
         }
         //
