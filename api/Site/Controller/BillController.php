@@ -121,9 +121,23 @@ class BillController extends BaseController
         if (!isset($invoice_data[0])) {
             \CustomErrorHandler::triggerInvalid("Invalid data");
         }
+        $customer_id = 3;
+        $single_invoices = [];
         $out = [];
         foreach ($invoice_data as $obj) {
-            $out[] = $this->_taxilla_helper->getData($obj);
+            $index = $obj->sd_invoice_id . "_" . $obj->sd_customer_id;
+            if ($obj->sd_customer_id == $customer_id) {
+                if (isset($single_invoices[$index])) {
+                    $single_invoices[$index][] = $obj;
+                } else {
+                    $single_invoices[$index] = [$obj];
+                }
+            } else {
+                $out[] = $this->_taxilla_helper->getData($obj);
+            }
+        }
+        foreach ($single_invoices as $sinvoice) {
+            $out[] = $this->_taxilla_helper->getData($sinvoice[0]);
         }
         //
         $path = SmartFileHelper::getDataPath() . "bills" . DS . $id . DS . "bill.xlsx";
