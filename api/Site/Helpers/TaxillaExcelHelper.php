@@ -36,11 +36,12 @@ class TaxillaExcelHelper extends BaseHelper
         if ($_dt->type == 3 || $_dt->type == 5 || $_dt->type == 7) {
             $units = "UNITS";
         }
-
+        $due_date = "05-12-2024";
+        $invoice_date = "25/11/2024";
         $out = [
             "Transaction Reference Number" => $_dt->invoice_number,
             "Invoice Number" => $_dt->invoice_number,
-            "Invoice Date" => date("d-m-Y"),
+            "Invoice Date" => $invoice_date,
             "Hub Name" => $_dt->hub_id,
             "Supply Type" => "Outward",
             "Invoice Type" => " Regular",
@@ -137,7 +138,7 @@ class TaxillaExcelHelper extends BaseHelper
             "Credit Days" => "",
             "Amount Paid" => "",
             "Amount Due" => "",
-            "Due Date" => "",
+            "Due Date" => $due_date,
             "Shipping Bill Number" => "",
             "Shipping Bill Date" => "",
             "Export Duty Amount" => "",
