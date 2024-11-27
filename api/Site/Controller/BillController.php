@@ -11,6 +11,7 @@ use Site\Helpers\BillHelper;
 use Site\Helpers\InvoiceHelper;
 use Site\Helpers\ImportHelper;
 use Core\Helpers\SmartData as Data;
+use CustomErrorHandler;
 use Site\Helpers\TaxillaExcelHelper;
 
 
@@ -160,6 +161,45 @@ class BillController extends BaseController
         $excel = new SmartExcellHelper($path, 0);
         $excel->createExcelFromData($out);
         $this->responseFileBase64($path);
+        // $this->responseMsg("created success");
+    }
+
+    public function exportZip()
+    {
+        $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+        if ($id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid ID");
+        }
+        $invoice_data =  $this->_invoice_helper->getInvoiceByBillId($id);
+   
+
+        $filePaths = [];
+        foreach($invoice_data as $obj){
+            if($obj->status==10){
+                $folder = $obj->vendor_company;
+                $file = str_replace("/","-",$obj->invoice_number).".pdf";
+                $path = "invoice" . DS . $obj->ID . DS . "invoicesign.pdf";
+                $_arr = ["path"=>$path,"name"=>$file];
+                //var_dump($_arr);
+                if(!isset($filePaths[$folder])){
+                  //  echo "entered <br/>";
+                    $filePaths[$folder] = [$_arr];
+                }else{
+                    $filePaths[$folder][] = $_arr;
+                   // echo "entered second <br/>";
+                }
+            }
+        }
+        if(empty($filePaths)){
+            CustomErrorHandler::triggerInvalid("No Singed Invoices Found");
+        }
+        $zip_path = SmartFileHelper::getDataPath() . "bills" . DS . $id . DS . "export.zip";
+        SmartFileHelper::createDirectoryRecursive($zip_path);
+        SmartFileHelper::createZipWithSubfolders($filePaths,$zip_path);  
+        $this->responseFileBase64( $zip_path );  
+        //var_dump($filePaths);
+        //$this->response($filePaths);
+
         // $this->responseMsg("created success");
     }
 

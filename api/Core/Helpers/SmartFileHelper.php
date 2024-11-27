@@ -221,17 +221,17 @@ class SmartFileHelper
                     // Create a folder in the ZIP
                     $zip->addEmptyDir($folder);
                     foreach ($files as $file) {
-                        if (isset($file['path'], $file['name']) && file_exists($file['path'])) {
+                        $full_path =   $base_path . $file['path'];
+                        if (isset($file['path'], $file['name']) && file_exists( $full_path )) {
                             // Add file with a custom name inside the folder
-                            $full_path =   $base_path . $file['path'];
                             $zip->addFile  ($full_path , $folder . '/' . $file['name']);
                         } else {
                            // echo "File not found or invalid entry: " . ($file['path'] ?? 'Unknown') . "\n";
                         }
                     }
                 } else {
-                    if (isset($files['path'], $files['name']) && file_exists($files['path'])) {
-                        $full_path =   $base_path . $files['path'];
+                    $full_path =   $base_path . $files['path'];
+                    if (isset($files['path'], $files['name']) && file_exists( $full_path)) {
                         // Add file with a custom name to the root of the ZIP
                         $zip->addFile(   $full_path , $files['name']);
                     } else {
