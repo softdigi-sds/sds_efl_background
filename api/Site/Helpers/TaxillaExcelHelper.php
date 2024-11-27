@@ -94,7 +94,7 @@ class TaxillaExcelHelper extends BaseHelper
             "Ship to Address 2" => $_dt->address_two,
             "Ship to City" => "",
             "Ship to State" => $_dt->customer_state,
-            "Ship to PIN Code" => $_dt->pin_code,
+            "Ship to PIN Code" => str_replace("-", "", $_dt->pin_code),
             "Receiver E mail ID" => "",
             "LR No" => "",
             "Transporter Name" => "",
