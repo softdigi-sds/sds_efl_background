@@ -543,7 +543,7 @@ class InvoiceHelper extends BaseHelper
                     "extra_units" => $units_count - $allowed_units > 0 ? $units_count - $allowed_units : 0
                 ];
                 $out[] = $_dt;
-                $remaining_units = $units_count - $allowed_units;
+                $remaining_units = round($units_count - $allowed_units,2);
                 if ($allowed_units > 0 && $units_count > 0 && $remaining_units > 0) {
 
                     $remaining_unit_price = $remaining_units * $extra_price;
@@ -573,6 +573,7 @@ class InvoiceHelper extends BaseHelper
             //  echo "<br/><br/>Unit price " . $unit_price_test . "   meter id " . $meter_id . " <br/><br/><br/>";
             if ($unit_price_test  > 0 &&  $_u_obj->count > 0) {
                 //  echo "<br/><br/> E = Unit price " . $unit_price_test . "   meter id " . $meter_id . " <br/><br/>";
+                $_u_obj->count = round($_u_obj->count,2);
                 $_dt = [
                     "type" => $hsn_id,
                     "vehicle_id" => $meter_id,
@@ -581,7 +582,7 @@ class InvoiceHelper extends BaseHelper
                     "month_avg" => 0,
                     "min_units" => $_u_obj->count,
                     "allowed_units" => $_u_obj->count,
-                    "total" => $_u_obj->count * $unit_price_test
+                    "total" => round($_u_obj->count * $unit_price_test,2)
                 ];
                 $out[] = $_dt;
             }
