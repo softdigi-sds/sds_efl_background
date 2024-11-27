@@ -232,7 +232,7 @@ class InvoicePdf
       <div style="font-size:11px">
         <table style="width:100% ; border-collapse:collapse" border="1">
           <tr>
-            <th colspan="2" style="text-align: left;">Net Invoice Value: <?php echo SmartGeneral::convertToIndianCurrency($this->get("total_amount"))?>
+            <th colspan="2" style="text-align: left;">Net Invoice Value: <?php echo strtoupper(SmartGeneral::convertToIndianCurrency($this->get("total_amount")))?>
              </th>
           </tr>
           <tr>

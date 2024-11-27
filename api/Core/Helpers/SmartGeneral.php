@@ -68,6 +68,15 @@ class SmartGeneral
         return isset($_ENV[$index_name]) ? $_ENV[$index_name] : "";
     }
 
+    static public function convertTwoDigits($number, $words) {
+        $num = intval($number);
+        if ($num < 20) {
+            return $words[$num];
+        } else {
+            return $words[($num - $num % 10)] . ' ' . $words[$num % 10];
+        }
+    }
+
     static public function convertToWords($number)
     {
         $words = array(
@@ -80,37 +89,69 @@ class SmartGeneral
         );
     
         $places = ['', 'Thousand', 'Lakh', 'Crore'];
-        
+    
         if ($number == 0) {
             return 'Zero';
         }
     
         $output = '';
-        $num = str_pad($number, ceil(strlen($number) / 2) * 2, '0', STR_PAD_LEFT);
-        $numArray = str_split($num, 2);
-        $placeLevel = count($numArray) - 1;
+        $numStr = strval($number);
+        $length = strlen($numStr);
+        $placeLevel = 0;
     
-        foreach ($numArray as $index => $pair) {
-            $pair = intval($pair);
-            if ($pair > 0) {
-                if ($pair < 20) {
-                    $output .= $words[$pair] . " ";
-                } else {
-                    $output .= $words[floor($pair / 10) * 10] . " " . $words[$pair % 10] . " ";
-                }
-                if ($placeLevel > 0) {
-                    $output .= $places[$placeLevel] . " ";
-                }
+        // Handle first 3 digits separately to match the Indian numbering system
+        $prefixLength = $length % 2 === 0 ? 2 : 1;
+        if ($length > 3) {
+            $output .= self::convertTwoDigits(substr($numStr, 0, $prefixLength), $words) . ' ';
+            if ($prefixLength === 1) {
+                $placeLevel = 1; // Thousand level
+            } else {
+                $placeLevel = 2; // Lakh level
             }
-            $placeLevel--;
         }
+        
+        $numStr = substr($numStr, $prefixLength);
+        $numGroups = str_split($numStr, 2);
+    
+        foreach ($numGroups as $group) {
+            if (intval($group) > 0) {
+                $output .= self::convertTwoDigits($group, $words) . ' ' . ($placeLevel > 0 ? $places[$placeLevel] . ' ' : '');
+            }
+            $placeLevel++;
+        }
+    
         return trim(preg_replace('/\s+/', ' ', $output));
     }
 
     static public function convertToIndianCurrency($number) {
-        $no = floor($number);
-        $decimal = round($number - $no, 2) * 100;
-        $decimalPart = ($decimal > 0) ? " and " . self::convertToWords($decimal) . " Paisa" : "";    
-        return self::convertToWords($no) . " Rupees" . $decimalPart;
+        $decimal = round($number - ($no = floor($number)), 2) * 100;
+        $hundred = null;
+        $digits_length = strlen($no);
+        $i = 0;
+        $str = array();
+        $words = array(0 => '', 1 => 'one', 2 => 'two',
+            3 => 'three', 4 => 'four', 5 => 'five', 6 => 'six',
+            7 => 'seven', 8 => 'eight', 9 => 'nine',
+            10 => 'ten', 11 => 'eleven', 12 => 'twelve',
+            13 => 'thirteen', 14 => 'fourteen', 15 => 'fifteen',
+            16 => 'sixteen', 17 => 'seventeen', 18 => 'eighteen',
+            19 => 'nineteen', 20 => 'twenty', 30 => 'thirty',
+            40 => 'forty', 50 => 'fifty', 60 => 'sixty',
+            70 => 'seventy', 80 => 'eighty', 90 => 'ninety');
+        $digits = array('', 'hundred','thousand','lakh', 'crore');
+        while( $i < $digits_length ) {
+            $divider = ($i == 2) ? 10 : 100;
+            $number = floor($no % $divider);
+            $no = floor($no / $divider);
+            $i += $divider == 10 ? 1 : 2;
+            if ($number) {
+                $plural = (($counter = count($str)) && $number > 9) ? 's' : null;
+                $hundred = ($counter == 1 && $str[0]) ? ' and ' : null;
+                $str [] = ($number < 21) ? $words[$number].' '. $digits[$counter]. $plural.' '.$hundred:$words[floor($number / 10) * 10].' '.$words[$number % 10]. ' '.$digits[$counter].$plural.' '.$hundred;
+            } else $str[] = null;
+        }
+        $Rupees = implode('', array_reverse($str));
+        $paise = ($decimal > 0) ? "." . ($words[$decimal / 10] . " " . $words[$decimal % 10]) . ' Paise' : '';
+        return ($Rupees ? $Rupees . 'Rupees ' : '') . $paise;
     }
 }
