@@ -484,7 +484,7 @@ class InvoiceHelper extends BaseHelper
             } else if ($obj->sd_hsn_id["value"] == 5 && $meter_id == 2) {
                 $unit_price = $obj->price;
                 $hsn_id = 5;
-            } else if ($obj->sd_hsn_id["value"] == 7 && $meter_id == 3) {
+            } else if ($obj->sd_hsn_id["value"] == 7 && $meter_id == 5) {
                 $unit_price = $obj->price;
                 $hsn_id = 7;
             }
