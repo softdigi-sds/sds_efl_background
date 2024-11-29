@@ -24,6 +24,23 @@ use Site\Helpers\TableHelper as Table;
 class TaxillaExcelHelper extends BaseHelper
 {
 
+    public function getCity($state_name)
+    {
+        $city = [
+            "WB" => "West Bengal",
+            "DL" => "Delhi",
+            "HR" => "Haryana",
+            "TS" => "Telangana",
+            "MH" => "Maharashtra",
+            "TN" => "Tamil Nadu",
+            "AP" => "Andhra Pradesh",
+            "KA" => "Karnataka",
+            "RJ" => "Rajasthan",
+
+        ];
+        return isset($city[$state_name]) ? $city[$state_name] : $state_name;
+    }
+
     public function getData($_dt)
     {
         $cgst = $sgst =  $_dt->total * (9 / 100);
@@ -36,8 +53,15 @@ class TaxillaExcelHelper extends BaseHelper
         if ($_dt->type == 3 || $_dt->type == 5 || $_dt->type == 7) {
             $units = "UNITS";
         }
+        $_dt->of_pin = trim(str_replace("-", "", $_dt->of_pin));
+        $_dt->pin_code = trim(str_replace("-", "", $_dt->pin_code));
         $due_date = "05/12/2024";
         $invoice_date = "25/11/2024";
+        $_dt->address_one = substr($_dt->address_one, 0, 99);
+        $_dt->address_two = substr($_dt->address_one, 0, 99);
+        $_dt->of_add = substr($_dt->of_add, 0, 99);
+        $_dt->customer_city = $this->getCity($_dt->customer_state);
+        $_dt->off_city_test = $this->getCity($_dt->of_state);
         $out = [
             "Transaction Reference Number" => $_dt->invoice_number,
             "Invoice Number" => $_dt->invoice_number,
@@ -55,9 +79,9 @@ class TaxillaExcelHelper extends BaseHelper
             "Org Code" => $_dt->of_gst,
             "Supplier Address 1" => $_dt->of_add,
             "Supplier Address 2" => "",
-            "Supplier City" => $_dt->of_city,
+            "Supplier City" => $_dt->off_city_test,
             "Supplier State" => $_dt->of_state,
-            "Supplier PIN Code" => str_replace("-", "", $_dt->of_pin),
+            "Supplier PIN Code" => $_dt->of_pin,
             "Goods/Services" => " Services",
             "HSN Code" => $_dt->type_hsn,
             "HSN Description" => $_dt->type_desc,
@@ -87,15 +111,15 @@ class TaxillaExcelHelper extends BaseHelper
             "Buyer Legal Name" => $_dt->billing_to,
             "Buyer Address 1" => $_dt->address_one,
             "Buyer Address 2" => $_dt->address_two,
-            "Buyer City" => $_dt->customer_state,
+            "Buyer City" => $_dt->customer_city,
             "Buyer State" => $_dt->customer_state,
-            "Buyer PIN Code" => str_replace("-", "", $_dt->pin_code),
+            "Buyer PIN Code" => $_dt->pin_code,
             "Ship to Legal Name" => $_dt->billing_to,
             "Ship to Address 1" => $_dt->address_one,
             "Ship to Address 2" => $_dt->address_two,
-            "Ship to City" =>  $_dt->customer_state,
+            "Ship to City" => $_dt->customer_city,
             "Ship to State" => $_dt->customer_state,
-            "Ship to PIN Code" => str_replace("-", "", $_dt->pin_code),
+            "Ship to PIN Code" => $_dt->pin_code,
             "Receiver E mail ID" => "",
             "LR No" => "",
             "Transporter Name" => "",
@@ -185,14 +209,14 @@ class TaxillaExcelHelper extends BaseHelper
             "Cess Rate" => "",
             "State Cess Rate" => "",
             "Cess Non Advol Value" => "",
-            "EMPTY_1"=>"",
-            "EMPTY_2"=>"",
-            "EMPTY_3"=>"",
-            "EMPTY_4"=>"",
-            "EMPTY_5"=>"",
-            "EMPTY_6"=>"",
-            "EMPTY_7"=>"",
-            "EMPTY_8"=>"",                      
+            "EMPTY_1" => "",
+            "EMPTY_2" => "",
+            "EMPTY_3" => "",
+            "EMPTY_4" => "",
+            "EMPTY_5" => "",
+            "EMPTY_6" => "",
+            "EMPTY_7" => "",
+            "EMPTY_8" => "",
             "Compensation Cess Amount" => "",
             "State Cess Amount" => "",
             "State Cess Non Advol Amount" => "",

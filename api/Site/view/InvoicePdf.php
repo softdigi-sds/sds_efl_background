@@ -116,6 +116,10 @@ class InvoicePdf
         .page-break {
           page-break-before: always;
         }
+
+        body {
+          font-family: Arial, sans-serif;
+        }
       </style>
     </head>
 
@@ -232,8 +236,8 @@ class InvoicePdf
       <div style="font-size:11px">
         <table style="width:100% ; border-collapse:collapse" border="1">
           <tr>
-            <th colspan="2" style="text-align: left;">Net Invoice Value: <?php echo strtoupper(SmartGeneral::convertToIndianCurrency($this->get("total_amount")))?>
-             </th>
+            <th colspan="2" style="text-align: left;">Net Invoice Value: <?php echo strtoupper(SmartGeneral::convertToIndianCurrency($this->get("total_amount"))) ?>
+            </th>
           </tr>
           <tr>
             <th colspan="2" style="text-align: left;">

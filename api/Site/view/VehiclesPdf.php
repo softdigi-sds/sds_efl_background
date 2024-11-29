@@ -46,18 +46,19 @@ class VehiclesPdf
     return $html;
   }
 
-  public function getParkingInfo(){
+  public function getParkingInfo()
+  {
     $rate_data =  isset($this->data["rate_data"]) ? $this->data["rate_data"] : null;
-    if($rate_data==null){
+    if ($rate_data == null) {
       return "";
     }
     $hsn_id = isset($rate_data->sd_hsn_id["value"]) ? $rate_data->sd_hsn_id["value"] : 0;
-   // $price = $rate_dat
-    if($hsn_id==1){
-      return "1) Parking Fee per vehicle ".$rate_data->price."/-, 2) Unit price ".$rate_data->extra_price."/- per unit 3) 
-      Min units to bill ".$rate_data->min_units_vehicle." per vehicle";
-    }else if($hsn_id==2){
-      return "1) Parking Fee per vehicle ".$rate_data->price."/";
+    // $price = $rate_dat
+    if ($hsn_id == 1) {
+      return "1) Rate per vehicle " . $rate_data->price . "/-, 2) Unit price " . $rate_data->extra_price . "/- per unit 3) 
+      Min units to bill " . $rate_data->min_units_vehicle . " per vehicle";
+    } else if ($hsn_id == 2) {
+      return "1) Rate per vehicle " . $rate_data->price . "/";
     }
     return "";
   }
@@ -75,7 +76,7 @@ class VehiclesPdf
         <tr>
           <td>BILLING FOR EV CHARGING</td>
           <td>' . $this->get("vendor_company") . '</td>
-          <td colspan="3">'.$this->getParkingInfo().'</td>
+          <td colspan="3">' . $this->getParkingInfo() . '</td>
         </tr>
         <tr>
           <td></td>
@@ -113,7 +114,7 @@ class VehiclesPdf
           <td></td>
           <td></td>
         </tr>';
-    if ($this->get("type") == 1) {
+    if ($this->get("type") == 1 && $this->get("extra_units") > 0) {
       $html .= '<tr>
           <td>Max units allowed per Vehicle</td>
           <td>' . $this->get("min_units_vehicle") . '</td>
@@ -140,7 +141,7 @@ class VehiclesPdf
   public static function getHtml($data)
   {
     //return "<p>Hello text</p>";
-   // var_dump($data);
+    // var_dump($data);
     //exit();
     $obj = new self($data);
     return $obj->get_html();

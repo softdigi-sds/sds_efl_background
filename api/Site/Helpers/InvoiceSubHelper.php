@@ -56,7 +56,8 @@ class InvoiceSubHelper extends BaseHelper
     //  7=>  "CHARGING UNITS BILLLED AS PER SUB METER FOR LOCATION MAINTENANCE(E)
 
 
-    public function getCustomerData($customer_id){
+    public function getCustomerData($customer_id)
+    {
 
         $customer_specific = [
             29 => [
@@ -70,11 +71,11 @@ class InvoiceSubHelper extends BaseHelper
     public function modifyTypes($types, $customer_id)
     {
         $customer_specific = $this->getCustomerData($customer_id);
-       // var_dump($customer_specific);
-        if(empty($customer_specific)){
+        // var_dump($customer_specific);
+        if (empty($customer_specific)) {
             return $types;
         }
-       // var_dump( $customer_specific);
+        // var_dump( $customer_specific);
         //exit();
         foreach ($types as $key => $desc) {
             $types[$key] = isset($customer_specific[$key]) ? $customer_specific[$key] : $desc;
@@ -89,9 +90,9 @@ class InvoiceSubHelper extends BaseHelper
         $id = $_data["type"];
         $bill_type = isset($_data["bill_type"]) ? $_data["bill_type"] : "CMS";
         $customer_id = isset($_data["sd_customer_id"]) ? $_data["sd_customer_id"] : 0;
-       // var_dump($_data);
+        // var_dump($_data);
         $_type_default = [
-            1 => "ELECTRIC VEHICLE CHARGING-PARKING FEE",
+            1 => "ELECTRIC VEHICLE CHARGING+PARKING FEE",
             2 => "ELECTRIC VEHICLE PARKING FEE",
             3 => "UNITS BILLED AS PER ",
             4 => "RENT FOR ACCOMMODATION  ",
@@ -101,7 +102,7 @@ class InvoiceSubHelper extends BaseHelper
             8 => "SUPPORT SERVICES FEE ",
             100 => "EXTRA UNITS BILLED AS PER  "
         ];
-        $_type = $this->modifyTypes($_type_default,$customer_id);
+        $_type = $this->modifyTypes($_type_default, $customer_id);
         $desc = isset($_type[$id]) ? $_type[$id] : "";
         $cms_sub_meter = $bill_type == "SUB_METER" ? "SUB METER" : "CMS";
         if ($id == 1 || $id == 2) {
