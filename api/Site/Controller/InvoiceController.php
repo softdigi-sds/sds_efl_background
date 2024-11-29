@@ -99,6 +99,19 @@ class InvoiceController extends BaseController
         $this->response($bill_id);
     }
 
+    public function updateRemarks()
+    {
+        $_invoice_id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+        if ($_invoice_id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid Invoice  ID");
+        }
+        $_data_in = [
+            "remarks"=>SmartData::post_data("remarks","STRING")
+        ];
+        $this->_helper->update(["remarks"],$_data_in,$_invoice_id);      
+        $this->response(1);
+    }
+
     /**
      * 
      */

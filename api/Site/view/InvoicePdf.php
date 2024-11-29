@@ -240,7 +240,7 @@ class InvoicePdf
               Hub Name :<?php echo $this->get("hub_id") ?></th>
           </tr>
           <tr>
-            <th colspan="2" style="text-align: left;">Remarks :</th>
+            <th colspan="2" style="text-align: left;">Remarks : <?php echo $this->get("remarks") ?></th>
           </tr>
           <tr>
             <th colspan="2" style="text-align: left;">Banker Details: ICICIBANK,HYDERABAD,ACCOUNTNO:777705120721,IFSCCODE:ICIC0000008.</th>

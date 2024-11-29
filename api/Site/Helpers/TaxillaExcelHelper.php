@@ -100,7 +100,7 @@ class TaxillaExcelHelper extends BaseHelper
             "LR No" => "",
             "Transporter Name" => "",
             "Vehicle No" => "",
-            "Remarks" => "",
+            "Remarks" => $_dt->remarks,
             "Auto Generate IRN" => "Yes",
             "Auto Generate EWB" => "NO",
             "EWB Sub Supply Type" => "",
