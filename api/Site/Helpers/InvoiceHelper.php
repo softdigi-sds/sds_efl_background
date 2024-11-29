@@ -848,12 +848,12 @@ class InvoiceHelper extends BaseHelper
 
         $html = InvoicePdf::getHtml($data);
         $qr_path = "images/" . $id . "_qr.png";
-        // $qr_text = isset($data->signed_qr_code) ? $data->signed_qr_code : "test";
-        $qr_text = isset($data->irn_number) ? $data->irn_number : "test";
+        $qr_text = isset($data->signed_qr_code) ? $data->signed_qr_code : "test";
+        //$qr_text = isset($data->irn_number) ? $data->irn_number : "test";
         SmartQrCodeHelper::generateQrImage($qr_text, $qr_path);
         $html_modified = SiteImageHelper::replaceImages($html, ["QR_CODE" => $id . "_qr.png"]);
-       // echo $html_modified;
-       //  exit();
+        //echo $html_modified;
+       // exit();
         $this->initiate_curl($html_modified, $id);
     }
 
@@ -941,6 +941,7 @@ class InvoiceHelper extends BaseHelper
             ];
             $sub_data[] = $_sub_data;
         }
+
         $_data_out = (array)$_data;
         $_data_out["avg_vehicles"] = $_data_out["total_vehicles"];
         $_data_out["sub_data"] = $sub_data;
@@ -969,11 +970,28 @@ class InvoiceHelper extends BaseHelper
             ];
             $sub_data[] = $_sub_data;
         }
+        $customer_rates  = $this->getCustomerRates($_data->sd_vendor_rate_id);
+      //  var_dump( $customer_rates);
+       
+        $rate_data = null;
+        foreach($customer_rates as $r_obj){
+            //var_dump($r_obj);
+           // echo "<br/><br/>";
+            $_type_id = isset($r_obj->sd_vehicle_types_id) && isset($r_obj->sd_vehicle_types_id["value"]) ? $r_obj->sd_vehicle_types_id["value"] : 0;
+           // echo  $_type_id . "    h " .  $_obj->vehicle_id . "<br/>";
+            if( $_type_id==$_obj->vehicle_id){
+                $rate_data = $r_obj;
+              
+            }
+        }
+       // var_dump($rate_data);
+        //exit();
         //  var_dump($sub_data);
         $_data_out = [
             "invoice_number" => $_data->invoice_number,
             "type_desc" => $_obj->type_desc,
             "type" => $_obj->type,
+            "hub_name"=>$_data->hub_id,
             "vendor_company" => $_data->vendor_company,
             "total_vehicles" => $_obj->count,
             "avg_vehicles" => $_obj->month_avg,
@@ -981,7 +999,8 @@ class InvoiceHelper extends BaseHelper
             "units_allowed" => $_obj->allowed_units,
             "total_units" => $_obj->total_units,
             "extra_units" => $_obj->extra_units,
-            "total_vehicles_charge" => $_obj->total
+            "total_vehicles_charge" => $_obj->total,
+            "rate_data"=>$rate_data
         ];
 
         // $_data_out["avg_vehicles"] = $_data_out["total_vehicles"];

@@ -136,6 +136,7 @@ class BillController extends BaseController
         $out = [];
         foreach ($invoice_data as $obj) {
             $index = $obj->sd_invoice_id . "_" . $obj->sd_customer_id;
+            $obj->type_desc = $obj->type_desc . " (from ".$obj->start_date." to ".$obj->end_date.")";
             if ($obj->sd_customer_id == $customer_id) {
                 if (isset($single_invoices[$index])) {
                     $single_invoices[$index][] = $obj;

@@ -147,11 +147,14 @@ class SmartGeneral
             if ($number) {
                 $plural = (($counter = count($str)) && $number > 9) ? 's' : null;
                 $hundred = ($counter == 1 && $str[0]) ? ' and ' : null;
-                $str [] = ($number < 21) ? $words[$number].' '. $digits[$counter]. $plural.' '.$hundred:$words[floor($number / 10) * 10].' '.$words[$number % 10]. ' '.$digits[$counter].$plural.' '.$hundred;
+                $str [] = ($number < 21) ? $words[(int)$number].' '. $digits[$counter]. $plural.' '.$hundred:$words[(int)(floor($number / 10) * 10)].' '.$words[(int)($number % 10)]. ' '.$digits[$counter].$plural.' '.$hundred;
             } else $str[] = null;
         }
         $Rupees = implode('', array_reverse($str));
-        $paise = ($decimal > 0) ? " " . ($words[$decimal / 10] . " " . $words[$decimal % 10]) . ' Paise' : '';
+        $decimal_ten = intval($decimal / 10);
+        $decimal_mod_ten = intval($decimal % 10);
+        $paise = "";
+        $paise = ($decimal > 0) ? " " . ($words[$decimal_ten] . " " . $words[ $decimal_mod_ten]) . ' Paise' : '';
         return ($Rupees ? $Rupees . 'Rupees ' : '') . $paise;
     }
 }
