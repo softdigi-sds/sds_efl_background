@@ -134,6 +134,7 @@ class BillController extends BaseController
         $customer_id = 3;
         $single_invoices = [];
         $out = [];
+        $states=[];
         foreach ($invoice_data as $obj) {
             $index = $obj->sd_invoice_id . "_" . $obj->sd_customer_id;
             $obj->type_desc = $obj->type_desc . " (from ".$obj->start_date." to ".$obj->end_date.")";
@@ -144,7 +145,10 @@ class BillController extends BaseController
                     $single_invoices[$index] = [$obj];
                 }
             } else {
+                $sno = isset($states[$obj->of_state]) ? $states[$obj->of_state] + 1 : 1;
+                $obj->sno = $sno;
                 $out[] = $this->_taxilla_helper->getData($obj);
+                $states[$obj->of_state] =$sno;
             }
         }
         foreach ($single_invoices as $sinvoice) {
@@ -154,6 +158,9 @@ class BillController extends BaseController
             $s_obj->type_hsn = 998714;
             $s_obj->count = 1;
             $s_obj->price = $s_obj->total = $this->getTotal($sinvoice);
+            $sno = isset($states[$s_obj->of_state]) ? $states[$s_obj->of_state] + 1 : 1;
+            $s_obj->sno = $sno;
+            $states[$obj->of_state] =$sno;
             $out[] = $this->_taxilla_helper->getData($sinvoice[0]);
         }
         //
