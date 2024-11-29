@@ -51,7 +51,7 @@ class TaxillaExcelHelper extends BaseHelper
         }
         $units = "NOS";
         if ($_dt->type == 3 || $_dt->type == 5 || $_dt->type == 7) {
-            $units = "UNITS";
+            $units = "UNT";
         }
         $_dt->of_pin = trim(str_replace("-", "", $_dt->of_pin));
         $_dt->pin_code = trim(str_replace("-", "", $_dt->pin_code));
