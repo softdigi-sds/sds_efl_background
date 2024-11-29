@@ -55,7 +55,8 @@ class TaxillaExcelHelper extends BaseHelper
         }
         $_dt->of_pin = trim(str_replace("-", "", $_dt->of_pin));
         $_dt->pin_code = trim(str_replace("-", "", $_dt->pin_code));
-        $due_date = "05/12/2024";
+        $_dt->of_pin = intval($_dt->of_pin);
+        $due_date = "10/12/2024";
         $invoice_date = "25/11/2024";
         $_dt->address_one = substr($_dt->address_one, 0, 99);
         $_dt->address_two = substr($_dt->address_one, 0, 99);

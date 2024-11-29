@@ -247,7 +247,7 @@ class InvoiceHelper extends BaseHelper
             "t10.*,t1.invoice_number,t2.vendor_company,t3.hub_id,t1.remarks,
             t4.billing_to,t4.address_one,t4.address_two,
         t4.gst_no,t2.pan_no,t4.pin_code, t1.ack_date,t1.sd_customer_id,t1.sd_hub_id",
-         "DATE_FORMAT(t22.bill_start_date,'%d-%m-%Y') as start_date, DATE_FORMAT(t22.bill_end_date,'%d-%m-%Y') as end_date",
+            "DATE_FORMAT(t22.bill_start_date,'%d-%m-%Y') as start_date, DATE_FORMAT(t22.bill_end_date,'%d-%m-%Y') as end_date",
             "t6.address_one as of_add,t6.gst_no as of_gst,t6.pan_no as of_pan,t6.office_city as of_city,t6.pin_code as of_pin",
             "(SELECT t20.short_name FROM " . Table::STATEDB . " t20 WHERE t20.ID = t6.state LIMIT 0,1) as of_state",
             "(SELECT t21.short_name FROM " . Table::STATEDB . " t21 WHERE t21.ID = t4.state_name LIMIT 0,1) as customer_state",
@@ -295,7 +295,7 @@ class InvoiceHelper extends BaseHelper
             $data->state_cees = "0.00";
             $data->roundoff_amt = "0.00";
             $data->other_charge = "0.00";
-            $data->due_date = "05/12/2024";
+            $data->due_date = "10/12/2024";
             $data->invoice_date = "25/11/2024";
         }
         return $data;
@@ -543,7 +543,7 @@ class InvoiceHelper extends BaseHelper
                     "extra_units" => $units_count - $allowed_units > 0 ? $units_count - $allowed_units : 0
                 ];
                 $out[] = $_dt;
-                $remaining_units = round($units_count - $allowed_units,2);
+                $remaining_units = round($units_count - $allowed_units, 2);
                 if ($allowed_units > 0 && $units_count > 0 && $remaining_units > 0) {
 
                     $remaining_unit_price = $remaining_units * $extra_price;
@@ -573,7 +573,7 @@ class InvoiceHelper extends BaseHelper
             //  echo "<br/><br/>Unit price " . $unit_price_test . "   meter id " . $meter_id . " <br/><br/><br/>";
             if ($unit_price_test  > 0 &&  $_u_obj->count > 0) {
                 //  echo "<br/><br/> E = Unit price " . $unit_price_test . "   meter id " . $meter_id . " <br/><br/>";
-                $_u_obj->count = round($_u_obj->count,2);
+                $_u_obj->count = round($_u_obj->count, 2);
                 $_dt = [
                     "type" => $hsn_id,
                     "vehicle_id" => $meter_id,
@@ -582,7 +582,7 @@ class InvoiceHelper extends BaseHelper
                     "month_avg" => 0,
                     "min_units" => $_u_obj->count,
                     "allowed_units" => $_u_obj->count,
-                    "total" => round($_u_obj->count * $unit_price_test,2)
+                    "total" => round($_u_obj->count * $unit_price_test, 2)
                 ];
                 $out[] = $_dt;
             }
@@ -827,11 +827,11 @@ class InvoiceHelper extends BaseHelper
         $data->sub_data_vehicle = $_sub_data_vehicle;
         // modify the subdata here to have single line item in pdf 
         $customer_id = 3;
-        if($data->sd_customer_id===$customer_id){
-            $s_obj =$data->sub_data[0];
+        if ($data->sd_customer_id === $customer_id) {
+            $s_obj = $data->sub_data[0];
             $s_obj->type_hsn = 998714;
-            $s_obj->type_desc = "ELECTRIC VEHICLE PARKING AND CHARGING FEE 3WL AND 4WL (from ".$data->start_date." to ".$data->end_date.")";
-            $s_obj->type =101; 
+            $s_obj->type_desc = "ELECTRIC VEHICLE PARKING AND CHARGING FEE 3WL AND 4WL (from " . $data->start_date . " to " . $data->end_date . ")";
+            $s_obj->type = 101;
             $s_obj->count = 1;
             $s_obj->price = $s_obj->total = $this->getTotal($data->sub_data);
             $data->sub_data = [$s_obj];
@@ -853,7 +853,7 @@ class InvoiceHelper extends BaseHelper
         SmartQrCodeHelper::generateQrImage($qr_text, $qr_path);
         $html_modified = SiteImageHelper::replaceImages($html, ["QR_CODE" => $id . "_qr.png"]);
         //echo $html_modified;
-       // exit();
+        // exit();
         $this->initiate_curl($html_modified, $id);
     }
 
@@ -971,27 +971,26 @@ class InvoiceHelper extends BaseHelper
             $sub_data[] = $_sub_data;
         }
         $customer_rates  = $this->getCustomerRates($_data->sd_vendor_rate_id);
-      //  var_dump( $customer_rates);
-       
+        //  var_dump( $customer_rates);
+
         $rate_data = null;
-        foreach($customer_rates as $r_obj){
+        foreach ($customer_rates as $r_obj) {
             //var_dump($r_obj);
-           // echo "<br/><br/>";
+            // echo "<br/><br/>";
             $_type_id = isset($r_obj->sd_vehicle_types_id) && isset($r_obj->sd_vehicle_types_id["value"]) ? $r_obj->sd_vehicle_types_id["value"] : 0;
-           // echo  $_type_id . "    h " .  $_obj->vehicle_id . "<br/>";
-            if( $_type_id==$_obj->vehicle_id){
+            // echo  $_type_id . "    h " .  $_obj->vehicle_id . "<br/>";
+            if ($_type_id == $_obj->vehicle_id) {
                 $rate_data = $r_obj;
-              
             }
         }
-       // var_dump($rate_data);
+        // var_dump($rate_data);
         //exit();
         //  var_dump($sub_data);
         $_data_out = [
             "invoice_number" => $_data->invoice_number,
             "type_desc" => $_obj->type_desc,
             "type" => $_obj->type,
-            "hub_name"=>$_data->hub_id,
+            "hub_name" => $_data->hub_id,
             "vendor_company" => $_data->vendor_company,
             "total_vehicles" => $_obj->count,
             "avg_vehicles" => $_obj->month_avg,
@@ -1000,7 +999,7 @@ class InvoiceHelper extends BaseHelper
             "total_units" => $_obj->total_units,
             "extra_units" => $_obj->extra_units,
             "total_vehicles_charge" => $_obj->total,
-            "rate_data"=>$rate_data
+            "rate_data" => $rate_data
         ];
 
         // $_data_out["avg_vehicles"] = $_data_out["total_vehicles"];
