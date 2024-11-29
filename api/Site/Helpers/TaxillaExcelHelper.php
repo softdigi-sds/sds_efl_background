@@ -36,7 +36,7 @@ class TaxillaExcelHelper extends BaseHelper
         if ($_dt->type == 3 || $_dt->type == 5 || $_dt->type == 7) {
             $units = "UNITS";
         }
-        $due_date = "05-12-2024";
+        $due_date = "05/12/2024";
         $invoice_date = "25/11/2024";
         $out = [
             "Transaction Reference Number" => $_dt->invoice_number,
@@ -87,7 +87,7 @@ class TaxillaExcelHelper extends BaseHelper
             "Buyer Legal Name" => $_dt->billing_to,
             "Buyer Address 1" => $_dt->address_one,
             "Buyer Address 2" => $_dt->address_two,
-            "Buyer City" => "",
+            "Buyer City" => $_dt->customer_state,
             "Buyer State" => $_dt->customer_state,
             "Buyer PIN Code" => str_replace("-", "", $_dt->pin_code),
             "Ship to Legal Name" => $_dt->billing_to,
