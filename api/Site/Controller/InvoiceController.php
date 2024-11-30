@@ -30,7 +30,7 @@ class InvoiceController extends BaseController
         $this->_bill_helper = new BillHelper($this->db);
         //   $this->_invoice_pdf_helper = new InvoicePdf($this->db);
         $this->_invoice_sub_helper = new InvoiceSubHelper($this->db);
-        $this->_hub_helper= new HubsHelper($this->db);
+        $this->_hub_helper = new HubsHelper($this->db);
     }
 
     /**
@@ -106,9 +106,9 @@ class InvoiceController extends BaseController
             \CustomErrorHandler::triggerInvalid("Invalid Invoice  ID");
         }
         $_data_in = [
-            "remarks"=>SmartData::post_data("remarks","STRING")
+            "remarks" => SmartData::post_data("remarks", "STRING")
         ];
-        $this->_helper->update(["remarks"],$_data_in,$_invoice_id);      
+        $this->_helper->update(["remarks"], $_data_in, $_invoice_id);
         $this->response(1);
     }
 
@@ -128,14 +128,14 @@ class InvoiceController extends BaseController
 
     public function getAllSelect()
     {
-        $id = SmartData::post_data("sd_customer_id","INTEGER"); 
+        $id = SmartData::post_data("sd_customer_id", "INTEGER");
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid Customer ID");
         }
 
         $sql = "sd_customer_id=:sd_customer_id";
-        $_data = ["sd_customer_id"=>$id];
-        $data = $this->_helper->getAllData($sql,$_data,["ID as value, invoice_number as label"]);
+        $_data = ["sd_customer_id" => $id];
+        $data = $this->_helper->getAllData($sql, $_data, ["ID as value, invoice_number as label"]);
         $this->response($data);
     }
 
@@ -202,7 +202,7 @@ class InvoiceController extends BaseController
         $this->_invoice_sub_helper->deleteWithInvoiceId($id);
         // insert and get id
         $this->_helper->deleteOneId($id);
-        
+
         $this->_bill_helper->updateBillDetails($invoicd_data->sd_bill_id);
         $out = new \stdClass();
         $out->msg = "Removed Successfully";
@@ -220,14 +220,14 @@ class InvoiceController extends BaseController
         // generate the invoide 
         $data = $this->_helper->getOneData($id);
         $path = "invoice" . DS . $id . DS . "invoice.pdf";
-        if (isset($data->ID) && $data->status!==10) {
-            $this->_helper->prepareGenerateInvoice($data,$this->_invoice_sub_helper);
-        }else{
+        if (isset($data->ID) && $data->status !== 10) {
+            $this->_helper->prepareGenerateInvoice($data, $this->_invoice_sub_helper);
+        } else {
             $path = "invoice" . DS . $id . DS . "invoicesign.pdf";
         }
-       
+        $fname = "invoice-" . time() . ".pdf";
         $path = SmartFileHelper::getDataPath() .  $path;
-        $this->responseFileBase64($path);
+        $this->responseFileBase64($path, $fname);
     }
 
 
@@ -238,10 +238,10 @@ class InvoiceController extends BaseController
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
         $data = $this->_helper->getOneData($id);
-        $this->_helper->prepareGenerateInvoice($data,$this->_invoice_sub_helper);        
+        $this->_helper->prepareGenerateInvoice($data, $this->_invoice_sub_helper);
         $output = $this->_helper->initiate_curl_sign($data);
         $token = isset($output->data) ? $output->data : "";
-        $this->_helper->update(["sign_token"],["sign_token"=>$token],$id);
+        $this->_helper->update(["sign_token"], ["sign_token" => $token], $id);
         $this->response($output);
     }
 
@@ -251,46 +251,47 @@ class InvoiceController extends BaseController
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $token = SmartData::post_data("token","STRING");
+        $token = SmartData::post_data("token", "STRING");
         $output = $this->_helper->verify_sign_info($token);
         $status = isset($output->data) && isset($output->data->task_status) ? $output->data->task_status : "FAILED";
-        if($status==="COMPLETED"){
+        if ($status === "COMPLETED") {
             $content = $output->data->content;
-            $this->_helper->storeSignedFile($id,$content);
+            $this->_helper->storeSignedFile($id, $content);
             $update_data = [
-                "status"=>10,
-                "signed_invoice"=>$content
+                "status" => 10,
+                "signed_invoice" => $content
             ];
-            $this->_helper->update(["status","signed_time","signed_by","signed_invoice"],$update_data,$id);
+            $this->_helper->update(["status", "signed_time", "signed_by", "signed_invoice"], $update_data, $id);
             $this->responseMsg("Signature Verified");
-        }else{
-           // \CustomErrorHandler::triggerInvalid("Signature Filed");
+        } else {
+            // \CustomErrorHandler::triggerInvalid("Signature Filed");
         }
     }
 
 
-    public function insertManual(){
-        $id = SmartData::post_data("bill_id","INTEGER");
-        if($id < 1){
+    public function insertManual()
+    {
+        $id = SmartData::post_data("bill_id", "INTEGER");
+        if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Bill_id is required");
         }
         $data = [];
         $sub_data = SmartData::post_array_data("rate_data");
-        if(count($sub_data)  < 1 ){
+        if (count($sub_data)  < 1) {
             \CustomErrorHandler::triggerInvalid("Atleast one invoice item is required");
         }
         $total_taxable = 0;
         $tax = "18";
-        foreach($sub_data as $key=>$_sub_arr){
+        foreach ($sub_data as $key => $_sub_arr) {
             $total_taxable += floatval($_sub_arr["price"]);
             $tax = floatval($_sub_arr["tax"]);
-            $tax_value = floatval($_sub_arr["price"]) * (floatval($_sub_arr["price"]) / 100 );
+            $tax_value = floatval($_sub_arr["price"]) * (floatval($_sub_arr["price"]) / 100);
             $sub_arr["total"] = floatval($_sub_arr["price"]) +  $tax_value;
             $sub_data[$key] = $_sub_arr;
         }
         $data["sd_hub_id"]  = SmartData::post_select_value("sd_hubs_id");
         $hub_data = $this->_hub_helper->getOneData($data["sd_hub_id"]);
-        
+
         $data["sd_customer_id"]  = SmartData::post_select_value("sd_customer_id");
         $data["sd_customer_address_id"]  = SmartData::post_select_value("sd_customer_address_id");
         $data["sd_vendor_rate_id"]   = 0;
@@ -309,7 +310,6 @@ class InvoiceController extends BaseController
         $this->_bill_helper->updateBillDetails($id);
         $this->db->_db->commit();
         $this->responseMsg("Invoice Added/Updated");
-
     }
 
 
@@ -322,24 +322,24 @@ class InvoiceController extends BaseController
         $_dt = $data = $this->_helper->getOneData($id);
         if (isset($data->ID)) {
             $data->sub_data = $this->_invoice_sub_helper->getAllByInvoiceId($data->ID);
-            $_sub_data_vehicle=[];
-            foreach(  $data->sub_data  as $_obj){
-               // var_dump($_obj);
-                if($_obj->vehicle_id > 0 && $_obj->count > 0 && ($_obj->type==1 || $_obj->type==2)){
-                    $_item_data = $this->_helper->getVehicleCount($_dt ,$_obj->vehicle_id,$_obj->price);
+            $_sub_data_vehicle = [];
+            foreach ($data->sub_data  as $_obj) {
+                // var_dump($_obj);
+                if ($_obj->vehicle_id > 0 && $_obj->count > 0 && ($_obj->type == 1 || $_obj->type == 2)) {
+                    $_item_data = $this->_helper->getVehicleCount($_dt, $_obj->vehicle_id, $_obj->price);
                     $_sub_data_vehicle[] = $_item_data;
                 }
             }
-            $data->sub_data_vehicle = $_sub_data_vehicle;           
+            $data->sub_data_vehicle = $_sub_data_vehicle;
         }
-       // var_dump($data);
-       // exit();
-        $this->_helper->generateInvoicePdf($id,$data);
+        // var_dump($data);
+        // exit();
+        $this->_helper->generateInvoicePdf($id, $data);
         // $html = InvoicePdf::getHtml([]);
         // $path = "invoice" . DS . $id . DS . "invoice.pdf";
         // SmartPdfHelper::genPdf($html,$path);
-      //  $this->_helper->generateInvoicePdf($id);
-      //  exit();
+        //  $this->_helper->generateInvoicePdf($id);
+        //  exit();
         // if ($data < 1) {
         //     \CustomErrorHandler::triggerInvalid("Provide Data ");
         // }

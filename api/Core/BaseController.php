@@ -118,10 +118,10 @@ class BaseController
         //exit();
         if (file_exists($full_path)) {
             header('Content-type: application/pdf');
-	        header('Content-Disposition: inline; filename='.basename($full_path).'');
+            header('Content-Disposition: inline; filename=' . basename($full_path) . '');
             header('Content-Transfer-Encoding: binary');
             header('Content-Length: ' . filesize($full_path));
-            @readfile($full_path); 
+            @readfile($full_path);
             /*
             header('Content-Description: File Transfer');
             header('Content-Transfer-Encoding: binary');
@@ -176,13 +176,16 @@ class BaseController
         // }
     }
 
-    public function responseFileBase64($file_path)
+    public function responseFileBase64($file_path, $file_name = "")
     {
         if (file_exists($file_path)) {
             $content = file_get_contents($file_path);
             $base_64 = base64_encode($content);
             $db = new \stdClass();
             $db->content = $base_64;
+            if (strlen($file_name) > 3) {
+                $db->file_name = $file_name;
+            }
             $this->response($db);
         } else {
             \CustomErrorHandler::triggerInvalid("Invalid File Path");
