@@ -287,7 +287,7 @@ class InvoiceController extends BaseController
         $total_taxable = 0;
         $tax = "18";
         foreach ($sub_data as $key => $_sub_arr) {
-            $total_taxable += floatval($_sub_arr["price"]);
+            $total_taxable += floatval($_sub_arr["price"] * $_sub_arr["count"]);
             $tax = floatval($_sub_arr["tax_value"]);
             $tax_value = floatval($_sub_arr["price"]) * (floatval($tax) / 100);
             $_sub_arr["total"] = (floatval($_sub_arr["price"]) +  $tax_value) * $_sub_arr["count"];
@@ -313,7 +313,7 @@ class InvoiceController extends BaseController
         $this->_helper->insertUpdateSingle($data);
         $this->_bill_helper->updateBillDetails($id);
         $this->db->_db->commit();
-        $this->responseMsg("Invoice Added/Updated");
+        // $this->responseMsg("Invoice Added/Updated");
     }
 
 

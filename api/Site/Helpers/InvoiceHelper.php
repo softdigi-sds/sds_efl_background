@@ -716,6 +716,9 @@ class InvoiceHelper extends BaseHelper
     {
         $invoice_type = isset($data["invoice_type"]) ? $data["invoice_type"] : 1;
         $exist_data = $this->checkInvoiceExists($data["sd_bill_id"], $data["sd_hub_id"], $data["sd_customer_id"], $invoice_type);
+        if ($invoice_type == 2) {
+            $exist_data = $this->checkInvoiceExistsAddress($data["sd_bill_id"], $data["sd_hub_id"], $data["sd_customer_id"], $data["sd_customer_address_id"], $invoice_type);
+        }
         if (isset($exist_data->ID)) {
             $update_columns = [
                 "total_taxable",
@@ -761,7 +764,9 @@ class InvoiceHelper extends BaseHelper
             $exist_data = $this->checkInvoiceExistsAddress($data["sd_bill_id"], $data["sd_hub_id"], $data["sd_customer_id"], $data["sd_customer_address_id"], $invoice_type);
         }
         $data["invoice_date"] = date("Y-m-d");
+        var_dump($exist_data);
         $sub_data = $data["sub_data"];
+        var_dump($sub_data);
         if (isset($exist_data->ID)) {
             if ($exist_data->status  < 5) {
                 // to avoid updatation after irn number generated

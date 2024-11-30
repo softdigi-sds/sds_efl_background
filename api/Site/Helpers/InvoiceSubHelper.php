@@ -218,11 +218,12 @@ class InvoiceSubHelper extends BaseHelper
             "allowed_units",
             "total",
             "total_units",
-            "extra_units"
+            "extra_units",
+            "tax_value"
         ];
         $vh_id = isset($_data["vehicle_id"]) ? $_data["vehicle_id"] : 0;
-        $_data["type_desc"] = isset($_data["type"]) ? $this->getInvoiceDesc($_data,   $vh_id) : $_data["type_desc"];
-        $_data["type_hsn"] =  isset($_data["type"]) ? $this->getInvoiceHSN($_data["type"]) :  $_data["type_hsn"];
+        $_data["type_desc"] = isset($_data["type"]) && $_data["type"] > 0 ? $this->getInvoiceDesc($_data,   $vh_id) : $_data["type_desc"];
+        $_data["type_hsn"] =  isset($_data["type"]) && $_data["type"] > 0  ? $this->getInvoiceHSN($_data["type"]) :  $_data["type_hsn"];
         $id_inserted = $this->insert($columns_insert, $_data);
         return  $id_inserted;
     }
