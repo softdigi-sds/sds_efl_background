@@ -221,12 +221,12 @@ class InvoiceHelper extends BaseHelper
         return $data;
     }
 
-    public function getOneWithInvoiceNumber($invoice_number)
+    public function getOneWithInvoiceNumber($invoice_number, $bill_id)
     {
         $from = Table::INVOICE . " t1";
         $select = ["t1.ID,t1.status"];
-        $sql = "t1.invoice_number=:ino";
-        $data_in = ["ino" => $invoice_number];
+        $sql = "t1.invoice_number=:ino AND t1.sd_bill_id=:bill_id";
+        $data_in = ["ino" => $invoice_number, "bill_id" => $bill_id];
         $group_by = "";
         $order_by = "";
         $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, true, []);

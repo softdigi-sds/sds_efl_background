@@ -278,6 +278,10 @@ class BillController extends BaseController
         if (strlen($content) < 10) {
             \CustomErrorHandler::triggerInvalid("Please upload Excel to Import");
         }
+        $bill_id = isset($this->post["id"]) ? $this->post["id"] : 0;
+        if ($bill_id < 1) {
+            \CustomErrorHandler::triggerInvalid("bill id required");
+        }
         //
         $insert_id = $this->_import_helper->insertData("CONSUMPTION");
         // excel path 
@@ -298,14 +302,14 @@ class BillController extends BaseController
                 "ack_date" => $excel->getDate($excel->get_cell_value("FT", $i)),
                 "irn_number" => $excel->get_cell_value("C", $i),
             ];
-            // var_dump($obj);
+            //var_dump($obj);
             if ($obj["invoice_number"] == "" || $obj["ack_no"] == "") {
                 $obj["status"] = 10;
                 $obj["msg"] = "Improper Data";
                 $out[$obj["invoice_number"]] = $obj;
             } else {
-                $rate_data = $this->_invoice_helper->getOneWithInvoiceNumber($obj["invoice_number"]);
-                // var_dump($rate_data);
+                $rate_data = $this->_invoice_helper->getOneWithInvoiceNumber($obj["invoice_number"], $bill_id);
+                //var_dump($rate_data);
                 if (isset($rate_data->ID)) {
                     if ($rate_data->status != 10) {
                         $in_data = $obj;
@@ -325,7 +329,7 @@ class BillController extends BaseController
                 }
             }
         }
-        //var_dump($out);
+        // var_dump($out);
         $this->response(array_values($out));
     }
 
@@ -346,6 +350,10 @@ class BillController extends BaseController
         $content = isset($excel_import["content"]) ? $excel_import["content"] : "";
         if (strlen($content) < 10) {
             \CustomErrorHandler::triggerInvalid("Please upload Zip to Import");
+        }
+        $bill_id = isset($this->post["id"]) ? $this->post["id"] : 0;
+        if ($bill_id < 1) {
+            \CustomErrorHandler::triggerInvalid("bill id required");
         }
         //
         $insert_id = $this->_import_helper->insertData("IMPORT");
@@ -369,14 +377,14 @@ class BillController extends BaseController
         foreach ($xlsx_files as $obj) {
             //$invoice_number = $obj["nameonly"];
             // $this->checkUpdateInvoiceData($id, $obj);
-            $out = $this->processExcelImport($obj["path"], $out);
+            $out = $this->processExcelImport($obj["path"], $out, $bill_id);
         }
         //  var_dump($out);
         // 
         $this->response($out);
     }
 
-    private function processExcelImport($dest_path, $out)
+    private function processExcelImport($dest_path, $out, $bill_id)
     {
         $excel = new SmartExcellHelper($dest_path, 0);
         $excel->init_excel();
@@ -394,7 +402,7 @@ class BillController extends BaseController
                 $obj["msg"] = "Improper Data";
                 $out[$obj["invoice_number"]] = $obj;
             } else {
-                $rate_data = $this->_invoice_helper->getOneWithInvoiceNumber($obj["invoice_number"]);
+                $rate_data = $this->_invoice_helper->getOneWithInvoiceNumber($obj["invoice_number"], $bill_id);
                 // var_dump($rate_data);
                 if (isset($rate_data->ID)) {
                     if ($rate_data->status != 10) {
