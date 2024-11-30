@@ -68,7 +68,8 @@ class SmartGeneral
         return isset($_ENV[$index_name]) ? $_ENV[$index_name] : "";
     }
 
-    static public function convertTwoDigits($number, $words) {
+    static public function convertTwoDigits($number, $words)
+    {
         $num = intval($number);
         if ($num < 20) {
             return $words[$num];
@@ -80,25 +81,47 @@ class SmartGeneral
     static public function convertToWords($number)
     {
         $words = array(
-            0 => '', 1 => 'One', 2 => 'Two', 3 => 'Three', 4 => 'Four', 5 => 'Five', 
-            6 => 'Six', 7 => 'Seven', 8 => 'Eight', 9 => 'Nine', 10 => 'Ten', 
-            11 => 'Eleven', 12 => 'Twelve', 13 => 'Thirteen', 14 => 'Fourteen', 
-            15 => 'Fifteen', 16 => 'Sixteen', 17 => 'Seventeen', 18 => 'Eighteen', 19 => 'Nineteen', 
-            20 => 'Twenty', 30 => 'Thirty', 40 => 'Forty', 50 => 'Fifty', 
-            60 => 'Sixty', 70 => 'Seventy', 80 => 'Eighty', 90 => 'Ninety'
+            0 => '',
+            1 => 'One',
+            2 => 'Two',
+            3 => 'Three',
+            4 => 'Four',
+            5 => 'Five',
+            6 => 'Six',
+            7 => 'Seven',
+            8 => 'Eight',
+            9 => 'Nine',
+            10 => 'Ten',
+            11 => 'Eleven',
+            12 => 'Twelve',
+            13 => 'Thirteen',
+            14 => 'Fourteen',
+            15 => 'Fifteen',
+            16 => 'Sixteen',
+            17 => 'Seventeen',
+            18 => 'Eighteen',
+            19 => 'Nineteen',
+            20 => 'Twenty',
+            30 => 'Thirty',
+            40 => 'Forty',
+            50 => 'Fifty',
+            60 => 'Sixty',
+            70 => 'Seventy',
+            80 => 'Eighty',
+            90 => 'Ninety'
         );
-    
+
         $places = ['', 'Thousand', 'Lakh', 'Crore'];
-    
+
         if ($number == 0) {
             return 'Zero';
         }
-    
+
         $output = '';
         $numStr = strval($number);
         $length = strlen($numStr);
         $placeLevel = 0;
-    
+
         // Handle first 3 digits separately to match the Indian numbering system
         $prefixLength = $length % 2 === 0 ? 2 : 1;
         if ($length > 3) {
@@ -109,37 +132,59 @@ class SmartGeneral
                 $placeLevel = 2; // Lakh level
             }
         }
-        
+
         $numStr = substr($numStr, $prefixLength);
         $numGroups = str_split($numStr, 2);
-    
+
         foreach ($numGroups as $group) {
             if (intval($group) > 0) {
                 $output .= self::convertTwoDigits($group, $words) . ' ' . ($placeLevel > 0 ? $places[$placeLevel] . ' ' : '');
             }
             $placeLevel++;
         }
-    
+
         return trim(preg_replace('/\s+/', ' ', $output));
     }
 
-    static public function convertToIndianCurrency($number) {
+    static public function convertToIndianCurrency($number)
+    {
         $decimal = round($number - ($no = floor($number)), 2) * 100;
         $hundred = null;
         $digits_length = strlen($no);
         $i = 0;
         $str = array();
-        $words = array(0 => '', 1 => 'one', 2 => 'two',
-            3 => 'three', 4 => 'four', 5 => 'five', 6 => 'six',
-            7 => 'seven', 8 => 'eight', 9 => 'nine',
-            10 => 'ten', 11 => 'eleven', 12 => 'twelve',
-            13 => 'thirteen', 14 => 'fourteen', 15 => 'fifteen',
-            16 => 'sixteen', 17 => 'seventeen', 18 => 'eighteen',
-            19 => 'nineteen', 20 => 'twenty', 30 => 'thirty',
-            40 => 'forty', 50 => 'fifty', 60 => 'sixty',
-            70 => 'seventy', 80 => 'eighty', 90 => 'ninety');
-        $digits = array('', 'hundred','thousand','lakh', 'crore');
-        while( $i < $digits_length ) {
+        $words = array(
+            0 => '',
+            1 => 'one',
+            2 => 'two',
+            3 => 'three',
+            4 => 'four',
+            5 => 'five',
+            6 => 'six',
+            7 => 'seven',
+            8 => 'eight',
+            9 => 'nine',
+            10 => 'ten',
+            11 => 'eleven',
+            12 => 'twelve',
+            13 => 'thirteen',
+            14 => 'fourteen',
+            15 => 'fifteen',
+            16 => 'sixteen',
+            17 => 'seventeen',
+            18 => 'eighteen',
+            19 => 'nineteen',
+            20 => 'twenty',
+            30 => 'thirty',
+            40 => 'forty',
+            50 => 'fifty',
+            60 => 'sixty',
+            70 => 'seventy',
+            80 => 'eighty',
+            90 => 'ninety'
+        );
+        $digits = array('', 'hundred', 'thousand', 'lakh', 'crore');
+        while ($i < $digits_length) {
             $divider = ($i == 2) ? 10 : 100;
             $number = floor($no % $divider);
             $no = floor($no / $divider);
@@ -147,14 +192,14 @@ class SmartGeneral
             if ($number) {
                 $plural = (($counter = count($str)) && $number > 9) ? 's' : null;
                 $hundred = ($counter == 1 && $str[0]) ? ' and ' : null;
-                $str [] = ($number < 21) ? $words[(int)$number].' '. $digits[$counter]. $plural.' '.$hundred:$words[(int)(floor($number / 10) * 10)].' '.$words[(int)($number % 10)]. ' '.$digits[$counter].$plural.' '.$hundred;
+                $str[] = ($number < 21) ? $words[(int)$number] . ' ' . $digits[$counter] . $plural . ' ' . $hundred : $words[(int)(floor($number / 10) * 10)] . ' ' . $words[(int)($number % 10)] . ' ' . $digits[$counter] . $plural . ' ' . $hundred;
             } else $str[] = null;
         }
         $Rupees = implode('', array_reverse($str));
         $decimal_ten = intval($decimal / 10);
-        $decimal_mod_ten = intval($decimal % 10);
+        $decimal_mod_ten = intval(round($decimal % 10));
         $paise = "";
-        $paise = ($decimal > 0) ? " " . ($words[$decimal_ten] . " " . $words[ $decimal_mod_ten]) . ' Paise' : '';
+        $paise = ($decimal > 0) ? " " . ($words[$decimal_ten] . " " . $words[$decimal_mod_ten]) . ' Paise' : '';
         return ($Rupees ? $Rupees . 'Rupees ' : '') . $paise;
     }
 }
