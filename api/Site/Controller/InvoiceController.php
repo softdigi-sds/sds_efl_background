@@ -175,6 +175,10 @@ class InvoiceController extends BaseController
         $data = $this->_helper->getOneData($id);
         if (isset($data->ID)) {
             $data->sub_data = $this->_invoice_sub_helper->getAllByInvoiceId($data->ID);
+            // for other things
+            $data->sd_hubs_id = ["value" => $data->sd_hub_id, "label" => $data->hub_id];
+            $data->sd_customer_id = ["value" => $data->sd_customer_id, "label" => $data->vendor_company];
+            $data->sd_customer_address_id = ["value" => $data->sd_customer_address_id, "label" => $data->address_one];
         }
         $this->response($data);
     }
@@ -276,7 +280,7 @@ class InvoiceController extends BaseController
             \CustomErrorHandler::triggerInvalid("Bill_id is required");
         }
         $data = [];
-        $sub_data = SmartData::post_array_data("rate_data");
+        $sub_data = SmartData::post_array_data("sub_data");
         if (count($sub_data)  < 1) {
             \CustomErrorHandler::triggerInvalid("Atleast one invoice item is required");
         }
@@ -284,9 +288,9 @@ class InvoiceController extends BaseController
         $tax = "18";
         foreach ($sub_data as $key => $_sub_arr) {
             $total_taxable += floatval($_sub_arr["price"]);
-            $tax = floatval($_sub_arr["tax"]);
-            $tax_value = floatval($_sub_arr["price"]) * (floatval($_sub_arr["price"]) / 100);
-            $sub_arr["total"] = floatval($_sub_arr["price"]) +  $tax_value;
+            $tax = floatval($_sub_arr["tax_value"]);
+            $tax_value = floatval($_sub_arr["price"]) * (floatval($tax) / 100);
+            $_sub_arr["total"] = (floatval($_sub_arr["price"]) +  $tax_value) * $_sub_arr["count"];
             $sub_data[$key] = $_sub_arr;
         }
         $data["sd_hub_id"]  = SmartData::post_select_value("sd_hubs_id");
