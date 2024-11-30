@@ -216,7 +216,7 @@ class InvoiceHelper extends BaseHelper
         $sql = "t1.sd_bill_id=:bill_id";
         $data_in = ["bill_id" => $bill_id];
         $group_by = "";
-        $order_by = "";
+        $order_by = "invoice_serial_number ASC";
         $data = $this->getAll($select, $from, $sql, $group_by, $order_by, $data_in, false, []);
         return $data;
     }

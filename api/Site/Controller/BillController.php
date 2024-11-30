@@ -134,10 +134,10 @@ class BillController extends BaseController
         $customer_id = 3;
         $single_invoices = [];
         $out = [];
-        $states=[];
+        $states = [];
         foreach ($invoice_data as $obj) {
             $index = $obj->sd_invoice_id . "_" . $obj->sd_customer_id;
-            $obj->type_desc = $obj->type_desc . " (from ".$obj->start_date." to ".$obj->end_date.")";
+            $obj->type_desc = $obj->type_desc . " (from " . $obj->start_date . " to " . $obj->end_date . ")";
             if ($obj->sd_customer_id == $customer_id) {
                 if (isset($single_invoices[$index])) {
                     $single_invoices[$index][] = $obj;
@@ -148,19 +148,19 @@ class BillController extends BaseController
                 $sno = isset($states[$obj->of_state]) ? $states[$obj->of_state] + 1 : 1;
                 $obj->sno = $sno;
                 $out[] = $this->_taxilla_helper->getData($obj);
-                $states[$obj->of_state] =$sno;
+                $states[$obj->of_state] = $sno;
             }
         }
         foreach ($single_invoices as $sinvoice) {
             $s_obj = $sinvoice[0];
-            $s_obj->type_desc = "ELECTRIC VEHICLE PARKING & CHARGING FEE 3WL & 4WL (from ".$s_obj->start_date." to ".$s_obj->end_date.")";
-            $s_obj->type =101; 
+            $s_obj->type_desc = "ELECTRIC VEHICLE PARKING & CHARGING FEE 3WL & 4WL (from " . $s_obj->start_date . " to " . $s_obj->end_date . ")";
+            $s_obj->type = 101;
             $s_obj->type_hsn = 998714;
             $s_obj->count = 1;
             $s_obj->price = $s_obj->total = $this->getTotal($sinvoice);
             $sno = isset($states[$s_obj->of_state]) ? $states[$s_obj->of_state] + 1 : 1;
             $s_obj->sno = $sno;
-            $states[$obj->of_state] =$sno;
+            $states[$obj->of_state] = $sno;
             $out[] = $this->_taxilla_helper->getData($sinvoice[0]);
         }
         //
@@ -179,32 +179,32 @@ class BillController extends BaseController
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
         $invoice_data =  $this->_invoice_helper->getInvoiceByBillId($id);
-   
+
 
         $filePaths = [];
-        foreach($invoice_data as $obj){
-            if($obj->status==10){
+        foreach ($invoice_data as $obj) {
+            if ($obj->status == 10) {
                 $folder = $obj->vendor_company;
-                $file = str_replace("/","-",$obj->invoice_number).".pdf";
+                $file = str_replace("/", "-", $obj->invoice_number) . ".pdf";
                 $path = "invoice" . DS . $obj->ID . DS . "invoicesign.pdf";
-                $_arr = ["path"=>$path,"name"=>$file];
+                $_arr = ["path" => $path, "name" => $file];
                 //var_dump($_arr);
-                if(!isset($filePaths[$folder])){
-                  //  echo "entered <br/>";
+                if (!isset($filePaths[$folder])) {
+                    //  echo "entered <br/>";
                     $filePaths[$folder] = [$_arr];
-                }else{
+                } else {
                     $filePaths[$folder][] = $_arr;
-                   // echo "entered second <br/>";
+                    // echo "entered second <br/>";
                 }
             }
         }
-        if(empty($filePaths)){
+        if (empty($filePaths)) {
             CustomErrorHandler::triggerInvalid("No Singed Invoices Found");
         }
         $zip_path = SmartFileHelper::getDataPath() . "bills" . DS . $id . DS . "export.zip";
         SmartFileHelper::createDirectoryRecursive($zip_path);
-        SmartFileHelper::createZipWithSubfolders($filePaths,$zip_path);  
-        $this->responseFileBase64( $zip_path );  
+        SmartFileHelper::createZipWithSubfolders($filePaths, $zip_path);
+        $this->responseFileBase64($zip_path);
         //var_dump($filePaths);
         //$this->response($filePaths);
 
@@ -330,12 +330,15 @@ class BillController extends BaseController
     }
 
     /**
-     * 
+     * FR : singed qr code
+     * FS : ack no
+     * FT : act _Date
+     * Fu : sined invoice
      */
     public function importZip()
     {
         $id = Data::post_data("id", "INTEGER");
-        $excel_import = Data::post_array_data("excel");
+        $excel_import = Data::post_array_data("import_zip");
         if (!is_array($excel_import) || count($excel_import) < 1) {
             \CustomErrorHandler::triggerInvalid("Please upload Zip to Import");
         }
@@ -358,15 +361,60 @@ class BillController extends BaseController
         SmartFileHelper::extractZip($dest_path, "");
         // $this->response($out);
         $xlsx_files = SmartFileHelper::getFilesDirectory($zip_dir, 'xlsx');
-        //var_dump($xlsx_files);
+        // var_dump($xlsx_files);
         if (count($xlsx_files) < 1) {
             \CustomErrorHandler::triggerInvalid("Please upload a valid zip file");
         }
+        $out  = [];
         foreach ($xlsx_files as $obj) {
             //$invoice_number = $obj["nameonly"];
-            $this->checkUpdateInvoiceData($id, $obj);
+            // $this->checkUpdateInvoiceData($id, $obj);
+            $out = $this->processExcelImport($obj["path"], $out);
         }
+        //  var_dump($out);
         // 
-        $this->responseMsg("Imported Successfully");
+        $this->response($out);
+    }
+
+    private function processExcelImport($dest_path, $out)
+    {
+        $excel = new SmartExcellHelper($dest_path, 0);
+        $excel->init_excel();
+        for ($i = 2; $i <= $excel->get_last_row(); $i++) {
+            $obj = [
+                "invoice_number" => $excel->get_cell_value("A", $i),
+                "ack_no" => $excel->get_cell_value("FS", $i),
+                "signed_qr_code" => $excel->get_cell_value("FR", $i),
+                "ack_date" => $excel->getDate($excel->get_cell_value("FT", $i)),
+                "irn_number" => $excel->get_cell_value("C", $i),
+            ];
+            // var_dump($obj);
+            if ($obj["invoice_number"] == "" || $obj["ack_no"] == "") {
+                $obj["status"] = 10;
+                $obj["msg"] = "Improper Data";
+                $out[$obj["invoice_number"]] = $obj;
+            } else {
+                $rate_data = $this->_invoice_helper->getOneWithInvoiceNumber($obj["invoice_number"]);
+                // var_dump($rate_data);
+                if (isset($rate_data->ID)) {
+                    if ($rate_data->status != 10) {
+                        $in_data = $obj;
+                        $in_data["status"] = 5;
+                        $this->_invoice_helper->updateInvoiceData($rate_data->ID, $in_data);
+                        //
+                        $obj["status"] = 5;
+                    } else {
+                        $obj["status"] = 10;
+                        $obj["msg"] = "Invoice Already Signed";
+                        $out[$obj["invoice_number"]]  = $obj;
+                    }
+                } else {
+                    $obj["status"] = 10;
+                    $obj["msg"] = "Invoice Number Not Existed";
+                    $out[$obj["invoice_number"]]  = $obj;
+                }
+            }
+        }
+        return $out;
     }
 }
