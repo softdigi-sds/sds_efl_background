@@ -690,6 +690,14 @@ class InvoiceHelper extends BaseHelper
         return $data;
     }
 
+    public function checkInvoiceExistsAddress($bill_id, $hub_id, $vendor_id, $address, $invoice_type)
+    {
+        $sql = " sd_bill_id=:bill_id AND sd_hub_id=:sd_hub_id AND sd_customer_id=:vend_id AND sd_customer_address_id=:add_id AND invoice_type=:type";
+        $data_in = ["bill_id" => $bill_id, "sd_hub_id" => $hub_id, "vend_id" => $vendor_id, "type" => $invoice_type, "add_id" => $address];
+        $data = $this->getAll(["*"], TABLE::INVOICE, $sql, "", "", $data_in, true, []);
+        return $data;
+    }
+
     public function getInvoiceId($bill_id, $invoice_number)
     {
         $sql = " sd_bill_id=:bill_id AND invoice_number=:invoice_number";
@@ -749,6 +757,9 @@ class InvoiceHelper extends BaseHelper
     {
         $invoice_type = isset($data["invoice_type"]) ? $data["invoice_type"] : 1;
         $exist_data = $this->checkInvoiceExists($data["sd_bill_id"], $data["sd_hub_id"], $data["sd_customer_id"], $invoice_type);
+        if ($invoice_type == 2) {
+            $exist_data = $this->checkInvoiceExistsAddress($data["sd_bill_id"], $data["sd_hub_id"], $data["sd_customer_id"], $data["sd_customer_address_id"], $invoice_type);
+        }
         $data["invoice_date"] = date("Y-m-d");
         $sub_data = $data["sub_data"];
         if (isset($exist_data->ID)) {
