@@ -314,6 +314,7 @@ class InvoiceController extends BaseController
         $this->_bill_helper->updateBillDetails($id);
         $this->db->_db->commit();
         // $this->responseMsg("Invoice Added/Updated");
+
     }
 
 
