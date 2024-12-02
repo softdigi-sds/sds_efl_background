@@ -55,7 +55,7 @@ class InvoicePdf
           <th>Quantity</th>
           <th>Unit</th>
           <th>Unit Price (RS)</th>
-          <th>Unit Price (RS)</th>
+          <th>Discount (RS)</th>
           <th>Freight</th>
           <th>Taxable Amount(RS)</th>
           <th>Total Rate (GST+Cess|State Cess+Cess Non.Advol)</th>
