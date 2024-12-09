@@ -219,7 +219,7 @@ class CommonRouter
         $this->_routes["/invoice/get_sign_info"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getSingInfo"];
         $this->_routes["/invoice/verify_sign"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "checkSingInfo"];
         $this->_routes["/invoice/update_remarks"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "updateRemarks"];
-     
+        $this->_routes["/invoice/status_update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "updateStatus"];
     
     
     }

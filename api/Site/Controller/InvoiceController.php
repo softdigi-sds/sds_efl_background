@@ -359,4 +359,16 @@ class InvoiceController extends BaseController
         // }
 
     }
+    public function updateStatus()
+    {
+        $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+        if ($id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid ID");
+        }
+        $status = SmartData::post_data("status", "INTEGER");
+        $columns = ["status"];
+        $data_in = ["status" => $status];
+        $this->_helper->update($columns, $this->post, $id);
+        $this->responseMsg("Status Updated Successfully");
+    }
 }
