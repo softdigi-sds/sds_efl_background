@@ -179,7 +179,7 @@ class CommonRouter
         $this->_routes["/bill/import_excel"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "importExcel"];
         $this->_routes["/bill/get_all_select"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllSelect"];
         $this->_routes["/bill/export_zip"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "exportZip"];
-      
+        $this->_routes["/bill/status_update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "updateStatus"];
 
         //  $this->_routes["/bill/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
     }

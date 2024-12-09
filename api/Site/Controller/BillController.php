@@ -46,6 +46,8 @@ class BillController extends BaseController
         $this->_helper->validate(BillHelper::validations, $columns, $this->post);
         $columns[] = "created_by";
         $columns[] = "created_time";
+        $columns[] = "status";
+        $this->post["status"] = 5;
         $exist_data = $this->_helper->checkBillExists($this->post["bill_start_date"], $this->post["bill_end_date"]);
         if (isset($exist_data->ID)) {
             \CustomErrorHandler::triggerInvalid("Bill Exists");
@@ -424,5 +426,17 @@ class BillController extends BaseController
             }
         }
         return $out;
+    }
+    public function updateStatus()
+    {
+        $id = isset($this->post["id"]) ? intval($this->post["id"]) : 0;
+        if ($id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invalid ID");
+        }
+        $status = Data::post_data("status", "INTEGER");
+        $columns = ["status"];
+        $data_in = ["status" => $status];
+        $this->_helper->update($columns, $this->post, $id);
+        $this->responseMsg("Status Updated Successfully");
     }
 }

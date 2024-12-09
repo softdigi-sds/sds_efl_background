@@ -33,7 +33,8 @@ class BillHelper extends BaseHelper
         "vehicle_amount" => SmartConst::SCHEMA_FLOAT,
         "others" => SmartConst::SCHEMA_FLOAT,
         "gst_amount" => SmartConst::SCHEMA_FLOAT,
-        "total_amount" => SmartConst::SCHEMA_FLOAT
+        "total_amount" => SmartConst::SCHEMA_FLOAT,
+        "status" => SmartConst::SCHEMA_INTEGER
     ];
     /**
      * 
