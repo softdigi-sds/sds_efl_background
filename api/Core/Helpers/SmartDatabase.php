@@ -127,7 +127,7 @@ class SmartDatabase {
      */
     public function query($query){   
         try {
-          // echo "quer y = " . $query;
+          // echo "quer y = " . $query . " <br/>";
            $this->stmt = $this->dbh->prepare($query);        
 
           } catch (\PDOException $e) {

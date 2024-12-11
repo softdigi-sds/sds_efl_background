@@ -41,7 +41,7 @@ class BillController extends BaseController
      */
     public function insert()
     {
-        $columns = ["bill_start_date", "bill_end_date"];
+        $columns = ["bill_start_date", "bill_end_date","invoice_date","due_date"];
         // do validations
         $this->_helper->validate(BillHelper::validations, $columns, $this->post);
         $columns[] = "created_by";
@@ -67,7 +67,7 @@ class BillController extends BaseController
         if ($id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid ID");
         }
-        $columns = ["bill_start_date", "bill_end_date"];
+        $columns = ["bill_start_date", "bill_end_date","invoice_date","due_date"];
         // do validations
         $this->_helper->validate(BillHelper::validations, $columns, $this->post);
         // extra columns
@@ -80,6 +80,9 @@ class BillController extends BaseController
         $this->db->_db->commit();
         $this->response($id);
     }
+
+
+   
     /**
      * 
      */

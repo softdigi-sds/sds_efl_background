@@ -8,6 +8,7 @@ use Core\Helpers\SmartAuthHelper;
 use Core\Helpers\SmartData as Data;
 use Site\Helpers\EflOfficeHelper;
 use Site\Helpers\HubsHelper;
+use Site\Helpers\EflOfficeGroupsHelper;
 
 
 
@@ -16,12 +17,14 @@ class EflOfficeController extends BaseController
 
     private EflOfficeHelper $_helper;
     private HubsHelper $_hubs_helper;
+    private EflOfficeGroupsHelper $_group_helper;
     function __construct($params)
     {
         parent::__construct($params);
         // 
         $this->_helper = new EflOfficeHelper($this->db);
         $this->_hubs_helper = new HubsHelper($this->db);
+        $this->_group_helper = new EflOfficeGroupsHelper($this->db);
     }
 
     /**
@@ -51,7 +54,10 @@ class EflOfficeController extends BaseController
         }
         // insert and get id
         $id = $this->_helper->insert($columns, $this->post);
-
+        // INSERT AND UPDATE SUB TINGS
+        if (!($this->post["role"]) == NULL) {
+            $this->_group_helper->insertRoles($id, $this->post["role"]);
+        }
         //
         $this->response($id);
     }
@@ -83,6 +89,12 @@ class EflOfficeController extends BaseController
         $this->db->_db->Begin();
         // insert and get id
         $id = $this->_helper->update($columns, $this->post, $id);
+        if (!($this->post["role"]) == NULL) {
+            $this->_group_helper->insertRoles($id, $this->post["role"]);
+        } else {
+            // delete from user role table
+            $this->_group_helper->deleteHubRole($id);
+        }
         $this->db->_db->commit();
         $this->response($id);
     }
@@ -105,6 +117,9 @@ class EflOfficeController extends BaseController
         }
         // insert and get id
         $data = $this->_helper->getOneData($id);
+        if(isset($data->ID)){ 
+           $data->role = $this->_group_helper->getSelectedRolesWithHubId($data->ID);
+        }
         $this->response($data);
     }
     /**

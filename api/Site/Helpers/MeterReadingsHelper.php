@@ -154,6 +154,19 @@ class MeterReadingsHelper extends BaseHelper
         return $data;
     }
 
+    public function getMeterDataWithHubAndDates($hub_id, $start_date,$end_date)
+    {
+        $from = Table::METER_READINGS . " t1 ";
+        $sql = "t1.sd_hub_id=:id AND t1.meter_start_date=:start_date AND t1.meter_end_date=:end_date";
+        $select = ["(t1.meter_end-t1.meter_start) as meter_reading"];
+        $data_in = ["id" => $hub_id, "start_date" => $start_date,"end_date"=>$end_date];
+      //  var_dump($data_in);
+        $data =  $this->getAll($select, $from, $sql, "", "",  $data_in, true, [], false);  
+       // var_dump($data);
+        //exit();      
+        return isset($data->meter_reading) ? $data->meter_reading : 0;
+    }
+
     public function checkMeterDataExists($hub_id,$start_date)
     {
         $from = Table::METER_READINGS . " t1 ";

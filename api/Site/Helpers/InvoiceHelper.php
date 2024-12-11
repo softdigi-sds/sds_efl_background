@@ -245,8 +245,9 @@ class InvoiceHelper extends BaseHelper
         INNER JOIN " . Table::EFLOFFICE . " t6 ON t3.sd_efl_office_id=t6.ID ";
         $select = [
             "t10.*,t1.invoice_number,t2.vendor_company,t3.hub_id,t1.remarks,
-            t4.billing_to,t4.address_one,t4.address_two,
-        t4.gst_no,t2.pan_no,t4.pin_code, t1.ack_date,t1.sd_customer_id,t1.sd_hub_id",
+            t4.billing_to,t4.address_one,t4.address_two,DATE_FORMAT(t22.invoice_date,'%d/%m/%Y') as invoice_date,
+            DATE_FORMAT(t22.due_date,'%d/%m/%Y') as due_date,
+            t4.gst_no,t2.pan_no,t4.pin_code, t1.ack_date,t1.sd_customer_id,t1.sd_hub_id",
             "DATE_FORMAT(t22.bill_start_date,'%d-%m-%Y') as start_date, DATE_FORMAT(t22.bill_end_date,'%d-%m-%Y') as end_date",
             "t6.address_one as of_add,t6.gst_no as of_gst,t6.pan_no as of_pan,t6.office_city as of_city,t6.pin_code as of_pin",
             "(SELECT t20.short_name FROM " . Table::STATEDB . " t20 WHERE t20.ID = t6.state LIMIT 0,1) as of_state",
@@ -347,6 +348,12 @@ class InvoiceHelper extends BaseHelper
         return  $rateSubHelper->getAllByVendorRateId($rate_id);
     }
 
+    private function getDefaultHsnDesc()
+    {
+        $rateSubHelper = new VendorRateSubHelper($this->db);
+        return  $rateSubHelper->getAllHsnsDesc();
+    }
+
 
     public function insertInvoiceNew($bill_id, $bill_data)
     {
@@ -362,6 +369,7 @@ class InvoiceHelper extends BaseHelper
             "gst_amount" => 0,
             "total_amount" => 0,
         ];
+        $default_data = $this->getDefaultHsnDesc();
 
         $_r_data = $this->getAllMappedCustomers();
         //  echo "count " .  count($_r_data);
@@ -369,6 +377,8 @@ class InvoiceHelper extends BaseHelper
             //echo " hub id " . $_obj->sd_hubs_id . " cid " .  $_obj->sd_customer_id . " <br/>";
             $_data = $this->prepareSingleVendorData($bill_id, $_obj, $start_date, $end_date,  $date_count);
             $_data["invoice_type"] = 1;
+            $_data["hsn_default"] =  $default_data->hsn_default;
+            $_data["desc_default"] =  $default_data->desc_default;
             // var_dump($_data);
             if ($_data["total_taxable"] > 0) {
                 $this->insertUpdateSingle($_data);
@@ -493,12 +503,12 @@ class InvoiceHelper extends BaseHelper
         return [$unit_price, $hsn_id];
     }
 
-
+    // this is only calcuation for ac units
     private function calculateTotal($arr)
     {
         $total = 0;
         foreach ($arr as $obj) {
-            if (isset($obj->count)) {
+            if (isset($obj->count) && $obj->ID==1) {
                 $total = $total + $obj->count;
             }
         }
@@ -764,9 +774,9 @@ class InvoiceHelper extends BaseHelper
             $exist_data = $this->checkInvoiceExistsAddress($data["sd_bill_id"], $data["sd_hub_id"], $data["sd_customer_id"], $data["sd_customer_address_id"], $invoice_type);
         }
         $data["invoice_date"] = date("Y-m-d");
-        var_dump($exist_data);
+       // var_dump($exist_data);
         $sub_data = $data["sub_data"];
-        var_dump($sub_data);
+       // var_dump($sub_data);
         if (isset($exist_data->ID)) {
             if ($exist_data->status  < 5) {
                 // to avoid updatation after irn number generated

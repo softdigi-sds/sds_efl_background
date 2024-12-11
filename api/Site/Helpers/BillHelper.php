@@ -26,6 +26,8 @@ class BillHelper extends BaseHelper
     const schema = [
         "bill_start_date" => SmartConst::SCHEMA_DATE,
         "bill_end_date" => SmartConst::SCHEMA_DATE,
+        "invoice_date" => SmartConst::SCHEMA_DATE,
+        "due_date" => SmartConst::SCHEMA_DATE,
         "created_by" => SmartConst::SCHEMA_CUSER_ID,
         "created_time" => SmartConst::SCHEMA_CDATETIME,
         "total_invoices" => SmartConst::SCHEMA_INTEGER,
@@ -46,10 +48,19 @@ class BillHelper extends BaseHelper
                 "msg" => "Please Specify bill start date"
             ]
         ],
-
-
-
         "bill_end_date" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Specify bill end date"
+            ]
+        ],
+        "invoice_date" => [
+            [
+                "type" => SmartConst::VALID_REQUIRED,
+                "msg" => "Please Specify bill end date"
+            ]
+        ],
+        "due_date" => [
             [
                 "type" => SmartConst::VALID_REQUIRED,
                 "msg" => "Please Specify bill end date"
@@ -143,14 +154,15 @@ class BillHelper extends BaseHelper
         //return $data;
     }
 
-    public function updateBillDetails($id){
+    public function updateBillDetails($id)
+    {
         $from = Table::INVOICE . " t1";
         $select = [" SUM(gst_amount) as gst_amount,SUM(total_amount) as total_amount,COUNT(ID) as total_invoices"];
         $sql = " t1.sd_bill_id=:ID";
         $data_in = ["ID" => $id];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
-        if(isset( $data->total_invoices)){
-            $this->update(["gst_amount","total_amount","total_invoices"],(array)$data,$id);
+        if (isset($data->total_invoices)) {
+            $this->update(["gst_amount", "total_amount", "total_invoices"], (array)$data, $id);
         }
     }
 }

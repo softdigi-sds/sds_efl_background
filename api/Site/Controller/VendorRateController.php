@@ -244,8 +244,8 @@ class VendorRateController extends BaseController
         $id = $this->_helper->insert($columns, $_data);
         // after that insert the sub data 
         $rate_data = $_data["rate_data"];
-        var_dump($_data);
-        var_dump($rate_data);
+       // var_dump($_data);
+        //var_dump($rate_data);
         $this->_sub_helper->insert_update_data($id, $rate_data);
         //  exit();
     }
@@ -347,6 +347,13 @@ class VendorRateController extends BaseController
             ];
             $this->_helper->update(["sd_customer_id"], $_udata, $obj->ID);
         }
-        var_dump($_data);
+        //var_dump($_data);
+    }
+
+
+    /**** efl rates  */
+    public function getAllSelectHsns(){
+        $_data = $this->_sub_helper->getAllSelectHsns();
+        $this->response($_data);
     }
 }

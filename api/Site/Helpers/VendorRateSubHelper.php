@@ -13,6 +13,7 @@ use Core\Helpers\SmartConst;
 
 //
 use Site\Helpers\TableHelper as Table;
+use stdClass;
 
 /**
  * Description of Data
@@ -147,15 +148,17 @@ class VendorRateSubHelper extends BaseHelper
     public function getAllByVendorRateId($sd_vendor_rate_id)
     {
         $from = Table::VENDOR_RATE_SUB . " t1 
-        LEFT JOIN " . Table::VEHICLE_TYPES . " t2 ON t1.sd_vehicle_types_id=t2.ID";
-        $select = ["t1.*,t2.vehicle_type"];
+        LEFT JOIN " . Table::VEHICLE_TYPES . " t2 ON t1.sd_vehicle_types_id=t2.ID 
+         LEFT JOIN " . Table::SD_EFL_HSN . " t3 ON t1.sd_hsn_id=t3.ID
+        ";
+        $select = ["t1.*,t2.vehicle_type,t3.title_label"];
         $sql = "t1.sd_vendor_rate_id=:id";
         $data_in = ["id" => $sd_vendor_rate_id];
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
         // $out = [];
         foreach ($data as $key => $obj) {
             $hsn = $obj->sd_hsn_id;
-            $obj->sd_hsn_id = ["value" => $hsn, "label" => $this->getTypes($hsn)];
+            $obj->sd_hsn_id = ["value" => $hsn, "label" =>$obj->title_label];
             $obj->sd_vehicle_types_id = ["value" => $obj->sd_vehicle_types_id, "label" => $obj->vehicle_type];
             $rate_type = $obj->rate_type;
             $obj->rate_type = ["value" => $rate_type, "label" => $this->getRateTypes($rate_type)];
@@ -271,4 +274,35 @@ class VendorRateSubHelper extends BaseHelper
         $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
         return $data;
     }
+
+
+
+    /**** efl hsns  */
+    public function getAllSelectHsns(){
+        $from = Table::SD_EFL_HSN;
+        $select = ["ID as value,title_label as label"];
+        $sql = "ID<100";
+        $data_in = [];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, true, []);
+        return $data; 
+    }
+
+    public function getAllHsnsDesc(){
+        $from = Table::SD_EFL_HSN;
+        $select = ["*"];
+        $sql = "";
+        $data_in = [];
+        $data = $this->getAll($select, $from, $sql, "", "", $data_in, false, []);
+        $out= new stdClass();
+        $out->hsn_default = [];
+        $out->desc_default = [];
+        foreach($data as $obj){
+            $out->hsn_default[$obj->ID] = $obj->hsn;
+            $out->desc_default[$obj->ID] = $obj->bill_title;
+        }
+        return $out; 
+    }
+
+
+
 }

@@ -94,7 +94,7 @@ class SmartExcellHelper
             //exit();
             $this->_last_row  = $this->_worksheet->getHighestRow();
         } catch (\Exception $ex) {
-            var_dump($ex);
+            //var_dump($ex);
         }
     }
 

@@ -64,7 +64,7 @@ class InvoiceController extends BaseController
 
     public function generate()
     {
-        $columns = ["bill_start_date", "bill_end_date"];
+        $columns = ["bill_start_date", "bill_end_date","invoice_date","due_date"];
         // do validations
         $this->_helper->validate(BillHelper::validations, $columns, $this->post);
         $columns[] = "created_by";

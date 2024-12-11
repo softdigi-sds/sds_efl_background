@@ -16,6 +16,7 @@ use Site\Helpers\VendorsHelper;
 use Site\Helpers\MeterTypesHelper;
 use Site\Helpers\HubsHelper;
 use Site\Helpers\VendorRateHelper;
+use Site\Helpers\MeterReadingsHelper;
 
 class EflConsumptionController extends BaseController
 {
@@ -26,6 +27,7 @@ class EflConsumptionController extends BaseController
     private MeterTypesHelper $_meterTypesHelper;
     private HubsHelper $_hubs_helper;
     private VendorRateHelper $_vendor_rate_helper;
+    private MeterReadingsHelper $_meter_helper;
     function __construct($params)
     {
         parent::__construct($params);
@@ -40,6 +42,8 @@ class EflConsumptionController extends BaseController
         $this->_hubs_helper = new HubsHelper($this->db);
         //
         $this->_vendor_rate_helper = new VendorRateHelper($this->db);
+        //
+        $this->_meter_helper = new MeterReadingsHelper($this->db);
     }
 
     /**
@@ -50,13 +54,14 @@ class EflConsumptionController extends BaseController
 
         $consump_data = Data::post_array_data("data");
         $hub_id = Data::post_select_value("hub_id");
-        $extra = Data::post_data("extra","INTEGER");        
+        $extra = isset($this->post["extra"]) ?    $this->post["extra"] : 0;    
         $date = Data::post_data("date", "STRING");
         foreach ($consump_data as $data) {
             $data["sd_hub_id"] = $hub_id;
             $data["sd_date"] =  $date;
+            $data["extra_units"] = $extra;
             // if (isset($data["sd_hub_id"])) {
-            $this->_helper->insertUpdateNew($data, 0);
+            $this->_helper->insertUpdateNew($data, $extra );
             // }
         }
       //  $this->responseMsg(msg: "Consumption Report has been appended successfully");
@@ -126,6 +131,7 @@ class EflConsumptionController extends BaseController
     {
         $hub_id = Data::post_select_value("hub_id");
         $date = isset($this->post["date"]) ? trim($this->post["date"]) : "";
+        $extra = isset($this->post["extra"]) ? intval($this->post["extra"]) : 2;
         if ($hub_id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid Hub ID");
         }
@@ -134,7 +140,7 @@ class EflConsumptionController extends BaseController
         }
         $types = $this->_meterTypesHelper->getAllData();
         // $hub_id = Data::post_select_value($hub_id);
-        $data = $this->_helper->getVendorsByHubId($hub_id, $date);
+        $data = $this->_helper->getVendorsByHubId($hub_id, $date, $extra);
         foreach ($data as $obj) {
             $_db_out = $this->_helper->ConsumptionTypeCount($obj->ID);
             $obj->sub_data =  is_array($_db_out) ? $_db_out : [];
@@ -150,14 +156,15 @@ class EflConsumptionController extends BaseController
     {
         $hub_id = Data::post_select_value("hub_id");
         $start_date = SmartData::post_data("date", "DATE");
-        $end_date = SmartData::post_data("end_date", "DATE");      
+        $end_date = SmartData::post_data("end_date", "DATE");    
+        //$extra = isset($this->post["extra"]) ?   $this->post["extra"] : 0;
         if ($hub_id < 1) {
             \CustomErrorHandler::triggerInvalid("Invalid Hub ID");
         }      
         $types = $this->_meterTypesHelper->getAllData();
         $vendor_data = $this->_vendor_rate_helper->getAllWithHubId($hub_id);          
         foreach ( $vendor_data as $obj) {
-            $_db_out = $this->_helper->getConsumptionInvoiceByDateVendor($hub_id,$obj->sd_customer_id,$start_date,$end_date);
+            $_db_out = $this->_helper->getConsumptionInvoiceByDateVendor($hub_id,$obj->sd_customer_id,$start_date,$end_date,0);
             //var_dump($_db_out);
             $obj->sub_data =  is_array($_db_out) ? $_db_out : [];
             $obj->ext_data =   [];
@@ -201,8 +208,11 @@ class EflConsumptionController extends BaseController
         // loop over and get sub data   
         foreach ($hubs as $obj) {
             $obj->sub_data = $this->_helper->getCountByHubAndStartEndDate($obj->ID,  $start_date,  $end_date);
+            $obj->meter_reading = $this->_meter_helper->getMeterDataWithHubAndDates($obj->ID,  $start_date,  $end_date);
             $obj->total = $this->_helper->hubTotal($obj->sub_data);
             $obj->average = count($dates) > 0 ? round($obj->total / count($dates), 2) : 0;
+            $obj->meter_reading = round( $obj->meter_reading ,2);
+            $obj->deviation =  round($obj->meter_reading  -   $obj->total,2);
             // $hubs[$key] = $obj;
         }
         $out = new \stdClass();

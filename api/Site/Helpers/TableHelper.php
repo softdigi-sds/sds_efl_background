@@ -25,6 +25,7 @@ class TableHelper
    const SITE_ALERTS  = "sd_site_alerts";
 
    const EFLOFFICE =  "sd_efl_office";
+   const EFLOFFICE_GROUPS="sd_efl_office_groups";
    const HUBS =  "sd_hubs";
    const HUB_GROUPS =  "sd_hub_groups";
    const STATEDB =  "sd_state_db";
@@ -47,6 +48,9 @@ class TableHelper
    //
    const SD_CUSTOMER = "sd_customer";
    const SD_CUSTOMER_ADDRESS = "sd_customer_address";
+   const SD_CUSTOMER_HSN = "sd_customer_hsn";
+
+   const SD_EFL_HSN = "sd_efl_hsns";
 
    const SD_PAYMENT = "sd_payment";
 }
