@@ -192,6 +192,10 @@ class InvoiceSubHelper extends BaseHelper
         $sql = "t1.sd_invoice_id=:id";
         $data_in = ["id" => $invoice_id];
         $data = $this->getAllData($sql, $data_in);
+        $gst_percentage = 18;
+        foreach($data as $obj){
+            $obj->total_with_gst = $obj->total + ($obj->total *  ($gst_percentage / 100 ));
+        }
         return $data;
     }
     /**

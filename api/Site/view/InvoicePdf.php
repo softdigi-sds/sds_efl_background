@@ -78,7 +78,7 @@ class InvoicePdf
             <td><?php echo $this->getIndex($obj, "total") ?></td>
             <td>18.00 + 0 | 0 + 0</td>
             <td>0.0 </td>
-            <td><?php echo $this->getIndex($obj, "total") ?></td>
+            <td><?php echo $this->getIndex($obj, "total_with_gst") ?></td>
           </tr>
         <?php } ?>
       </table>
