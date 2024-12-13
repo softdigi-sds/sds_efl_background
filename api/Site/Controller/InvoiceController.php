@@ -290,7 +290,7 @@ class InvoiceController extends BaseController
             $total_taxable += floatval($_sub_arr["price"] * $_sub_arr["count"]);
             $tax = floatval($_sub_arr["tax_value"]);
             $tax_value = floatval($_sub_arr["price"]) * (floatval($tax) / 100);
-            $_sub_arr["total"] = (floatval($_sub_arr["price"]) +  $tax_value) * $_sub_arr["count"];
+            $_sub_arr["total"] = (floatval($_sub_arr["price"])) * $_sub_arr["count"];
             $sub_data[$key] = $_sub_arr;
         }
         $data["sd_hub_id"]  = SmartData::post_select_value("sd_hubs_id");
@@ -309,11 +309,14 @@ class InvoiceController extends BaseController
         $data["sub_data"] = $sub_data;
         $data["sd_bill_id"] = $id;
         $data["bill_type"] = "CMS";
+        $default_data = $this->_helper->getDefaultHsnDesc();
+        $data["hsn_default"] =  $default_data->hsn_default;
+        $data["desc_default"] =  $default_data->desc_default;
         $this->db->_db->Begin();
         $this->_helper->insertUpdateSingle($data);
         $this->_bill_helper->updateBillDetails($id);
         $this->db->_db->commit();
-        // $this->responseMsg("Invoice Added/Updated");
+        $this->responseMsg("Invoice Added/Updated");
 
     }
 

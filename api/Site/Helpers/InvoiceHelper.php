@@ -348,7 +348,7 @@ class InvoiceHelper extends BaseHelper
         return  $rateSubHelper->getAllByVendorRateId($rate_id);
     }
 
-    private function getDefaultHsnDesc()
+    public function getDefaultHsnDesc()
     {
         $rateSubHelper = new VendorRateSubHelper($this->db);
         return  $rateSubHelper->getAllHsnsDesc();
