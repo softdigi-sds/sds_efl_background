@@ -37,7 +37,8 @@ class PaymentController extends BaseController
         $this->_helper->validate(PaymentHelper::validations, $columns, $this->post);
         $columns[] = "created_by";
         $columns[] = "created_time";
-
+        $columns[] = "payment_method";
+        $this->post["payment_mode"] = Data::post_select_string("payment_mode");
         $this->post["sd_invoice_id"] = Data::post_select_value("sd_invoice_id");
         $this->post["sd_customer_id"] = Data::post_select_value("sd_customer_id");
         $this->db->_db->Begin();
