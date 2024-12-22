@@ -214,7 +214,7 @@ class CommonRouter
         $this->_routes["/invoice/delete_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "deleteOne"];
         $this->_routes["/invoice/generate_invoice"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "generate"];
         $this->_routes["/invoice/update_invoice"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
-        $this->_routes["/invoice/get_all_customer"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getInvoiceByCustomerID"];       
+        $this->_routes["/invoice/get_all_customer"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getInvoiceByCustomerID"];
         $this->_routes["/invoice/get_one_invoice"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getInvoiceByBillID"];
         $this->_routes["/invoice/download_invoice"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "downloadInvoice"];
         $this->_routes["/invoice/get_pdf"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "getPdf"];
@@ -222,8 +222,7 @@ class CommonRouter
         $this->_routes["/invoice/verify_sign"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "checkSingInfo"];
         $this->_routes["/invoice/update_remarks"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "updateRemarks"];
         $this->_routes["/invoice/status_update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "updateStatus"];
-    
-    
+        $this->_routes["/invoice/update_number"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "invoiceNumberUpdate"];
     }
     private function efl_vehicles_routes()
     {
@@ -239,13 +238,12 @@ class CommonRouter
         $this->_routes["/efl_vehicles/get_one_parking_data_hub"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOneParkingDataHub"];
 
         $this->_routes["/efl_vehicles/export_excel"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "exportExcel"];
-     
+
         $this->_routes["/efl_vehicles/import_excel"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "importExcel"];
         $this->_routes["/efl_vehicles/Vehicle_Report"] = [SmartConst::REQUEST_GET, $this->_admin_only, $controller, "VehicleReport"];
         $this->_routes["/efl_vehicles/get_report_dashboard"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getDashBoardHubWise"];
         $this->_routes["/efl_vehicles/get_report_date"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getDashBoardHubWiseDate"];
         $this->_routes["/efl_vehicles/get_hub_capacity_report"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllHubCapacity"];
-      
     }
 
     private function site_routes()
@@ -267,12 +265,11 @@ class CommonRouter
     private function meter_readings_routes()
     {
         $controller = "MeterReadingsController";
-        $this->_routes["/meter_readings/update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];      
+        $this->_routes["/meter_readings/update"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "update"];
         $this->_routes["/meter_readings/insert"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "insert"];
         $this->_routes["/meter_readings/get_all"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAll"];
         $this->_routes["/meter_readings/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/meter_readings/import_excel"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "importExcel"];
-
     }
     private function vehicles_types_routes()
     {
@@ -291,8 +288,6 @@ class CommonRouter
         $this->_routes["/payment/get_one"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getOne"];
         $this->_routes["/payment/get_all_report"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllReport"];
         $this->_routes["/payment/get_customer_ledger"] = [SmartConst::REQUEST_POST, $this->_admin_only, $controller, "getAllCustomerLedger"];
-    
-        
     }
 
     private function get_all_Routes()

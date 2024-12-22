@@ -508,7 +508,7 @@ class InvoiceHelper extends BaseHelper
     {
         $total = 0;
         foreach ($arr as $obj) {
-            if (isset($obj->count) && $obj->ID==1) {
+            if (isset($obj->count) && $obj->ID == 1) {
                 $total = $total + $obj->count;
             }
         }
@@ -739,6 +739,7 @@ class InvoiceHelper extends BaseHelper
                 "sd_customer_address_id",
                 "invoice_date"
             ];
+
             $this->update($update_columns, $data, $exist_data->ID);
             return $exist_data->ID;
         }
@@ -774,9 +775,9 @@ class InvoiceHelper extends BaseHelper
             $exist_data = $this->checkInvoiceExistsAddress($data["sd_bill_id"], $data["sd_hub_id"], $data["sd_customer_id"], $data["sd_customer_address_id"], $invoice_type);
         }
         $data["invoice_date"] = date("Y-m-d");
-       // var_dump($exist_data);
+        // var_dump($exist_data);
         $sub_data = $data["sub_data"];
-       // var_dump($sub_data);
+        // var_dump($sub_data);
         if (isset($exist_data->ID)) {
             if ($exist_data->status  < 5) {
                 // to avoid updatation after irn number generated

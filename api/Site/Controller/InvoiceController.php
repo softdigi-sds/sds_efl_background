@@ -64,7 +64,7 @@ class InvoiceController extends BaseController
 
     public function generate()
     {
-        $columns = ["bill_start_date", "bill_end_date","invoice_date","due_date"];
+        $columns = ["bill_start_date", "bill_end_date", "invoice_date", "due_date"];
         // do validations
         $this->_helper->validate(BillHelper::validations, $columns, $this->post);
         $columns[] = "created_by";
@@ -317,7 +317,23 @@ class InvoiceController extends BaseController
         $this->_bill_helper->updateBillDetails($id);
         $this->db->_db->commit();
         $this->responseMsg("Invoice Added/Updated");
+    }
 
+    public function invoiceNumberUpdate()
+    {
+        $id = SmartData::post_data("id", "INTEGER");
+        if ($id < 1) {
+            \CustomErrorHandler::triggerInvalid("Invoice id is required");
+        }
+        $serial_number = SmartData::post_data("invoice_serial_number", "INTEGER");
+        $invoice_number =  SmartData::post_data("invoice_number", "STRING");
+        $_data = [
+            "invoice_serial_number" => $serial_number,
+            "invoice_number" => $invoice_number,
+        ];
+        //var_dump($_data);
+        $this->_helper->update(["invoice_serial_number", "invoice_number"], $_data, $id);
+        $this->responseMsg("updated!");
     }
 
 
