@@ -296,8 +296,8 @@ class InvoiceHelper extends BaseHelper
             $data->state_cees = "0.00";
             $data->roundoff_amt = "0.00";
             $data->other_charge = "0.00";
-            $data->due_date = "10/12/2024";
-            $data->invoice_date = "25/11/2024";
+            //  $data->due_date = "10/12/2024";
+            // $data->invoice_date = "25/11/2024";
         }
         return $data;
     }
