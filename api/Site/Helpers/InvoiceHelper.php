@@ -857,6 +857,7 @@ class InvoiceHelper extends BaseHelper
             }
         }
         $data->sub_data_vehicle = $_sub_data_vehicle;
+        
         // modify the subdata here to have single line item in pdf 
         $customer_id = 3;
         if ($data->sd_customer_id === $customer_id) {
