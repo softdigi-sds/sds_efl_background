@@ -196,10 +196,10 @@ class SmartGeneral
             } else $str[] = null;
         }
         $Rupees = implode('', array_reverse($str));
-        $decimal_ten = intval($decimal / 10);
-        $decimal_mod_ten = intval(round($decimal % 10));
+       // $decimal_ten = intval($decimal / 10);
+       // $decimal_mod_ten = intval(round($decimal % 10));
         $paise = "";
-        $paise = ($decimal > 0) ? " " . ($words[$decimal_ten] . " " . $words[$decimal_mod_ten]) . ' Paise' : '';
+       // $paise = ($decimal > 0) ? " " . ($words[$decimal_ten] . " " . $words[$decimal_mod_ten]) . ' Paise' : '';
         return ($Rupees ? $Rupees . 'Rupees ' : '') . $paise;
     }
 }
