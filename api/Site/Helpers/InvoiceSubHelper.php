@@ -240,6 +240,7 @@ class InvoiceSubHelper extends BaseHelper
         return  $id_inserted;
     }
 
+    
     public function insert_update_data($_id, $data, $_data)
     {
         $this->deleteBySql(Table::SD_INVOICE_SUB, "sd_invoice_id=:id", ["id" => $_id]);
