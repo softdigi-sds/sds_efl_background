@@ -862,10 +862,11 @@ class InvoiceHelper extends BaseHelper
         if ($data->sd_customer_id === $customer_id) {
             $s_obj = $data->sub_data[0];
             $s_obj->type_hsn = 998714;
-            $s_obj->type_desc = "ELECTRIC VEHICLE PARKING AND CHARGING FEE 3WL AND 4WL (from " . $data->start_date . " to " . $data->end_date . ")";
+            $s_obj->type_desc = "ELECTRIC VEHICLE PARKING AND CHARGING FEE 3WL AND 4WL";
             $s_obj->type = 101;
             $s_obj->count = 1;
-            $s_obj->price = $s_obj->total = $this->getTotal($data->sub_data);
+            $s_obj->price = $this->getTotal($data->sub_data);
+            $s_obj->total =  $s_obj->price +  ($s_obj->price * 0.18);
             $data->sub_data = [$s_obj];
         }
 
