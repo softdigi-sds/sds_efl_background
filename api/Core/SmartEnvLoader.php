@@ -33,5 +33,5 @@ if (file_exists($envFilePath)) {
 		
     }
 }else{
-    \CustomErrorHandler::triggerInternalError("No Environment File Please check in path ");
+    //\CustomErrorHandler::triggerInternalError("No Environment File Please check in path ");
 }
