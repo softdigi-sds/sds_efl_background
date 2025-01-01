@@ -212,7 +212,8 @@ class InvoiceHelper extends BaseHelper
         LEFT JOIN " . Table::HUBS . " t3 ON t1.sd_hub_id=t3.ID 
         LEFT JOIN " . Table::EFLOFFICE . " t12 ON t3.sd_efl_office_id=t12.ID
         ";
-        $select = ["t1.*, t2.vendor_company, t3.hub_id ", "t12.office_city", "'' as signed_qr_code"];
+        $select = ["t1.*, t2.vendor_company, t3.hub_id ", "t12.office_city",
+         "'' as signed_qr_code","'' as signed_invoice"];
         $sql = "t1.sd_bill_id=:bill_id";
         $data_in = ["bill_id" => $bill_id];
         $group_by = "";
