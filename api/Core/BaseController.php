@@ -68,12 +68,20 @@ class BaseController
         }
     }
 
+
+    public function cleanBuffer()
+    {
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
+    }
+
     /**
      * 
      */
     public function response($data)
     {
-        ob_clean();
+        $this->cleanBuffer();
         http_response_code(200);
         echo json_encode($data);
         exit();
@@ -83,7 +91,7 @@ class BaseController
      */
     public function responseMsg($msg)
     {
-        ob_clean();
+        $this->cleanBuffer();
         $db = new \stdClass();
         $db->msg = $msg;
         http_response_code(200);

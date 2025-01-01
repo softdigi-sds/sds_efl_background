@@ -157,7 +157,7 @@ class IndexMain
     {
         $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : "";
         if ($method !== $this->_method) {
-            ob_clean();
+          //  ob_clean();
             \CustomErrorHandler::triggerInvalidRequest();
         }
     }
