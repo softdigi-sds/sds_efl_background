@@ -9,7 +9,8 @@
 ini_set('memory_limit', '  1024M');
 ini_set('max_execution_time', 600);
 
-use Core\Helpers\SmartAuthHelper;
+// load the autoloader class to laod the relevent classes 
+require_once 'Core/AutoLoader.php';
 
 error_reporting(E_ALL);
 // directory seperator
@@ -27,8 +28,7 @@ require_once('vendor/jwt/SignatureInvalidException.php');
 require_once "Core/SmartEnvLoader.php";
 //
 require_once "Core/SmartAuthLoader.php";
-// load the autoloader class to laod the relevent classes 
-require_once 'Core/AutoLoader.php';
+
 //
 require_once "Core/Router.php";
 //
