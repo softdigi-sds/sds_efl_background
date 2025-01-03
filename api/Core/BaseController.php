@@ -184,6 +184,16 @@ class BaseController
         // }
     }
 
+    public function responseBase64($content)
+    {
+        $this->cleanBuffer();
+        $db = new \stdClass();
+        $db->content = $content;
+        http_response_code(200);
+        echo json_encode($db);
+        exit();
+    }
+
     public function responseFileBase64($file_path, $file_name = "")
     {
         if (file_exists($file_path)) {

@@ -226,12 +226,19 @@ class InvoiceController extends BaseController
         $path = "invoice" . DS . $id . DS . "invoice.pdf";
         if (isset($data->ID) && $data->status !== 10) {
             $this->_helper->prepareGenerateInvoice($data, $this->_invoice_sub_helper);
+            $fname = "invoice-" . time() . ".pdf";
+            $path = SmartFileHelper::getDataPath() .  $path;
+            $this->responseFileBase64($path, $fname);
         } else {
             $path = "invoice" . DS . $id . DS . "invoicesign.pdf";
+            $fname = "invoice-" . time() . ".pdf";
+            $path = SmartFileHelper::getDataPath() .  $path;
+            if (file_exists($path)) {
+                $this->responseFileBase64($path, $fname);
+            } else {
+                $this->responseBase64($data->signed_invoice);
+            }
         }
-        $fname = "invoice-" . time() . ".pdf";
-        $path = SmartFileHelper::getDataPath() .  $path;
-        $this->responseFileBase64($path, $fname);
     }
 
 
